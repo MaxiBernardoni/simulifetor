@@ -1,0 +1,87 @@
+import type { GameEvent } from '../../engine/types';
+import { c, fx } from '../dsl';
+
+export const MONEY: GameEvent[] = [
+  { id: 'money.lottery', title: 'Lotería', tags: ['money'], weight: 9,
+    conditions: [c.age(18, 95), c.moneyGte(200)],
+    text: 'Un quiosquero te ofrece un billete de lotería por $200.',
+    choices: [
+      { label: 'Comprarlo', outcomes: [
+        { weight: 90, text: 'No ganaste nada. La casa siempre gana.', effects: [fx.money(-200)] },
+        { weight: 8, text: 'Ganaste un premio menor. Te alcanza para la cena.', effects: [fx.money(1500), fx.hap(4)] },
+        { weight: 2, text: '¡GANASTE! No lo podés creer.', effects: [fx.money(80000), fx.hap(20)] },
+      ] },
+      { label: 'Ignorarlo', outcomes: [{ weight: 1, text: 'Seguiste caminando. Nunca sabrás qué habría pasado.', effects: [] }] },
+    ] },
+  { id: 'money.inheritance', title: 'Herencia inesperada', tags: ['money'], weight: 3, once: true,
+    conditions: [c.age(25, 80)],
+    text: 'Un tío lejano que ni recordabas te dejó algo en el testamento.',
+    effects: [fx.money(9000), fx.hap(4)] },
+  { id: 'money.unexpected_bill', title: 'Gasto imprevisto', tags: ['money'], weight: 14,
+    conditions: [c.age(18, 99), c.moneyGte(1000)],
+    text: 'Se rompió el calefón y el lavarropas la misma semana. Justo.',
+    effects: [fx.money(-1800), fx.hap(-3)] },
+  { id: 'money.scam_email', title: 'Un correo sospechoso', tags: ['money', 'tech'], weight: 9,
+    conditions: [c.age(16, 95), c.year(2000, 2200)],
+    text: 'Te llega un mail de un príncipe que necesita tu ayuda para mover una fortuna.',
+    choices: [
+      { label: 'Ayudarlo', outcomes: [
+        { weight: 9, text: 'Era una estafa. Adiós a tus ahorros.', effects: [fx.money(-2500), fx.hap(-6)] },
+        { weight: 1, text: 'Por algún milagro, era verdad. Te pagó una comisión.', effects: [fx.money(5000), fx.hap(6)] },
+      ] },
+      { label: 'Borrarlo', outcomes: [{ weight: 1, text: 'Lo mandaste a spam. Punto para tu sentido común.', effects: [fx.hap(1)] }] },
+    ] },
+  { id: 'money.crypto', title: 'La moda de las criptomonedas', tags: ['money', 'tech'], weight: 8,
+    conditions: [c.age(18, 70), c.year(2013, 2200), c.moneyGte(1500)],
+    text: 'Un amigo te asegura que una moneda va "a la luna". Te pide que le entres.',
+    choices: [
+      { label: 'Invertir $1.500', outcomes: [
+        { weight: 6, text: 'Se desplomó. Perdiste todo. Tu amigo desapareció.', effects: [fx.money(-1500), fx.hap(-5)] },
+        { weight: 3, text: 'Ganaste un poco. Lo vendiste justo a tiempo.', effects: [fx.money(1500), fx.hap(3)] },
+        { weight: 1, text: '¡Se fue a la luna! Multiplicaste tu inversión.', effects: [fx.money(12000), fx.hap(10)] },
+      ] },
+      { label: 'No', outcomes: [{ weight: 1, text: 'Pasaste. Con suerte, la próxima vez.', effects: [] }] },
+    ] },
+  { id: 'money.car_breaks', title: 'Se rompió el auto', tags: ['money'], weight: 9,
+    conditions: [c.flag('driver'), c.moneyGte(800)],
+    text: 'El auto se quedó en la ruta. El mecánico te miró con cara de lástima.',
+    effects: [fx.money(-1200), fx.hap(-2)] },
+  { id: 'money.found_wallet', title: 'Billetera en la calle', tags: ['money'], weight: 9,
+    conditions: [c.age(10, 90)],
+    text: 'Te encontraste una billetera con plata y documentos.',
+    choices: [
+      { label: 'Devolverla', outcomes: [
+        { weight: 6, text: 'El dueño te lo agradeció con una recompensa.', effects: [fx.money(300), fx.hap(4)] },
+        { weight: 4, text: 'Te dijeron gracias y no más. Al menos dormís tranquilo/a.', effects: [fx.hap(2)] },
+      ] },
+      { label: 'Quedártela', outcomes: [
+        { weight: 1, text: 'Te quedaste con el efectivo y tiraste el resto. La culpa te duró una semana.', effects: [fx.money(1200), fx.hap(-2)] },
+      ] },
+    ] },
+  { id: 'money.friend_loan', title: 'Un amigo pide plata', tags: ['money'], weight: 9,
+    conditions: [c.has('friend'), c.age(18, 90), c.moneyGte(2000)],
+    text: '{friend} te pide $2.000 prestados. "Te lo devuelvo el mes que viene, palabra."',
+    choices: [
+      { label: 'Prestarle', outcomes: [
+        { weight: 4, text: '{friend} te devolvió todo. Sorpresa.', effects: [fx.close('friend', 8), fx.hap(2)] },
+        { weight: 6, text: '{friend} nunca te devolvió la plata. Ahora te evita.', effects: [fx.money(-2000), fx.close('friend', -25), fx.hap(-3)] },
+      ] },
+      { label: 'Negarte', outcomes: [{ weight: 1, text: 'Le dijiste que no. La amistad se enfrió.', effects: [fx.close('friend', -12)] }] },
+    ] },
+  { id: 'money.tax_audit', title: 'Auditoría fiscal', tags: ['money'], weight: 6,
+    conditions: [c.moneyGte(30000), c.age(25, 90)],
+    text: 'Te llegó una notificación del fisco. Van a revisar tus cuentas.',
+    effects: [fx.moneyPct(-0.08), fx.hap(-4)] },
+  { id: 'money.bonus', title: 'Aguinaldo generoso', tags: ['money', 'work'], weight: 8,
+    conditions: [c.job(), c.perf(50)],
+    text: 'La empresa tuvo un gran año y repartió un bonus.',
+    effects: [fx.money(2500), fx.hap(4)] },
+  { id: 'money.debt_collector', title: 'Cobrador de deudas', tags: ['money'], weight: 12,
+    conditions: [c.moneyLte(-3000), c.age(18, 99)],
+    text: 'Empezaron a llamarte de números desconocidos. Los cobradores de deudas no perdonan.',
+    effects: [fx.hap(-7), fx.hea(-2)] },
+  { id: 'money.identity_theft', title: 'Robo de identidad', tags: ['money', 'tech'], weight: 5,
+    conditions: [c.year(2005, 2200), c.age(20, 90), c.moneyGte(2000)],
+    text: 'Alguien usó tus datos para sacar un crédito a tu nombre. Perdés meses arreglándolo.',
+    effects: [fx.money(-2000), fx.hap(-6)] },
+];

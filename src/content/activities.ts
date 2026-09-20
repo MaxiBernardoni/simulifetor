@@ -1,0 +1,250 @@
+import type { Activity } from '../engine/types';
+import { c, fx } from './dsl';
+
+export const ACTIVITIES: Activity[] = [
+  // ── Salud ──
+  {
+    id: 'gym', label: 'Ir al gimnasio', desc: 'Cuota anual: $500', icon: 'Dumbbell', category: 'salud', cost: 500,
+    conditions: [c.age(14, 90)],
+    outcomes: [
+      { weight: 7, text: 'Entrenaste todo el año. Te sentís (y te ves) mejor.', effects: [fx.hea(4), fx.loo(3), fx.hap(2)] },
+      { weight: 2, text: 'Fuiste tres veces en enero y después la cuota quedó de decoración.', effects: [fx.hea(1)] },
+      { weight: 1, text: 'Te lesionaste levantando de más. Pura vanidad.', effects: [fx.hea(-5), fx.hap(-2)] },
+    ],
+  },
+  {
+    id: 'doctor', label: 'Ir al médico', desc: 'Consulta y estudios: $400', icon: 'Stethoscope', category: 'salud', cost: 400,
+    outcomes: [
+      { weight: 7, text: 'El médico te revisó de arriba abajo. Todo en orden, más o menos.', effects: [fx.hea(5)] },
+      { weight: 2, text: 'Te dieron un tratamiento que funcionó de maravillas.', effects: [fx.hea(9), fx.hap(2)] },
+      { weight: 1, text: 'Te dijo que tenés que dejar de googlear tus síntomas.', effects: [fx.hea(2), fx.hap(1)] },
+    ],
+  },
+  {
+    id: 'therapy', label: 'Terapia', desc: 'Sesiones: $800', icon: 'Brain', category: 'salud', cost: 800,
+    conditions: [c.age(10, 95)],
+    outcomes: [
+      { weight: 6, text: 'Terapia todo el año. Descubriste que la culpa de todo la tiene tu mamá.', effects: [fx.hap(7)] },
+      { weight: 3, text: 'Lloraste bastante, pero saliste más liviano.', effects: [fx.hap(5), fx.hea(1)] },
+      { weight: 1, text: 'Tu terapeuta se pasó el año hablando de sí mismo.', effects: [fx.hap(-1)] },
+    ],
+  },
+  {
+    id: 'meditate', label: 'Meditar', desc: 'Gratis y aburrido', icon: 'Flower2', category: 'salud',
+    conditions: [c.age(12, 99)],
+    outcomes: [
+      { weight: 5, text: 'Cerraste los ojos. Respiraste. Se te ocurrió lo que ibas a cenar.', effects: [fx.hap(3), fx.hea(1)] },
+      { weight: 2, text: 'Lograste paz interior durante casi dos minutos.', effects: [fx.hap(5)] },
+    ],
+  },
+  {
+    id: 'cosmetic', label: 'Cirugía estética', desc: 'Costo: $8.000', icon: 'Sparkles', category: 'salud', cost: 8000,
+    conditions: [c.age(18, 80)],
+    outcomes: [
+      { weight: 7, text: 'Salió bien. Te ves como recién salido/a de un filtro.', effects: [fx.loo(9), fx.hap(3)] },
+      { weight: 2, text: 'Quedó… raro. La sonrisa no se apaga nunca.', effects: [fx.loo(-6), fx.hap(-6)] },
+      { weight: 1, text: 'El cirujano se equivocó de paciente. Salvaste la vida de milagro.', effects: [fx.hea(-15), fx.loo(-4), fx.hap(-8)] },
+    ],
+  },
+  // ── Ocio ──
+  {
+    id: 'party', label: 'Salir de fiesta', desc: 'Noche de excesos', icon: 'PartyPopper', category: 'ocio', cost: 200,
+    conditions: [c.age(16, 70)],
+    outcomes: [
+      { weight: 5, text: 'Una noche legendaria. No recordás la mitad, pero sabés que estuvo buenísima.', effects: [fx.hap(6), fx.hea(-2)] },
+      { weight: 2, text: 'Terminaste bailando arriba de una mesa. Hay video.', effects: [fx.hap(4), fx.hea(-1), fx.loo(-1)] },
+      { weight: 2, text: 'Te fuiste temprano y te sentiste viejo/a.', effects: [fx.hap(-1)] },
+      { weight: 1, text: 'Te despertaste en un lugar que no conocías, sin celular ni billetera.', effects: [fx.hap(-5), fx.money(-300), fx.hea(-2)] },
+    ],
+  },
+  {
+    id: 'drink', label: 'Salir a tomar', desc: 'Unas copas', icon: 'Beer', category: 'ocio', cost: 100,
+    conditions: [c.age(18, 90)],
+    outcomes: [
+      { weight: 6, text: 'Unas copas con amigos. Se resolvió el mundo… otra vez.', effects: [fx.hap(4), fx.hea(-2)] },
+      { weight: 2, text: 'Pasaste de "unas copas" a "no me acuerdo". Resaca de tres días.', effects: [fx.hap(1), fx.hea(-4), fx.flag('drinker')] },
+      { weight: 1, text: 'Te peleaste con alguien en la puerta del bar.', effects: [fx.hap(-2), fx.hea(-4), fx.loo(-2)] },
+    ],
+  },
+  {
+    id: 'drugs', label: 'Probar drogas', desc: 'Mala idea, buena historia', icon: 'Pill', category: 'ocio', cost: 300,
+    conditions: [c.age(18, 70)],
+    outcomes: [
+      { weight: 4, text: 'Fue una experiencia… interesante. Viste colores nuevos.', effects: [fx.hap(8), fx.hea(-6)] },
+      { weight: 3, text: 'Te pegó mal. Pasaste la noche en la guardia.', effects: [fx.hap(-6), fx.hea(-10), fx.money(-800)] },
+      { weight: 2, text: 'Te gustó demasiado. Ahora lo necesitás.', effects: [fx.hap(3), fx.hea(-6), fx.flag('substance')] },
+      { weight: 1, text: 'Nada. Te reíste de todo un rato. Qué desperdicio de plata.', effects: [fx.hap(2)] },
+    ],
+  },
+  {
+    id: 'hookup', label: 'Buscar una aventura', desc: 'Sin compromiso', icon: 'Flame', category: 'social', cost: 100,
+    conditions: [c.age(18, 75)],
+    outcomes: [
+      { weight: 5, text: 'Conociste a alguien. Fue una noche memorable y una mañana incómoda.', effects: [fx.hap(6), fx.loo(1)] },
+      { weight: 3, text: 'Rechazo tras rechazo. Pagaste tres tragos para nada.', effects: [fx.hap(-3), fx.money(-100)] },
+      { weight: 1, text: 'Resultó que tu aventura tenía un regalito: una infección.', effects: [fx.hap(-2), fx.hea(-8), fx.money(-400)] },
+      { weight: 1, text: 'La aventura se convirtió en algo más serio.', effects: [fx.hap(5), fx.add('partner')] },
+    ],
+  },
+  {
+    id: 'travel', label: 'Viajar', desc: 'Costo: $3.000', icon: 'Plane', category: 'ocio', cost: 3000,
+    conditions: [c.age(16, 90)],
+    outcomes: [
+      { weight: 6, text: 'Viajaste, comiste raro, sacaste 400 fotos que nunca vas a mirar. Valió la pena.', effects: [fx.hap(9), fx.sma(1)] },
+      { weight: 2, text: 'Te robaron el pasaporte en el primer día. Igual la pasaste bien.', effects: [fx.hap(2), fx.money(-800)] },
+      { weight: 1, text: 'Intoxicación alimentaria. Conociste los baños de tres países.', effects: [fx.hap(-2), fx.hea(-6)] },
+    ],
+  },
+  {
+    id: 'casino', label: 'Ir al casino', desc: 'Apuesta: $500', icon: 'Dices', category: 'ocio', cost: 500,
+    conditions: [c.age(18, 95)],
+    outcomes: [
+      { weight: 55, text: 'La casa siempre gana. Perdiste todo lo que apostaste.', effects: [fx.hap(-3)] },
+      { weight: 30, text: 'Recuperaste tu plata y algo más.', effects: [fx.money(700), fx.hap(3)] },
+      { weight: 13, text: 'Buena racha. Te llevaste un buen premio.', effects: [fx.money(2500), fx.hap(7)] },
+      { weight: 2, text: '¡JACKPOT! No lo podés creer.', effects: [fx.money(25000), fx.hap(15)] },
+    ],
+  },
+  {
+    id: 'read', label: 'Leer libros', desc: 'Gratis, casi', icon: 'BookOpen', category: 'estudio',
+    conditions: [c.age(6, 99)],
+    outcomes: [
+      { weight: 6, text: 'Te devoraste varios libros. Te sentís más inteligente (aunque insoportable).', effects: [fx.sma(3), fx.hap(1)] },
+      { weight: 2, text: 'Leíste el mismo capítulo siete veces sin retener nada.', effects: [fx.sma(1)] },
+    ],
+  },
+  {
+    id: 'study', label: 'Estudiar más', desc: 'Mejor rendimiento escolar', icon: 'GraduationCap', category: 'estudio',
+    conditions: [c.enrolled()],
+    outcomes: [
+      { weight: 6, text: 'Le pusiste ganas y se nota en las notas.', effects: [fx.gpa(10), fx.sma(2), fx.hap(-1)] },
+      { weight: 3, text: 'Estudiaste toda la noche. Al día siguiente no recordabas nada.', effects: [fx.gpa(4), fx.hea(-1)] },
+    ],
+  },
+  {
+    id: 'tattoo', label: 'Hacerte un tatuaje', desc: 'Costo: $400', icon: 'PenTool', category: 'social', cost: 400,
+    conditions: [c.age(18, 80), c.noFlag('tattoo')],
+    outcomes: [
+      { weight: 6, text: 'Te tatuaste algo que "significa mucho para vos". Ya veremos en 10 años.', effects: [fx.hap(4), fx.loo(2), fx.flag('tattoo')] },
+      { weight: 2, text: 'Quedó torcido. Igual lo vas a llevar con orgullo.', effects: [fx.hap(1), fx.loo(-1), fx.flag('tattoo')] },
+    ],
+  },
+  // ── Social ──
+  {
+    id: 'make_friends', label: 'Hacer amigos', desc: 'Salí y conocé gente', icon: 'Users', category: 'social',
+    conditions: [c.age(5, 95)],
+    outcomes: [
+      { weight: 7, text: 'Conociste a alguien copado. Ya es tu amigo/a.', effects: [fx.add('friend'), fx.hap(3)] },
+      { weight: 3, text: 'Nadie te prestó atención. La soledad pega fuerte.', effects: [fx.hap(-2)] },
+    ],
+  },
+  {
+    id: 'find_partner', label: 'Buscar pareja', desc: 'Apps, amigos, destino', icon: 'Heart', category: 'social',
+    conditions: [c.age(16, 90), c.hasNot('partner')],
+    outcomes: [
+      { weight: 4, text: 'Conociste a alguien con quien hay química. Empezaron a salir.', effects: [fx.add('partner'), fx.hap(6)] },
+      { weight: 5, text: 'Salidas incómodas y mensajes sin respuesta. Otro año de solteros.', effects: [fx.hap(-3)] },
+      { weight: 1, text: 'La persona resultó ser un/a estafador/a. Te sacó plata.', effects: [fx.hap(-6), fx.money(-1500)] },
+    ],
+  },
+  {
+    id: 'adopt_pet', label: 'Adoptar una mascota', desc: 'Costo: $200', icon: 'PawPrint', category: 'social', cost: 200,
+    conditions: [c.age(8, 99), c.noFlag('pet')],
+    outcomes: [
+      { weight: 1, text: 'Adoptaste una mascota. Ahora es la persona más importante de tu vida.', effects: [fx.hap(9), fx.flag('pet')] },
+    ],
+  },
+  // ── Dinero / trabajo ──
+  {
+    id: 'odd_jobs', label: 'Hacer changas', desc: 'Trabajos informales', icon: 'Hammer', category: 'dinero',
+    conditions: [c.age(14, 70)],
+    outcomes: [
+      { weight: 6, text: 'Juntaste unos pesos con changas.', effects: [fx.money(2800), fx.hea(-1)] },
+      { weight: 3, text: 'Te pagaron una miseria por muchísimo laburo.', effects: [fx.money(900), fx.hap(-2), fx.hea(-1)] },
+      { weight: 1, text: 'Un cliente muy generoso te dejó una buena propina.', effects: [fx.money(6000), fx.hap(3)] },
+    ],
+  },
+  {
+    id: 'work_hard', label: 'Trabajar duro', desc: 'Mejora tu rendimiento', icon: 'Briefcase', category: 'trabajo',
+    conditions: [c.job()],
+    outcomes: [
+      { weight: 7, text: 'Te rompiste el lomo todo el año. Tu jefe {boss} lo notó.', effects: [fx.perf(12), fx.hap(-2), fx.hea(-1)] },
+      { weight: 3, text: 'Hiciste horas extra. Tus compañeros te odian un poco.', effects: [fx.perf(8), fx.hap(-3)] },
+    ],
+  },
+  {
+    id: 'ask_raise', label: 'Pedir aumento', desc: 'Arriesgado', icon: 'TrendingUp', category: 'trabajo',
+    conditions: [c.job()],
+    outcomes: [
+      { weight: 4, text: '{boss} aceptó darte un aumento.', effects: [fx.raise(1.12), fx.hap(4)] },
+      { weight: 5, text: '{boss} te dijo que "no es el momento". Nunca es el momento.', effects: [fx.hap(-2)] },
+      { weight: 1, text: '{boss} se ofendió tanto que te despidió.', effects: [fx.fired(), fx.hap(-8)] },
+    ],
+  },
+  // ── Crimen ──
+  {
+    id: 'shoplift', label: 'Robar en un local', desc: 'Delito menor', icon: 'ShoppingBag', category: 'crimen',
+    conditions: [c.age(10, 90)],
+    outcomes: [
+      { weight: 7, text: 'Te llevaste algo y nadie te vio. Lo vendiste después.', effects: [fx.money(500), fx.hap(2)] },
+      { weight: 3, text: 'Te agarró el guardia. Llamaron a la policía, pero zafaste con una advertencia.', effects: [fx.hap(-5), fx.flag('shoplifted')] },
+      { weight: 1, text: 'Te detuvieron y te dieron un año de prisión.', effects: [fx.hap(-8), fx.jail(1, 1)] },
+    ],
+  },
+  {
+    id: 'robbery', label: 'Robar a alguien', desc: 'Delito grave', icon: 'Skull', category: 'crimen',
+    conditions: [c.age(16, 70)],
+    outcomes: [
+      { weight: 6, text: 'El golpe salió bien. Sacaste un buen botín.', effects: [fx.money(5500), fx.hap(3), fx.flag('thief')] },
+      { weight: 2, text: 'La víctima se resistió. Te fuiste con las manos vacías.', effects: [fx.hap(-4), fx.hea(-4)] },
+      { weight: 4, text: 'Te atrapó la policía. Vas preso.', effects: [fx.hap(-10), fx.jail(1, 5)] },
+    ],
+  },
+  {
+    id: 'scam', label: 'Armar una estafa', desc: 'Requiere ingenio', icon: 'VenetianMask', category: 'crimen',
+    conditions: [c.age(18, 80), c.stat('smarts', '>=', 45)],
+    outcomes: [
+      { weight: 6, text: 'La estafa funcionó a la perfección. Nadie sospecha nada.', effects: [fx.money(12000), fx.hap(4), fx.flag('scammer')] },
+      { weight: 2, text: 'Se te cayó la estafa. Perdiste plata pero nadie te vinculó.', effects: [fx.money(-1000), fx.hap(-4)] },
+      { weight: 3, text: 'Te descubrieron. Cargo por fraude.', effects: [fx.hap(-10), fx.jail(2, 6)] },
+    ],
+  },
+  {
+    id: 'sell_drugs', label: 'Vender drogas', desc: 'Negocio de alto riesgo', icon: 'Package', category: 'crimen',
+    conditions: [c.age(16, 60)],
+    outcomes: [
+      { weight: 6, text: 'Un año de buen negocio en la esquina correcta.', effects: [fx.money(8000), fx.hap(2), fx.flag('dealer')] },
+      { weight: 2, text: 'Un rival te asaltó la mercadería y te dejó bastante golpeado.', effects: [fx.money(-2000), fx.hea(-10), fx.hap(-6)] },
+      { weight: 3, text: 'Redada. Te encontraron con la mercadería.', effects: [fx.hap(-10), fx.jail(2, 8)] },
+    ],
+  },
+  {
+    id: 'street_fight', label: 'Buscar pelea', desc: 'Violencia callejera', icon: 'Swords', category: 'crimen',
+    conditions: [c.age(13, 60)],
+    outcomes: [
+      { weight: 5, text: 'Ganaste la pelea. Nadie se atreve a mirarte feo.', effects: [fx.hap(3), fx.hea(-4)] },
+      { weight: 4, text: 'Te dieron una paliza.', effects: [fx.hap(-5), fx.hea(-10), fx.loo(-3)] },
+      { weight: 1, text: 'Alguien llamó a la policía. Terminaste preso por lesiones.', effects: [fx.hap(-6), fx.jail(1, 2)] },
+    ],
+  },
+  // ── Prisión ──
+  {
+    id: 'jail_gym', label: 'Entrenar en el patio', desc: 'Prisión', icon: 'Dumbbell', category: 'salud', inJail: true,
+    outcomes: [
+      { weight: 1, text: 'Pasaste el año levantando pesas hechas con tachos. Estás en forma.', effects: [fx.hea(4), fx.hap(2)] },
+    ],
+  },
+  {
+    id: 'jail_read', label: 'Leer en la biblioteca', desc: 'Prisión', icon: 'BookOpen', category: 'estudio', inJail: true,
+    outcomes: [
+      { weight: 1, text: 'Leíste toda la biblioteca de la cárcel. Es más grande de lo que pensabas.', effects: [fx.sma(4), fx.hap(1)] },
+    ],
+  },
+  {
+    id: 'jail_riot', label: 'Provocar un motín', desc: 'Prisión', icon: 'Flame', category: 'crimen', inJail: true,
+    outcomes: [
+      { weight: 3, text: 'El motín se te fue de las manos. Te agregaron años a la condena.', effects: [fx.hap(-4), fx.hea(-8), fx.jail(1, 3)] },
+      { weight: 2, text: 'Ganaste respeto entre los presos. Nadie se mete con vos.', effects: [fx.hap(4), fx.hea(-3)] },
+    ],
+  },
+];

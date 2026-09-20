@@ -1,0 +1,78 @@
+import type { GameEvent } from '../../engine/types';
+import { c, fx } from '../dsl';
+
+export const HEALTH: GameEvent[] = [
+  { id: 'health.flu', title: 'Gripe', tags: ['health'], weight: 14,
+    conditions: [c.age(13, 99)],
+    text: 'Te agarró una gripe que te tumbó una semana en cama.',
+    effects: [fx.hea(-4), fx.hap(-2)] },
+  { id: 'health.accident', title: 'Accidente', tags: ['health'], weight: 8,
+    conditions: [c.age(13, 90)],
+    text: 'Te resbalaste en la ducha y te golpeaste feo. Nunca subestimes un piso mojado.',
+    effects: [fx.hea(-10), fx.hap(-3), fx.money(-300)] },
+  { id: 'health.checkup', title: 'Chequeo médico', tags: ['health'], weight: 9,
+    conditions: [c.age(35, 90), c.moneyGte(400)],
+    text: 'Tu obra social te insiste con un chequeo general.',
+    choices: [
+      { label: 'Ir al médico', outcomes: [
+        { weight: 7, text: 'Te encontraron algo a tiempo y lo trataron. Te salvó la vida, probablemente.', effects: [fx.hea(6), fx.money(-400)] },
+        { weight: 3, text: 'Todo en orden. Perdiste la mañana y la plata.', effects: [fx.money(-400)] },
+      ] },
+      { label: 'Ignorarlo', outcomes: [
+        { weight: 7, text: 'Ignoraste el chequeo. Hasta ahora, todo bien.', effects: [] },
+        { weight: 3, text: 'Ignoraste los síntomas. Ahora está más complicado.', effects: [fx.hea(-8), fx.flag('chronic')] },
+      ] },
+    ] },
+  { id: 'health.chronic', title: 'Diagnóstico crónico', tags: ['health'], weight: 8, once: true,
+    conditions: [c.age(45, 90), c.stat('health', '<=', 60), c.noFlag('chronic')],
+    text: 'El médico habló de "enfermedad crónica", "tratamiento de por vida" y "cambios en tu estilo de vida". No te acordás de mucho más.',
+    effects: [fx.hea(-8), fx.hap(-7), fx.flag('chronic'), fx.money(-1000)] },
+  { id: 'health.pandemic', title: 'Pandemia', tags: ['health', 'historical'], weight: 1000, once: true,
+    conditions: [c.year(2020, 2021)],
+    text: 'Una pandemia global paralizó al mundo. Cuarentena, barbijos, videollamadas y mucho pan casero.',
+    effects: [fx.hea(-5), fx.hap(-8), fx.money(-700)] },
+  { id: 'health.addiction', title: 'La adicción pasa factura', tags: ['health'], weight: 30,
+    conditions: [c.flag('substance')],
+    text: 'Tu adicción te está consumiendo la salud, el dinero y las relaciones.',
+    effects: [fx.hea(-6), fx.hap(-5), fx.money(-1800)] },
+  { id: 'health.depression', title: 'Depresión', tags: ['health'], weight: 22,
+    conditions: [c.stat('happiness', '<=', 30), c.age(13, 99)],
+    text: 'Empezaste a sentirte vacío/a. Nada te importa. Lo peor es que tampoco te importa que nada te importe.',
+    choices: [
+      { label: 'Buscar ayuda profesional', outcomes: [
+        { weight: 7, text: 'Con terapia, de a poco, empezaste a mejorar.', effects: [fx.hap(12), fx.money(-800)] },
+        { weight: 3, text: 'La primera terapeuta no te sirvió. Seguís buscando.', effects: [fx.money(-400), fx.hap(2)] },
+      ] },
+      { label: 'Seguir como si nada', outcomes: [
+        { weight: 1, text: 'Seguiste igual. Lo peor pasó de a poco, sin ruido.', effects: [fx.hap(-6), fx.hea(-4)] },
+      ] },
+    ] },
+  { id: 'health.heart_scare', title: 'Susto en el pecho', tags: ['health'], weight: 8,
+    conditions: [c.age(50, 95), c.stat('health', '<=', 55)],
+    text: 'Sentiste una presión en el pecho. Te llevaron a la guardia. Fue un susto… esta vez.',
+    choices: [
+      { label: 'Cambiar de hábitos', outcomes: [
+        { weight: 1, text: 'Cambiaste tus hábitos y dejaste el cigarrillo y la grasa. Te sentís mejor.', effects: [fx.hea(6), fx.hap(-1)] },
+      ] },
+      { label: 'Seguir igual', outcomes: [
+        { weight: 6, text: 'Seguiste como si nada. La suerte te acompañó.', effects: [] },
+        { weight: 4, text: 'Al mes tuviste un infarto. Zafaste por poco.', effects: [fx.hea(-18), fx.hap(-8)] },
+      ] },
+    ] },
+  { id: 'health.smoker_cough', title: 'Tos de fumador', tags: ['health'], weight: 22,
+    conditions: [c.flag('smoker'), c.age(25, 99)],
+    text: 'El cigarrillo empieza a cobrarte factura. Cada mañana tosés como un motor viejo.',
+    effects: [fx.hea(-4), fx.loo(-1)] },
+  { id: 'health.hangover_drinker', title: 'Alcohol de más', tags: ['health'], weight: 18,
+    conditions: [c.flag('drinker'), c.age(20, 99)],
+    text: 'Tu relación con el alcohol ya no es "social". Tu hígado te manda un mensaje.',
+    effects: [fx.hea(-5), fx.hap(-2)] },
+  { id: 'health.gym_fit', title: 'En forma', tags: ['health'], weight: 8,
+    conditions: [c.stat('health', '>=', 75), c.age(18, 50)],
+    text: 'Te miraste al espejo y, por una vez, te gustó lo que viste.',
+    effects: [fx.loo(2), fx.hap(3)] },
+  { id: 'health.dental', title: 'Dolor de muelas', tags: ['health'], weight: 10,
+    conditions: [c.age(18, 90), c.moneyGte(500)],
+    text: 'Una muela se te partió mientras comías. El dentista te cobró una fortuna.',
+    effects: [fx.money(-900), fx.hap(-2), fx.hea(1)] },
+];
