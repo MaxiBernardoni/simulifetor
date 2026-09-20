@@ -158,12 +158,20 @@ export type Prompt =
     }
   | { kind: 'result'; title: string; text: string; deltas: Delta[] };
 
+export interface Look {
+  skin: number;
+  eyes: number;
+  hairStyle: number;
+  hairColor: number;
+}
+
 export interface Life {
   id: string;
   rng: number;
   name: string;
   surname: string;
   gender: Gender;
+  look: Look;
   birthYear: number;
   age: number;
   year: number;
@@ -198,4 +206,4 @@ export interface LifeSummary {
   job: string;
 }
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;

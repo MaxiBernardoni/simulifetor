@@ -16,7 +16,7 @@
 | Sonido | Solo sonidos de interfaz mínimos |
 | Iconos | Íconos vectoriales, no emojis |
 | **Época de arranque** | **Aleatoria**: cada vida nace en un año al azar dentro de un rango (ver 06). Los eventos históricos y la tecnología dependen del año. |
-| **Avatar** | **Como BitLife: sin retrato dibujado.** Nombre, edad, género y stats con íconos. |
+| **Avatar** | **Personalizable** (cambiado tras probar el MVP): nombre, género, piel, ojos, peinado y color de pelo, dibujado con SVG. |
 | **Sistemas prioritarios (Fase 2)** | Elegidos por mí: **1) Relaciones, 2) Carrera/Trabajo y dinero, 3) Crimen y justicia.** Son los que más generan historias y decisiones interesantes. Salud, propiedades y fama van después. |
 | Instalación permanente en iPhone / PWA | Se decide más adelante |
 

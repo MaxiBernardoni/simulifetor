@@ -1,13 +1,30 @@
 import { SCHEMA_VERSION } from './types';
-import type { Life, Person } from './types';
+import type { Gender, Life, Look, Person } from './types';
 import { rngFromState } from './rng';
 import { makePerson, randomFirstName } from './people';
 import { SURNAMES } from '../content/names';
+import { EYE_COLORS, HAIR_COLORS, HAIR_STYLES, SKIN_TONES } from '../content/look';
 import { addLog } from './effects';
 
 export const BIRTH_YEAR_RANGE: [number, number] = [1950, 2010];
 
-export function createLife(seed?: number): Life {
+export interface CreateOpts {
+  name?: string;
+  surname?: string;
+  gender?: Gender;
+  look?: Partial<Look>;
+}
+
+export function randomLook(rng: { int(a: number, b: number): number }): Look {
+  return {
+    skin: rng.int(0, SKIN_TONES.length - 1),
+    eyes: rng.int(0, EYE_COLORS.length - 1),
+    hairStyle: rng.int(0, HAIR_STYLES.length - 1),
+    hairColor: rng.int(0, HAIR_COLORS.length - 1),
+  };
+}
+
+export function createLife(seed?: number, opts: CreateOpts = {}): Life {
   const s0 = seed ?? Math.floor(Math.random() * 2147483647);
   const life = { rng: s0 } as Life;
   const rng = rngFromState(
@@ -17,8 +34,11 @@ export function createLife(seed?: number): Life {
     },
   );
 
-  const gender = rng.chance(0.5) ? 'M' : 'F';
-  const surname = rng.pick(SURNAMES);
+  const randomGender: Gender = rng.chance(0.5) ? 'M' : 'F';
+  const gender: Gender = opts.gender ?? randomGender;
+  const surname = opts.surname?.trim() || rng.pick(SURNAMES);
+  const rl = randomLook(rng);
+  const look: Look = { ...rl, ...opts.look };
   const birthYear = rng.int(BIRTH_YEAR_RANGE[0], BIRTH_YEAR_RANGE[1]);
   const wealthClass = (rng.weighted([1, 2, 3], (w) => (w === 1 ? 3 : w === 2 ? 5 : 2)) ?? 2) as 1 | 2 | 3;
 
@@ -34,9 +54,10 @@ export function createLife(seed?: number): Life {
 
   Object.assign(life, {
     id: `life-${Date.now().toString(36)}-${rng.int(0, 9999)}`,
-    name: randomFirstName(rng, gender),
+    name: opts.name?.trim() || randomFirstName(rng, gender),
     surname,
     gender,
+    look,
     birthYear,
     age: 0,
     year: birthYear,

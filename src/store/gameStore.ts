@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Life, LifeSummary } from '../engine/types';
 import { SCHEMA_VERSION } from '../engine/types';
 import { cloneLife, createLife } from '../engine/life';
+import type { CreateOpts } from '../engine/life';
 import { ageUp } from '../engine/ageUp';
 import { dismissPrompt, resolveChoice } from '../engine/events';
 import {
@@ -27,12 +28,15 @@ interface SaveData {
 
 interface GameState {
   ready: boolean;
+  creating: boolean;
   life: Life | null;
   history: LifeSummary[];
   tab: Tab;
   load: () => Promise<void>;
   setTab: (t: Tab) => void;
-  newLife: () => void;
+  startCreating: () => void;
+  cancelCreate: () => void;
+  newLife: (opts?: CreateOpts) => void;
   ageUp: () => void;
   choose: (i: number) => void;
   dismiss: () => void;
@@ -81,6 +85,7 @@ export const useGame = create<GameState>((set, get) => {
 
   return {
     ready: false,
+    creating: false,
     life: null,
     history: [],
     tab: 'life',
@@ -103,9 +108,12 @@ export const useGame = create<GameState>((set, get) => {
 
     setTab: (tab) => set({ tab }),
 
-    newLife: () => {
-      const life = createLife();
-      set({ life, tab: 'life' });
+    startCreating: () => set({ creating: true }),
+    cancelCreate: () => set({ creating: false }),
+
+    newLife: (opts) => {
+      const life = createLife(undefined, opts);
+      set({ life, tab: 'life', creating: false });
       void persist(life, get().history);
     },
 
@@ -121,7 +129,7 @@ export const useGame = create<GameState>((set, get) => {
     dropUni: () => mutate(dropUniversity),
 
     wipe: async () => {
-      set({ life: null, history: [], tab: 'life' });
+      set({ life: null, history: [], tab: 'life', creating: false });
       try {
         await AsyncStorage.removeItem(KEY);
       } catch {

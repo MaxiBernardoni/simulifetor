@@ -69,6 +69,21 @@ describe('motor', () => {
     expect(a.people.map((p) => p.name)).toEqual(b.people.map((p) => p.name));
   });
 
+  it('createLife respeta nombre, género y aspecto elegidos', () => {
+    const l = createLife(5, { name: '  Maxi ', surname: 'Bernardoni', gender: 'F', look: { skin: 4, eyes: 2, hairStyle: 5, hairColor: 7 } });
+    expect(l.name).toBe('Maxi');
+    expect(l.surname).toBe('Bernardoni');
+    expect(l.gender).toBe('F');
+    expect(l.look).toEqual({ skin: 4, eyes: 2, hairStyle: 5, hairColor: 7 });
+    expect(l.people.find((p) => p.kind === 'father')!.name).toContain('Bernardoni');
+  });
+
+  it('sin opciones el aspecto es aleatorio pero válido', () => {
+    const l = createLife(11);
+    expect(l.look.skin).toBeGreaterThanOrEqual(0);
+    expect(l.look.hairStyle).toBeLessThan(8);
+  });
+
   it('año de nacimiento dentro del rango', () => {
     for (let s = 1; s < 50; s++) {
       const l = createLife(s);

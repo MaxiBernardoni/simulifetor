@@ -15,6 +15,7 @@ import { AssetsScreen } from './src/ui/screens/AssetsScreen';
 import { MoreScreen } from './src/ui/screens/MoreScreen';
 import { DeathScreen } from './src/ui/screens/DeathScreen';
 import { StartScreen } from './src/ui/screens/StartScreen';
+import { CreateScreen } from './src/ui/screens/CreateScreen';
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: 'life', label: 'Vida', icon: 'Activity' },
@@ -28,6 +29,7 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
 function Main() {
   const ready = useGame((s) => s.ready);
   const life = useGame((s) => s.life);
+  const creating = useGame((s) => s.creating);
   const tab = useGame((s) => s.tab);
   const setTab = useGame((s) => s.setTab);
   const load = useGame((s) => s.load);
@@ -43,6 +45,7 @@ function Main() {
       </View>
     );
   }
+  if (creating) return <CreateScreen />;
   if (!life) return <StartScreen />;
 
   // Con decisiones pendientes se muestra el modal por encima; si murió y no queda nada pendiente, resumen.

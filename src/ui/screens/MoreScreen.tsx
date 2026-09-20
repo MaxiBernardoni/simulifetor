@@ -8,14 +8,14 @@ import { colors, space } from '../theme';
 export function MoreScreen() {
   const life = useGame((st) => st.life)!;
   const history = useGame((st) => st.history);
-  const newLife = useGame((st) => st.newLife);
+  const start = useGame((st) => st.startCreating);
   const wipe = useGame((st) => st.wipe);
 
   const confirmNew = () => {
-    if (!life.alive) return newLife();
+    if (!life.alive) return start();
     Alert.alert('¿Empezar otra vida?', 'La vida actual se abandona (no se guarda en el historial).', [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Nueva vida', style: 'destructive', onPress: newLife },
+      { text: 'Nueva vida', style: 'destructive', onPress: start },
     ]);
   };
   const confirmWipe = () =>

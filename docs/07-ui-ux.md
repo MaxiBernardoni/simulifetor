@@ -6,7 +6,7 @@
 - Barras/anillos de progreso para stats, con color por estado (verde/amarillo/rojo).
 - Tarjetas para eventos y decisiones; transiciones cortas.
 - Sonidos de interfaz mínimos (clic, envejecer, notificación de evento, muerte). Se pueden desactivar.
-- **Sin avatar dibujado, igual que BitLife** (decidido): la identidad del personaje es nombre, edad, género y stats con íconos.
+- **Avatar dibujado con SVG** (actualizado tras probar el MVP): en la creación se elige nombre, apellido, género, color de piel, color de ojos, peinado (8) y color de pelo, con botón Aleatorio. El avatar se muestra en la pantalla de vida y en el resumen de muerte.
 
 ## Navegación (tabs inferiores)
 1. **Vida** — feed del historial + botón **Envejecer** + stats compactos.

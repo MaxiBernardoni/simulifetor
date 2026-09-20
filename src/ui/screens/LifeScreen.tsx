@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useGame } from '../../store/gameStore';
 import type { LogEntry, StatKey } from '../../engine/types';
 import { Button, Card, DeltaChips, StatBar } from '../components';
+import { Avatar } from '../Avatar';
 import { colors, space, toneColor } from '../theme';
 
 const STATS: StatKey[] = ['happiness', 'health', 'smarts', 'looks'];
@@ -32,13 +33,16 @@ export function LifeScreen() {
   return (
     <View style={s.wrap}>
       <View style={s.header}>
-        <Text style={s.name}>
-          {life.name} {life.surname}
-        </Text>
-        <Text style={s.sub}>
-          {life.age} {life.age === 1 ? 'año' : 'años'} · {life.year}
-          {life.jailYears > 0 ? ` · Preso (${life.jailYears})` : ''}
-        </Text>
+        <Avatar look={life.look} size={56} />
+        <View style={{ flex: 1 }}>
+          <Text style={s.name}>
+            {life.name} {life.surname}
+          </Text>
+          <Text style={s.sub}>
+            {life.age} {life.age === 1 ? 'año' : 'años'} · {life.year}
+            {life.jailYears > 0 ? ` · Preso (${life.jailYears})` : ''}
+          </Text>
+        </View>
       </View>
       <Card style={{ marginHorizontal: space.lg }}>
         {STATS.map((k) => (
@@ -74,7 +78,7 @@ export function LifeScreen() {
 
 const s = StyleSheet.create({
   wrap: { flex: 1 },
-  header: { paddingHorizontal: space.lg, paddingTop: space.md, paddingBottom: space.md },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: space.lg, paddingTop: space.md, paddingBottom: space.md },
   name: { color: colors.text, fontSize: 24, fontWeight: '800' },
   sub: { color: colors.muted, fontSize: 14, marginTop: 2 },
   groupHead: { color: colors.text, fontWeight: '800', fontSize: 13, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.8 },

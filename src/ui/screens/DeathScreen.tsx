@@ -3,19 +3,21 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useGame } from '../../store/gameStore';
 import { formatMoney } from '../../engine/format';
 import { Button, Card } from '../components';
-import { Icon } from '../Icon';
+import { Avatar } from '../Avatar';
 import { colors, space } from '../theme';
 
 export function DeathScreen() {
   const life = useGame((st) => st.life)!;
-  const newLife = useGame((st) => st.newLife);
+  const start = useGame((st) => st.startCreating);
   const children = life.people.filter((p) => p.kind === 'child');
   const last = life.log.slice(-6, -1);
 
   return (
     <ScrollView contentContainerStyle={s.wrap}>
       <View style={s.center}>
-        <Icon name="Ghost" size={54} color={colors.muted} />
+        <View style={{ opacity: 0.6 }}>
+          <Avatar look={life.look} size={104} />
+        </View>
         <Text style={s.title}>
           {life.name} {life.surname}
         </Text>
@@ -45,7 +47,7 @@ export function DeathScreen() {
       ) : null}
 
       <View style={{ marginTop: space.xl }}>
-        <Button label="Nueva vida" icon="Baby" onPress={newLife} />
+        <Button label="Nueva vida" icon="Baby" onPress={start} />
       </View>
     </ScrollView>
   );
