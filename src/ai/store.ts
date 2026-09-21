@@ -207,12 +207,14 @@ export const useAI = create<AIState>((set, get) => {
         answer: text,
         ctx: ctxNow(),
         age: life.age,
+        thread: prompt.thread,
+        depth: prompt.depth,
       });
       if (!res.ok) return res.message;
       // Si mientras tanto cambió la situación, no se aplica.
       const now = useGame.getState().life?.pending[0];
-      if (now?.kind !== 'choice' || now.eventId !== prompt.eventId) return 'La situación cambió mientras la IA pensaba.';
-      useGame.getState().chooseFree(res.outcome);
+      if (now?.kind !== 'choice' || now.eventId !== prompt.eventId || now.text !== prompt.text) return 'La situación cambió mientras la IA pensaba.';
+      useGame.getState().chooseFree(res.outcome, res.next);
       return null;
     },
   };

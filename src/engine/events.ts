@@ -1,4 +1,5 @@
-import type { Choice, GameEvent, Life, Outcome, Person } from './types';
+import type { Choice, FollowUp, GameEvent, Life, Outcome, Person } from './types';
+import { FOLLOWUP_ID } from './types';
 import { rngOf } from './rng';
 import { allConds } from './conditions';
 import { addLog, applyEffects, newEffectCtx, toneOf } from './effects';
@@ -130,20 +131,19 @@ function finishOutcome(life: Life, title: string, icon: string, baseScene: strin
  * Resuelve la decisión pendiente con un resultado que no sale del evento (por ejemplo, el veredicto de la IA sobre una
  * respuesta escrita). El resultado tiene que venir ya validado y acotado.
  */
-export function resolveWithOutcome(life: Life, outcome: Outcome): void {
+export function resolveWithOutcome(life: Life, outcome: Outcome, next?: FollowUp): void {
   const prompt = life.pending[0];
   if (!prompt || prompt.kind !== 'choice') return;
   const ev = getEvent(prompt.eventId);
   const target = life.people.find((p) => p.id === prompt.targetId);
   life.pending.shift();
-  finishOutcome(
-    life,
-    prompt.title,
-    prompt.icon ?? styleForTags(ev?.tags).icon,
-    prompt.scene ?? (ev ? sceneForEvent(ev.id, ev.tags) : 'random'),
-    target,
-    outcome,
-  );
+  const icon = prompt.icon ?? styleForTags(ev?.tags).icon;
+  const scene = prompt.scene ?? (ev ? sceneForEvent(ev.id, ev.tags) : 'random');
+  finishOutcome(life, prompt.title, icon, scene, target, outcome);
+  // La continuación va justo después del cartel de resultado: el jugador decide otra vez.
+  if (next && life.alive) {
+    life.pending.splice(1, 0, { kind: 'choice', eventId: FOLLOWUP_ID, ...next, targetId: target?.id, icon, scene });
+  }
 }
 
 export function dismissPrompt(life: Life): void {

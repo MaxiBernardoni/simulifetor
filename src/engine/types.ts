@@ -175,6 +175,18 @@ export interface Delta {
   amount: number;
 }
 
+/** Id de los prompts de continuación de la IA (no corresponden a ningún evento registrado). */
+export const FOLLOWUP_ID = 'ai.followup';
+
+/** Nueva situación que la IA plantea a partir de la respuesta del jugador. */
+export interface FollowUp {
+  title: string;
+  text: string;
+  options: string[];
+  thread: string;
+  depth: number;
+}
+
 export type Prompt =
   | {
       kind: 'choice';
@@ -184,6 +196,10 @@ export type Prompt =
       targetId?: string;
       icon?: string;
       scene?: string;
+      /** Continuación generada por la IA (no hay evento detrás): opciones sugeridas, historia hasta acá y cuántas van. */
+      options?: string[];
+      thread?: string;
+      depth?: number;
     }
   | { kind: 'result'; title: string; text: string; deltas: Delta[]; icon?: string; scene?: string; targetId?: string };
 

@@ -1,4 +1,4 @@
-import type { GameEvent, Outcome } from '../engine/types';
+import type { FollowUp, GameEvent, Outcome } from '../engine/types';
 import { AIError } from './types';
 import type { AIProvider, AuditEntry } from './types';
 import { eventPrompt, freeTextPrompt, narratorPrompt } from './prompts';
@@ -93,7 +93,10 @@ export async function narrate(
   }
 }
 
-export type FreeTextAnswer = { ok: true; outcome: Outcome } | { ok: false; message: string };
+/** Cuántas continuaciones seguidas puede plantear la IA: después, la historia cierra sola. */
+export const MAX_FOLLOWUPS = 3;
+
+export type FreeTextAnswer = { ok: true; outcome: Outcome; next?: FollowUp } | { ok: false; message: string };
 
 const ERROR_MESSAGE: Record<string, string> = {
   timeout: 'La IA tardó demasiado.',
@@ -111,18 +114,26 @@ const ERROR_MESSAGE: Record<string, string> = {
 export async function resolveFreeText(
   provider: AIProvider,
   apiKey: string,
-  input: { title: string; situation: string; answer: string; ctx: string; age: number },
+  input: { title: string; situation: string; answer: string; ctx: string; age: number; thread?: string; depth?: number },
   timeoutMs = 30000,
 ): Promise<FreeTextAnswer> {
   let reason = 'sin respuesta';
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const raw = await provider.generate(freeTextPrompt(input.title, input.situation, input.answer, input.ctx), apiKey, {
+      const depth = input.depth ?? 0;
+      const raw = await provider.generate(freeTextPrompt(input.title, input.situation, input.answer, input.ctx, input.thread, depth < MAX_FOLLOWUPS), apiKey, {
         timeoutMs,
         temperature: 0.8,
       });
       const res = validateFreeTextOutcome(raw, input.age);
-      if (res.ok) return res;
+      if (res.ok) {
+        const { next, outcome } = res;
+        if (!next || depth >= MAX_FOLLOWUPS) return { ok: true, outcome };
+        // La historia hasta acá (acotada) viaja con la continuación para que la IA no pierda el hilo.
+        const step = `${input.situation} → el jugador: ${input.answer.trim()} → ${outcome.text}`;
+        const thread = [input.thread, step].filter(Boolean).join(' | ').slice(-700);
+        return { ok: true, outcome, next: { ...next, thread, depth: depth + 1 } };
+      }
       reason = res.reason;
     } catch (e) {
       const kind = e instanceof AIError ? e.kind : 'network';

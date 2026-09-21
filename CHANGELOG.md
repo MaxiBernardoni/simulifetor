@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [IA: la IA retruca]
+
+- Al responder escribiendo, la IA puede plantear una situación nueva que continúa la anterior y se basa en tu respuesta; volvés a decidir (opción sugerida o texto libre). Hasta 3 seguidas, con hilo de contexto y las mismas reglas de contenido. 4 tests nuevos (206 en total).
+
 ## [IA: verificación automática]
 
 - Se eliminaron los botones "Probar conexión" y "Guardar clave": la clave se guarda sola al pegarla y la conexión se verifica sola ante cualquier cambio (clave, proveedor, dirección, modelo, preset). Indicador en Ajustes: ruedita → tick verde / cruz roja; al tocar la cruz se despliega dentro de la pantalla el motivo del error. Verificado en el navegador con Ollama local y con Groq real (clave falsa → "Invalid API Key"). 3 tests nuevos.

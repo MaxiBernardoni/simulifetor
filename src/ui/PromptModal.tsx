@@ -34,7 +34,7 @@ export function PromptModal() {
   const answerError = draft.key === promptKey ? draft.error : null;
   const setAnswer = (text: string) => setDraft({ key: promptKey, text, error: null });
   useEffect(() => {
-    if (!narratorOn || !prompt || prompt.kind !== 'choice') return;
+    if (!narratorOn || !prompt || prompt.kind !== 'choice' || prompt.options) return;
     let alive = true;
     void narrateText(prompt.eventId, prompt.text).then((t) => {
       if (alive && t) setNarrated({ key: promptKey, text: t });
@@ -45,11 +45,11 @@ export function PromptModal() {
   }, [promptKey, narratorOn, narrateText]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!life || !prompt) return null;
   const shownText = narrated?.key === promptKey ? narrated.text : prompt.text;
-  const submitAnswer = async () => {
+  const submitAnswer = async (text = answer) => {
     setThinking(true);
-    const err = await answerText(answer);
+    const err = await answerText(text);
     setThinking(false);
-    if (err) setDraft({ key: promptKey, text: answer, error: err });
+    if (err) setDraft({ key: promptKey, text, error: err });
   };
 
   const ev = prompt.kind === 'choice' ? getEvent(prompt.eventId) : undefined;
@@ -93,15 +93,22 @@ export function PromptModal() {
                     />
                   </FadeIn>
                 ))
+              ) : prompt.kind === 'choice' && prompt.options && canWrite ? (
+                // Continuación de la IA: las opciones sugeridas se responden como si el jugador las hubiera escrito.
+                prompt.options.map((o, i) => (
+                  <FadeIn key={i} delay={200 + i * 90} from={10}>
+                    <Button label={o} variant="primary" disabled={thinking} onPress={() => void submitAnswer(o)} />
+                  </FadeIn>
+                ))
               ) : (
                 <FadeIn delay={250} from={10}>
                   <Button label="Continuar" onPress={() => (prompt.kind === 'choice' ? choose(0) : dismiss())} />
                 </FadeIn>
               )}
             </View>
-            {prompt.kind === 'choice' && ev?.choices && canWrite ? (
+            {prompt.kind === 'choice' && (ev?.choices || prompt.options) && canWrite ? (
               <View style={s.free}>
-                <Text style={s.or}>o escribí qué hacés</Text>
+                <Text style={s.or}>{prompt.options ? 'o escribí otra cosa' : 'o escribí qué hacés'}</Text>
                 <TextInput
                   style={s.input}
                   value={answer}

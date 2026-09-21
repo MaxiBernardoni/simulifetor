@@ -141,12 +141,35 @@ function clipText(t: string): string {
   return dot > 60 ? cut.slice(0, dot + 1) : cut.trimEnd() + '…';
 }
 
+const nextSchema = z.strictObject({
+  title: z.string().min(3).max(60),
+  text: z.string().min(15).max(1200).transform(clipText),
+  options: z.array(z.string().min(2).max(60)).min(2).max(3),
+});
+
 const freeTextSchema = z.strictObject({
   text: z.string().min(15).max(1200).transform(clipText),
   effects: effectsSchema.default({}),
+  next: z.unknown().optional(),
 });
 
-export type FreeTextResult = { ok: true; outcome: Outcome } | { ok: false; reason: string };
+export interface NextSituation {
+  title: string;
+  text: string;
+  options: string[];
+}
+
+export type FreeTextResult = { ok: true; outcome: Outcome; next?: NextSituation } | { ok: false; reason: string };
+
+/** La continuación es opcional: si viene mal formada o con contenido no permitido se descarta sin perder el resultado. */
+function validateNext(raw: unknown, age: number): NextSituation | undefined {
+  const p = nextSchema.safeParse(raw);
+  if (!p.success) return undefined;
+  const { title, text, options } = p.data;
+  const all = [title, text, ...options].join(' \n ');
+  if (all.includes('{') || all.includes('}') || contentProblem(all, age)) return undefined;
+  return { title: title.trim(), text: text.trim(), options: options.map((o) => o.trim()) };
+}
 
 /** Convierte el veredicto de la IA sobre la respuesta escrita del jugador en un resultado seguro (mismos límites que los eventos). */
 export function validateFreeTextOutcome(raw: unknown, age: number): FreeTextResult {
@@ -163,10 +186,11 @@ export function validateFreeTextOutcome(raw: unknown, age: number): FreeTextResu
     const issue = parsed.error.issues[0];
     return { ok: false, reason: `formato: ${issue?.path.join('.') || 'raíz'} — ${issue?.message ?? 'inválido'}` };
   }
-  const { text, effects } = parsed.data;
+  const { text, effects, next } = parsed.data;
   if (text.includes('{') || text.includes('}')) return { ok: false, reason: 'llaves en el texto' };
   const problem = contentProblem(text, age);
   if (problem) return { ok: false, reason: problem };
   if (magnitude(effects) > 30) return { ok: false, reason: 'efectos demasiado grandes' };
-  return { ok: true, outcome: { weight: 1, text: text.trim(), effects: toEffects(effects) } };
+  const cont = next === undefined || next === null ? undefined : validateNext(next, age);
+  return { ok: true, outcome: { weight: 1, text: text.trim(), effects: toEffects(effects) }, ...(cont ? { next: cont } : {}) };
 }

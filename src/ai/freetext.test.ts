@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { validateFreeTextOutcome } from './validate';
 import { inputProblem } from './filter';
-import { resolveFreeText } from './service';
+import { resolveFreeText, MAX_FOLLOWUPS } from './service';
 import { createMock } from './providers/mock';
 import { AIError } from './types';
 import { freeTextPrompt, CONTENT_RULES } from './prompts';
@@ -127,5 +127,42 @@ describe('motor: resolver con un resultado dado', () => {
     const before = JSON.stringify(l);
     resolveWithOutcome(l, { weight: 1, text: 'algo', effects: [{ stat: 'happiness', add: 9 }] });
     expect(JSON.stringify(l)).toBe(before);
+  });
+});
+
+describe('continuación: la IA retruca y el jugador decide otra vez', () => {
+  const next = { title: 'El matón vuelve', text: 'El matón vuelve con dos amigos y te bloquea la salida del patio.', options: ['Correr', 'Pelear'] };
+  const input = { title: 'Matón', situation: 'Un chico te molesta.', answer: 'Le hablo con calma', ctx: 'ctx', age: 30 };
+
+  it('valida la continuación y la devuelve con el hilo y la profundidad', async () => {
+    const r = await resolveFreeText(createMock([good({ next })]), 'k', input);
+    expect(r.ok && r.next).toMatchObject({ title: 'El matón vuelve', depth: 1, options: ['Correr', 'Pelear'] });
+    if (r.ok) expect(r.next?.thread).toContain('Le hablo con calma');
+  });
+
+  it('una continuación inválida o con contenido prohibido se descarta pero el resultado se conserva', () => {
+    for (const bad of [{ ...next, options: ['una sola'] }, { ...next, text: 'Te ofrece sexo con un niño de 12 años en el baño.' }, { title: 'x' }]) {
+      const r = validateFreeTextOutcome(good({ next: bad }), 30);
+      expect(r.ok && r.next).toBeFalsy();
+      expect(r.ok).toBe(true);
+    }
+  });
+
+  it('no pide más continuaciones al llegar al máximo', async () => {
+    const r = await resolveFreeText(createMock([good({ next })]), 'k', { ...input, depth: MAX_FOLLOWUPS });
+    expect(r.ok && r.next).toBeUndefined();
+    expect(freeTextPrompt('t', 's', 'a', 'c', 'hilo', false)).not.toContain('"next"');
+    expect(freeTextPrompt('t', 's', 'a', 'c', 'hilo', true)).toContain('"next"');
+  });
+
+  it('motor: el cartel de resultado va primero y después la nueva decisión', () => {
+    const l = createLife(9);
+    l.age = 10;
+    fireEvent(l, getEvent('child.bully')!);
+    const v = validateFreeTextOutcome(good({ next }), l.age);
+    if (!v.ok) throw new Error('debía ser válido');
+    resolveWithOutcome(l, v.outcome, { ...v.next!, thread: 'h', depth: 1 });
+    expect(l.pending.map((p) => p.kind)).toEqual(['result', 'choice']);
+    expect(l.pending[1]).toMatchObject({ title: 'El matón vuelve', depth: 1, options: ['Correr', 'Pelear'] });
   });
 });

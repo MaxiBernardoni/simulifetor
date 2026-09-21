@@ -2,7 +2,7 @@ import { eraAt } from '../content/eras';
 import { performSwitch } from '../engine/switch';
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { Life, LifeSummary, Outcome } from '../engine/types';
+import type { FollowUp, Life, LifeSummary, Outcome } from '../engine/types';
 import { SCHEMA_VERSION } from '../engine/types';
 import { cloneLife, createLife, migrateLife } from '../engine/life';
 import type { CreateOpts } from '../engine/life';
@@ -74,7 +74,7 @@ interface GameState {
   importData: (json: string) => string | null;
   ageUp: () => void;
   choose: (i: number) => void;
-  chooseFree: (outcome: Outcome) => void;
+  chooseFree: (outcome: Outcome, next?: FollowUp) => void;
   dismiss: () => void;
   activity: (id: string) => void;
   personAction: (actionId: string, personId: string) => void;
@@ -455,7 +455,7 @@ export const useGame = create<GameState>((set, get) => {
 
     ageUp: () => mutate(ageUp, { tick: true }),
     choose: (i) => mutate((l) => resolveChoice(l, i)),
-    chooseFree: (outcome) => mutate((l) => resolveWithOutcome(l, outcome)),
+    chooseFree: (outcome, next) => mutate((l) => resolveWithOutcome(l, outcome, next)),
     dismiss: () => mutate(dismissPrompt),
     activity: (id) => mutate((l) => runActivity(l, id)),
     personAction: (a, p) => mutate((l) => runPersonAction(l, a, p)),
