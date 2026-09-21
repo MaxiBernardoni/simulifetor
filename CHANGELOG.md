@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Gesto de volver]
+
+- Deslizar desde el borde izquierdo vuelve a la pantalla anterior (estilo Instagram), con animación que sigue al dedo (`ui/SwipeBack.tsx`). Las pantallas del Menú ahora vuelven al Menú, no a la vida. Verificado en el navegador con arrastre desde el borde; **sin probar en un iPhone real**.
+
 ## [IA: modelo propio sin censura]
 
 - Nuevo proveedor `compat` (servidor con API estilo OpenAI: Ollama, LM Studio, OpenRouter…), con dirección y modelo configurables, clave opcional y presets. Groq pasó a usar el mismo código. El prompt de eventos admite tono crudo y adulto; las reglas fijas (menores, suicidio, marcas, lugares reales) se siguen aplicando en el validador.

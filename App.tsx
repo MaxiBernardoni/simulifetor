@@ -25,6 +25,7 @@ import { BackupScreen } from './src/ui/screens/BackupScreen';
 import { AIScreen } from './src/ui/screens/AIScreen';
 import { HelpScreen } from './src/ui/screens/HelpScreen';
 import { TutorialScreen } from './src/ui/screens/TutorialScreen';
+import { SwipeBack } from './src/ui/SwipeBack';
 import { useAI } from './src/ai/store';
 import { getScenario } from './src/content/scenarios';
 
@@ -40,6 +41,9 @@ const TITLES: Record<Exclude<Tab, 'life'>, string> = {
   ai: 'IA (opcional)',
   help: 'Cómo se juega',
 };
+
+// Pantallas que se abren desde el Menú vuelven al Menú; el resto vuelve a la vida.
+const FROM_MENU: Tab[] = ['tree', 'slots', 'backup', 'ai', 'help'];
 
 function Main() {
   const ready = useGame((s) => s.ready);
@@ -73,12 +77,14 @@ function Main() {
           ? () => setCreating({ step: 'mode' })
           : () => setCreating({ step: creating.scenarioId ? 'scenarios' : 'mode' });
     return (
-      <View style={s.root}>
-        <Header title={title} onBack={back} />
-        {creating.step === 'mode' && <ModeScreen />}
-        {creating.step === 'scenarios' && <ScenariosScreen />}
-        {creating.step === 'create' && <CreateScreen />}
-      </View>
+      <SwipeBack onBack={back}>
+        <View style={s.root}>
+          <Header title={title} onBack={back} />
+          {creating.step === 'mode' && <ModeScreen />}
+          {creating.step === 'scenarios' && <ScenariosScreen />}
+          {creating.step === 'create' && <CreateScreen />}
+        </View>
+      </SwipeBack>
     );
   }
   if (!life) return <StartScreen />;
@@ -89,10 +95,12 @@ function Main() {
   if (!life.alive && life.pending.length === 0) {
     if (tab === 'tree') {
       return (
-        <View style={s.root}>
-          <Header title="Árbol genealógico" onBack={() => setTab('life')} />
-          <FamilyTreeScreen />
-        </View>
+        <SwipeBack onBack={() => setTab('life')}>
+          <View style={s.root}>
+            <Header title="Árbol genealógico" onBack={() => setTab('life')} />
+            <FamilyTreeScreen />
+          </View>
+        </SwipeBack>
       );
     }
     return (
@@ -103,13 +111,15 @@ function Main() {
     );
   }
 
+  const goBack = () => setTab(FROM_MENU.includes(tab) ? 'more' : 'life');
+
   return (
     <View style={s.root}>
       {tab === 'life' ? (
         <LifeScreen />
       ) : (
-        <>
-          <Header title={TITLES[tab]} onBack={() => setTab('life')} />
+        <SwipeBack onBack={goBack}>
+          <Header title={TITLES[tab]} onBack={goBack} />
           <FadeIn key={tab} from={18} duration={260} style={{ flex: 1 }}>
             {tab === 'activities' && <ActivitiesScreen />}
             {tab === 'work' && <WorkScreen />}
@@ -122,7 +132,7 @@ function Main() {
             {tab === 'ai' && <AIScreen />}
             {tab === 'help' && <HelpScreen />}
           </FadeIn>
-        </>
+        </SwipeBack>
       )}
       <PromptModal />
       <AchievementToast />

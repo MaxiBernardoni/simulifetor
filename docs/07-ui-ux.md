@@ -40,3 +40,8 @@
 - **Tutorial de primer uso** (`ui/screens/TutorialScreen.tsx`, textos en `content/help.ts`): 5 tarjetas ilustradas con Siguiente / Atrás / Saltar. Aparece una sola vez, al empezar la primera vida (`meta.seenTutorial`, opcional: quien ya tenía partidas guardadas lo tiene como visto).
 - **Cómo se juega** (Menú → Cómo se juega, `HelpScreen`): secciones plegables (stats y sus bandas, envejecer, actividades, trabajo, dinero, crimen, escenarios, ranuras, árbol, logros) y glosario.
 - **Consejos** en la pantalla de muerte (`tipFor`): sugiere algo que la vida no probó (casa financiada, universidad, inversión, hijos, escenarios…).
+
+
+## Gesto de volver (deslizar)
+
+`ui/SwipeBack.tsx` envuelve las pantallas con botón de volver (creación de vida, pantallas del Menú y el árbol tras la muerte): deslizá hacia la derecha **desde el borde izquierdo** (primeros 32 px) y la pantalla sigue al dedo; si pasás un tercio del ancho o hacés un gesto rápido, vuelve; si no, rebota. Usa `PanResponder` en modo *capture* para ganarle a los scrolls horizontales (el árbol). Las pantallas abiertas desde el Menú (árbol, partidas, copia, IA, ayuda) ahora vuelven al Menú y no a la vida; el resto vuelve a la vida.
