@@ -23,7 +23,6 @@ export function ActivitiesScreen() {
 
   return (
     <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: 40 }}>
-      <Text style={{ color: colors.text, fontSize: 24, fontWeight: '800' }}>Actividades</Text>
       <Text style={{ color: colors.muted, marginTop: 2 }}>Cada una se puede hacer una vez por año.</Text>
       {ORDER.map((cat) => {
         const items = allActivities()

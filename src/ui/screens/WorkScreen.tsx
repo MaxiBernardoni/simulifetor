@@ -21,7 +21,6 @@ export function WorkScreen() {
 
   return (
     <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: 40 }}>
-      <Text style={{ color: colors.text, fontSize: 24, fontWeight: '800' }}>Estudio y trabajo</Text>
 
       <SectionTitle>Educación</SectionTitle>
       <Card>

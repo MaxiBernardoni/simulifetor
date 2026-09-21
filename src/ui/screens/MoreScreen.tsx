@@ -28,7 +28,6 @@ export function MoreScreen() {
 
   return (
     <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: 40 }}>
-      <Text style={{ color: colors.text, fontSize: 24, fontWeight: '800' }}>Más</Text>
       <View style={{ gap: 10, marginTop: space.md }}>
         <Button label="Nueva vida" icon="Baby" onPress={confirmNew} />
         <Button label="Borrar todos los datos" variant="danger" onPress={confirmWipe} />

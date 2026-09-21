@@ -3,8 +3,9 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { ViewStyle } from 'react-native';
 import type { Delta, StatKey } from '../engine/types';
 import { formatMoney } from '../engine/format';
-import { colors, radius, space } from './theme';
+import { colors, radius, space, barColor } from './theme';
 import { Icon } from './Icon';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const STAT_META: Record<StatKey, { label: string; icon: string; color: string }> = {
   happiness: { label: 'Felicidad', icon: 'Sun', color: colors.happiness },
@@ -41,8 +42,8 @@ export function Button({
       disabled={disabled}
       style={({ pressed }) => [s.btn, { backgroundColor: bg, opacity: disabled ? 0.4 : pressed ? 0.8 : 1 }]}
     >
-      {icon ? <Icon name={icon} size={18} color="#fff" /> : null}
-      <Text style={s.btnText}>{label}</Text>
+      {icon ? <Icon name={icon} size={18} color={variant === 'ghost' ? colors.text : '#fff'} /> : null}
+      <Text style={[s.btnText, variant === 'ghost' && { color: colors.text }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -127,7 +128,7 @@ const s = StyleSheet.create({
   sectionTitle: { color: colors.muted, fontSize: 12, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', marginTop: space.lg, marginBottom: space.sm },
   btn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, paddingHorizontal: 18, borderRadius: radius.md },
   btnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  barBg: { backgroundColor: colors.surface2, borderRadius: 8, overflow: 'hidden' },
+  barBg: { backgroundColor: colors.track, borderRadius: 8, overflow: 'hidden' },
   statRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginVertical: 4 },
   statLabel: { color: colors.muted, width: 92, fontSize: 13 },
   statValue: { color: colors.text, width: 28, textAlign: 'right', fontWeight: '700', fontSize: 13 },
@@ -138,4 +139,84 @@ const s = StyleSheet.create({
   rowIcon: { width: 38, height: 38, borderRadius: 10, backgroundColor: colors.surface2, alignItems: 'center', justifyContent: 'center' },
   rowTitle: { color: colors.text, fontSize: 15, fontWeight: '600' },
   rowSub: { color: colors.muted, fontSize: 12, marginTop: 2 },
+});
+
+// ───────── Estilo "simulador de vida" ─────────
+
+/** Barra roja superior con título, botón de volver y acciones a los costados. */
+export function Header({
+  title,
+  onBack,
+  left,
+  right,
+  wordmark,
+}: {
+  title?: string;
+  onBack?: () => void;
+  left?: React.ReactNode;
+  right?: React.ReactNode;
+  wordmark?: boolean;
+}) {
+  const insets = useSafeAreaInsets();
+  return (
+    <View style={[h.bar, { paddingTop: insets.top + 8 }]}>
+      <View style={h.side}>
+        {onBack ? (
+          <Pressable onPress={onBack} hitSlop={10} style={h.circle}>
+            <Icon name="ArrowLeft" size={22} color="#fff" />
+          </Pressable>
+        ) : (
+          left
+        )}
+      </View>
+      {wordmark ? <Text style={h.wordmark}>VidaSim</Text> : <Text style={h.title}>{title}</Text>}
+      <View style={[h.side, { alignItems: 'flex-end' }]}>{right}</View>
+    </View>
+  );
+}
+
+export function CircleButton({ icon, onPress }: { icon: string; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} hitSlop={10} style={h.circle}>
+      <Icon name={icon} size={22} color="#fff" />
+    </Pressable>
+  );
+}
+
+/** Fila de stat: etiqueta azul a la izquierda, barra con porcentaje. */
+export function LifeStat({ stat, value }: { stat: StatKey; value: number }) {
+  const m = STAT_META[stat];
+  const color = barColor(value);
+  return (
+    <View style={ls.row}>
+      <Text style={ls.label}>{m.label}</Text>
+      <View style={ls.icon}>
+        <Icon name={m.icon} size={18} color={m.color} />
+      </View>
+      <View style={ls.track}>
+        <View style={[ls.fill, { width: `${Math.max(2, Math.min(100, value))}%`, backgroundColor: color }]} />
+        <Text style={ls.pct}>{value}%</Text>
+      </View>
+    </View>
+  );
+}
+
+const h = StyleSheet.create({
+  bar: { backgroundColor: colors.header, paddingHorizontal: 14, paddingBottom: 10, flexDirection: 'row', alignItems: 'center' },
+  side: { width: 76, justifyContent: 'center' },
+  circle: { width: 40, height: 40, borderRadius: 20, borderWidth: 2.5, borderColor: '#fff', alignItems: 'center', justifyContent: 'center' },
+  title: { flex: 1, textAlign: 'center', color: '#fff', fontSize: 20, fontWeight: '800' },
+  wordmark: {
+    flex: 1, textAlign: 'center', color: colors.headerText, fontSize: 30, fontWeight: '900', letterSpacing: 0.5,
+    textShadowColor: '#0A3A7A', textShadowOffset: { width: 2, height: 2 }, textShadowRadius: 0,
+  },
+});
+
+const ls = StyleSheet.create({
+  row: { flexDirection: 'row', alignItems: 'center', marginVertical: 5 },
+  label: { width: 104, textAlign: 'right', color: colors.nameBlue, fontWeight: '800', fontSize: 16, paddingRight: 8 },
+  icon: { width: 28, alignItems: 'center' },
+  track: { flex: 1, height: 26, backgroundColor: colors.track, borderRadius: 3, overflow: 'hidden', justifyContent: 'center', marginLeft: 6 },
+  fill: { position: 'absolute', left: 0, top: 0, bottom: 0 },
+  pct: { position: 'absolute', right: 8, color: colors.text, fontWeight: '800', fontSize: 15 },
 });

@@ -31,7 +31,7 @@ export function PromptModal() {
                   <Button
                     key={i}
                     label={c.label}
-                    variant={i === 0 ? 'primary' : 'ghost'}
+                    variant="primary"
                     disabled={!choiceAvailable(life, c, target)}
                     onPress={() => choose(i)}
                   />

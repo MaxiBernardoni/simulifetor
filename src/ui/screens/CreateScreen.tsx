@@ -52,10 +52,8 @@ export function CreateScreen() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
-        <Text style={s.title}>Crear personaje</Text>
-
-        <View style={{ alignItems: 'center', marginVertical: space.lg }}>
-          <Avatar look={look} size={140} />
+        <View style={{ alignItems: 'center', marginBottom: space.lg }}>
+          <Avatar look={look} size={130} />
         </View>
 
         <Button label="Aleatorio" icon="Dices" variant="ghost" onPress={randomize} />

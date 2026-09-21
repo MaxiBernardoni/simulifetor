@@ -1,14 +1,15 @@
 # 07 · UI / UX
 
-## Estilo
-- **Minimalista pero atractivo**: fondo oscuro suave (con modo claro opcional), tipografía legible, una paleta de acento, mucho aire.
+## Estilo (actualizado tras probar el MVP)
+- **Estética cercana a los simuladores de vida clásicos** (pedido del usuario): tema claro, barra roja superior con logo propio y contador de logros, barra de personaje con avatar/ocupación/saldo, feed de texto plano con "Edad: N años" en azul, barra azul con botones circulares y el botón verde **Edad** al centro, y stats abajo con barras que cambian de color según el valor. Las demás secciones se abren con barra roja y flecha de volver. No se copian marcas ni logos: el nombre y el wordmark son propios.
+- Antes (descartado): fondo oscuro minimalista.
 - **Íconos vectoriales** consistentes (Phosphor/Lucide), no emojis.
 - Barras/anillos de progreso para stats, con color por estado (verde/amarillo/rojo).
 - Tarjetas para eventos y decisiones; transiciones cortas.
 - Sonidos de interfaz mínimos (clic, envejecer, notificación de evento, muerte). Se pueden desactivar.
 - **Avatar dibujado con SVG** (actualizado tras probar el MVP): en la creación se elige nombre, apellido, género, color de piel, color de ojos, peinado (8) y color de pelo, con botón Aleatorio. El avatar se muestra en la pantalla de vida y en el resumen de muerte.
 
-## Navegación (tabs inferiores)
+## Navegación (hub central; ya no hay tabs inferiores)
 1. **Vida** — feed del historial + botón **Envejecer** + stats compactos.
 2. **Actividades** — menú por categorías (salud, ocio, dinero, crimen, etc.).
 3. **Trabajo/Estudio** — ocupación actual, ascensos, escuela.

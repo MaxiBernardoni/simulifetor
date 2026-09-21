@@ -63,7 +63,7 @@ function Line({ label, value }: { label: string; value: string }) {
 }
 
 const s = StyleSheet.create({
-  wrap: { padding: space.lg, paddingTop: 48, paddingBottom: 40 },
+  wrap: { padding: space.lg, paddingTop: 24, paddingBottom: 40 },
   center: { alignItems: 'center', gap: 6 },
   title: { color: colors.text, fontSize: 28, fontWeight: '800', marginTop: 12, textAlign: 'center' },
   sub: { color: colors.muted, fontSize: 15 },

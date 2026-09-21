@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useGame } from './src/store/gameStore';
 import type { Tab } from './src/store/gameStore';
-import { Icon } from './src/ui/Icon';
+import { Header } from './src/ui/components';
 import { PromptModal } from './src/ui/PromptModal';
 import { colors } from './src/ui/theme';
 import { LifeScreen } from './src/ui/screens/LifeScreen';
@@ -17,14 +17,13 @@ import { DeathScreen } from './src/ui/screens/DeathScreen';
 import { StartScreen } from './src/ui/screens/StartScreen';
 import { CreateScreen } from './src/ui/screens/CreateScreen';
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  { id: 'life', label: 'Vida', icon: 'Activity' },
-  { id: 'activities', label: 'Actividades', icon: 'Zap' },
-  { id: 'work', label: 'Trabajo', icon: 'Briefcase' },
-  { id: 'people', label: 'Gente', icon: 'Users' },
-  { id: 'assets', label: 'Finanzas', icon: 'Wallet' },
-  { id: 'more', label: 'Más', icon: 'Menu' },
-];
+const TITLES: Record<Exclude<Tab, 'life'>, string> = {
+  activities: 'Actividades',
+  work: 'Ocupación',
+  people: 'Relaciones',
+  assets: 'Activos',
+  more: 'Menú',
+};
 
 function Main() {
   const ready = useGame((s) => s.ready);
@@ -32,6 +31,7 @@ function Main() {
   const creating = useGame((s) => s.creating);
   const tab = useGame((s) => s.tab);
   const setTab = useGame((s) => s.setTab);
+  const cancelCreate = useGame((s) => s.cancelCreate);
   const load = useGame((s) => s.load);
 
   useEffect(() => {
@@ -45,33 +45,42 @@ function Main() {
       </View>
     );
   }
-  if (creating) return <CreateScreen />;
+  if (creating) {
+    return (
+      <View style={s.root}>
+        <Header title="Nueva vida" onBack={life ? cancelCreate : undefined} />
+        <CreateScreen />
+      </View>
+    );
+  }
   if (!life) return <StartScreen />;
 
   // Con decisiones pendientes se muestra el modal por encima; si murió y no queda nada pendiente, resumen.
-  if (!life.alive && life.pending.length === 0) return <DeathScreen />;
+  if (!life.alive && life.pending.length === 0) {
+    return (
+      <View style={s.root}>
+        <Header title="Fin de la vida" />
+        <DeathScreen />
+      </View>
+    );
+  }
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
-        {tab === 'life' && <LifeScreen />}
-        {tab === 'activities' && <ActivitiesScreen />}
-        {tab === 'work' && <WorkScreen />}
-        {tab === 'people' && <PeopleScreen />}
-        {tab === 'assets' && <AssetsScreen />}
-        {tab === 'more' && <MoreScreen />}
-      </View>
-      <View style={s.tabbar}>
-        {TABS.map((t) => {
-          const active = t.id === tab;
-          return (
-            <Pressable key={t.id} style={s.tab} onPress={() => setTab(t.id)}>
-              <Icon name={t.icon} size={22} color={active ? colors.accent : colors.muted} />
-              <Text style={[s.tabLabel, { color: active ? colors.accent : colors.muted }]}>{t.label}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
+    <View style={s.root}>
+      {tab === 'life' ? (
+        <LifeScreen />
+      ) : (
+        <>
+          <Header title={TITLES[tab]} onBack={() => setTab('life')} />
+          <View style={{ flex: 1 }}>
+            {tab === 'activities' && <ActivitiesScreen />}
+            {tab === 'work' && <WorkScreen />}
+            {tab === 'people' && <PeopleScreen />}
+            {tab === 'assets' && <AssetsScreen />}
+            {tab === 'more' && <MoreScreen />}
+          </View>
+        </>
+      )}
       <PromptModal />
     </View>
   );
@@ -80,18 +89,13 @@ function Main() {
 export default function App() {
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={s.root} edges={['top', 'bottom']}>
-        <StatusBar style="light" />
-        <Main />
-      </SafeAreaView>
+      <StatusBar style="light" />
+      <Main />
     </SafeAreaProvider>
   );
 }
 
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  tabbar: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.surface, paddingTop: 8, paddingBottom: 4 },
-  tab: { flex: 1, alignItems: 'center', gap: 2, paddingVertical: 2 },
-  tabLabel: { fontSize: 10, fontWeight: '600' },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg },
 });

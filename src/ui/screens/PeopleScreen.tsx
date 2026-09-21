@@ -32,7 +32,6 @@ export function PeopleScreen() {
   return (
     <>
       <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: 40 }}>
-        <Text style={{ color: colors.text, fontSize: 24, fontWeight: '800' }}>Relaciones</Text>
         {GROUPS.map((g) => {
           const list = life.people.filter((p) => g.kinds.includes(p.kind));
           if (!list.length) return null;

@@ -58,7 +58,6 @@ export function AssetsScreen() {
 
   return (
     <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: 40 }}>
-      <Text style={{ color: colors.text, fontSize: 24, fontWeight: '800' }}>Finanzas</Text>
       <Card style={{ marginTop: space.md }}>
         <Text style={{ color: colors.muted, fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>{debt ? 'Deuda' : 'Dinero'}</Text>
         <Text style={{ color: debt ? colors.bad : colors.money, fontSize: 34, fontWeight: '800', marginTop: 4 }}>{formatMoney(life.money)}</Text>

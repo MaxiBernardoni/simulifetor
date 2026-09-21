@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Activity as ActivityIcon, Award, Baby, Banknote, Beer, Blocks, BookOpen, Brain, Briefcase, Check, ChevronRight,
+  Activity as ActivityIcon, ArrowLeft, Award, Ellipsis, Plus, Star, Baby, Banknote, Beer, Blocks, BookOpen, Brain, Briefcase, Check, ChevronRight,
   Circle, Clock, Dices, Dumbbell, Eye, Flame, Flower2, Gem, Ghost, Gift, GraduationCap, Hammer, Heart,
   HeartCrack, HeartPulse, House, Landmark, Lightbulb, Lock, Megaphone, Menu, MessageCircle, Moon, Package,
   PartyPopper, PawPrint, PenTool, Pill, Plane, RefreshCcw, ShoppingBag, Skull, Sparkles, Stethoscope, Sun,
@@ -9,7 +9,7 @@ import {
 import type { LucideIcon } from 'lucide-react-native';
 
 const MAP: Record<string, LucideIcon> = {
-  Activity: ActivityIcon, Award, Baby, Banknote, Beer, Blocks, BookOpen, Brain, Briefcase, Check, ChevronRight,
+  Activity: ActivityIcon, ArrowLeft, Award, Ellipsis, Plus, Star, Baby, Banknote, Beer, Blocks, BookOpen, Brain, Briefcase, Check, ChevronRight,
   Clock, Dices, Dumbbell, Eye, Flame, Flower2, Gem, Ghost, Gift, GraduationCap, Hammer, Heart, HeartCrack,
   HeartPulse, House, Landmark, Lightbulb, Lock, Megaphone, Menu, MessageCircle, Moon, Package, PartyPopper,
   PawPrint, PenTool, Pill, Plane, RefreshCcw, ShoppingBag, Skull, Sparkles, Stethoscope, Sun, Swords,
