@@ -1,7 +1,6 @@
 import type { Gender, Life, Look, Person } from './types';
-import { rngFromState } from './rng';
+import { rngFromState , rngOf } from './rng';
 import type { Rng } from './rng';
-import { rngOf } from './rng';
 import { FEMALE_NAMES, MALE_NAMES, SURNAMES } from '../content/names';
 import { baseMortality, personDied } from './ageUp';
 import { inheritLook } from './people';

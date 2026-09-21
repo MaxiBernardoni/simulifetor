@@ -5,6 +5,7 @@
   "dependencies": {
     "@expo/metro-runtime": "~57.0.16",
     "@react-native-async-storage/async-storage": "2.2.0",
+    "eslint-config-expo": "~57.0.2",
     "expo": "~57.0.24",
     "expo-secure-store": "~57.0.4",
     "expo-status-bar": "~57.0.1",
@@ -20,6 +21,9 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
+    "eslint": "^9.39.5",
+    "prettier": "^3.9.8",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.3",
     "vitest": "^5.0.1"
   },
@@ -30,7 +34,14 @@
     "web": "expo start --web",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "check": "tsc --noEmit && vitest run"
+    "check": "tsc --noEmit && vitest run",
+    "lint": "eslint .",
+    "format": "prettier --write src/engine src/store src/ui App.tsx",
+    "format:check": "prettier --check src/engine src/store src/ui App.tsx",
+    "icons": "node scripts/gen-icons.mjs",
+    "dev:web": "node scripts/dev-web.mjs",
+    "stop:web": "node scripts/stop-web.mjs",
+    "check:all": "npm run lint && npm run format:check && npm run typecheck && npm test"
   },
   "private": true
 }

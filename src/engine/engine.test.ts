@@ -3,22 +3,23 @@ import { ALL_EVENTS } from '../content/events';
 import { ACTIVITIES } from '../content/activities';
 import { PERSON_ACTIONS } from '../content/personActions';
 import { CAREERS } from '../content/careers';
-import { HAIRS, hairGenderOf, hairForGender, hairStylesFor } from '../content/look';
+import { HAIRS, hairGenderOf } from '../content/look';
 import { priceIndex } from '../content/eras';
 import { createLife } from './life';
 import { ageUp } from './ageUp';
 import { simulateLife } from './sim';
 import { fill } from './text';
-import { autoPlay } from './autoplay';
 import { legacyPoints } from './dynasty';
 import { checkScenario, createScenarioLife } from './scenarios';
 import { SCENARIOS } from '../content/scenarios';
 import { SCENE_KEYS, sceneForActivity, sceneForEvent, sceneForPersonAction } from '../content/scenes';
 import { applyEffects, newEffectCtx } from './effects';
 import { rngOf } from './rng';
-import { resolveChoice } from './events';
+import { resolveChoice , fireEvent } from './events';
 import { buyAsset, canBuy, loanCapacity, netWorth, takeLoan } from './assets';
 import type { Effect, GameEvent, Outcome } from './types';
+
+import { getEvent } from './registry';
 
 const outcomesOf = (ev: GameEvent): Outcome[] => [
   ...(ev.choices?.flatMap((c) => c.outcomes) ?? []),
@@ -144,9 +145,6 @@ describe('motor', () => {
     expect(a.log.length).toBe(b.log.length);
   });
 });
-
-import { fireEvent } from './events';
-import { getEvent } from './registry';
 function allEventsFor(l: ReturnType<typeof createLife>) {
   const ev = getEvent('court.trial');
   if (!ev) return false;

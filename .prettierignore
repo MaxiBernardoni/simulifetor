@@ -1,0 +1,7 @@
+node_modules
+dist
+.expo
+src/content/**
+package-lock.json
+*.md
+src/ui/Icon.tsx

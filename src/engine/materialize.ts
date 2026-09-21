@@ -6,7 +6,7 @@ import { addLog } from './effects';
 import { depthOf, relationLabel } from './kinship';
 import { estateOf, legacyPoints } from './dynasty';
 import { formatMoney } from './format';
-import { netWorth, realNetWorth } from './assets';
+import { realNetWorth } from './assets';
 import { syncLifeToWorld } from './world';
 
 const person = (n: TreeNode, kind: PersonKind, closeness: number, patch: Partial<Person> = {}): Person => ({

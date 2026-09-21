@@ -8,13 +8,11 @@ import { buildForest, canSwitchTo, relationLabel } from './kinship';
 import { materializeLife } from './materialize';
 
 const look = { skin: 1, eyes: 0, hairStyle: 0, hairColor: 1 };
-let seq = 0;
 function node(w: World, patch: Partial<TreeNode> & { id: string }): TreeNode {
   const n: TreeNode = {
     name: patch.id, surname: 'Test', gender: 'M', look, birthYear: 1950, alive: true, age: 40, blood: true, wealthClass: 2, ...patch,
   };
   w.nodes[n.id] = n;
-  seq++;
   return n;
 }
 

@@ -32,7 +32,6 @@ function Swatches({ palette, value, onChange, names }: { palette: string[]; valu
 }
 
 export function CreateScreen() {
-  const life = useGame((st) => st.life);
   const newLife = useGame((st) => st.newLife);
   const cancel = useGame((st) => st.cancelCreate);
   const creating = useGame((st) => st.creating);

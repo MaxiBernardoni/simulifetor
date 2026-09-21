@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { HAIRS, hairForGender, hairGenderOf, hairStylesFor, kidHairStyles } from '../content/look';
-import { createLife } from './life';
+import { createLife , migrateLife } from './life';
 import { deriveLook } from './looks';
-import { migrateLife } from './life';
 import type { Person } from './types';
 
 describe('peinados por género', () => {

@@ -1,6 +1,6 @@
 import type { Life } from '../engine/types';
 import { getCareer } from '../engine/registry';
-import { netWorth, realNetWorth } from '../engine/assets';
+import { realNetWorth } from '../engine/assets';
 
 export interface Achievement {
   id: string;
