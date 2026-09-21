@@ -44,6 +44,12 @@ Para agregar contenido, editá los archivos de `src/content` (ver `docs/04-conte
 | [07-ui-ux.md](docs/07-ui-ux.md) | Pantallas, navegación, estilo visual |
 | [08-roadmap.md](docs/08-roadmap.md) | Fases de desarrollo |
 | [09-decisiones-abiertas.md](docs/09-decisiones-abiertas.md) | Decisiones cerradas y abiertas |
+| [10-motor-y-formulas.md](docs/10-motor-y-formulas.md) | Cómo funciona el motor hoy: orden del año, fórmulas, economía, mundo familiar |
+| [11-guardado-y-migraciones.md](docs/11-guardado-y-migraciones.md) | Claves de guardado, ranuras, versiones de esquema, backups |
+| [12-verificacion-y-testing.md](docs/12-verificacion-y-testing.md) | Qué cubren los tests y cómo verificar la UI |
+| [../CHANGELOG.md](CHANGELOG.md) | Historial de cambios |
+| [../CLAUDE.md](CLAUDE.md) | Guía para agentes (convenciones, trampas, definición de "terminado") |
+| [tareas/](docs/tareas/README.md) | **Backlog de tareas complejas** y prompt de la rutina nocturna |
 
 ## Estado
 

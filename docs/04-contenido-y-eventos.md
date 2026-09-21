@@ -104,3 +104,50 @@ Objetivo de cantidad para un MVP jugable: ~150 eventos. Meta a mediano plazo: 80
 
 ## Validación
 Todos los archivos de contenido pasan por esquemas **Zod** al arrancar en desarrollo; un test recorre todos los eventos y avisa de ids duplicados, referencias rotas (`trigger`), y condiciones inválidas.
+
+
+---
+
+# Referencia completa del DSL de contenido (estado actual)
+
+Se importan desde `src/content/dsl.ts`: `c` (condiciones) y `fx` (efectos).
+
+## Condiciones (`c.*`)
+
+| Función | Significado |
+|---|---|
+| `stat(stat, op, valor)` | Stat `happiness`/`health`/`smarts`/`looks` con `>=`, `<=`, `>`, `<` |
+| `age(min, max)` / `year(min, max)` | Edad / año calendario, inclusivo |
+| `flag(f)` / `noFlag(f)` | Bandera de la vida |
+| `moneyGte(n)` / `moneyLte(n)` | Dinero mayor/menor o igual |
+| `job()` / `noJob()` / `sector(s)` | Con/sin trabajo; sector del trabajo (`comercio`, `salud`, `legal`, `tecnología`…) |
+| `perf(min?, max?)` | Rendimiento laboral |
+| `edu(n)` | Nivel de estudios ≥ n (0 nada, 1 primaria, 2 secundaria, 3 universidad) |
+| `enrolled()` / `notEnrolled()` | Cursando o no |
+| `has(kind)` / `hasNot(kind)` | Hay/no hay alguien vivo de ese tipo: `mother father sibling friend partner child ex` |
+| `married()` / `single()` | Pareja casada / no |
+| `chance(p)` | Probabilidad (0–1) |
+| `jailed()` / `free()` | Preso / libre |
+| `tClose(min?, max?)` / `tAge(min?, max?)` | Cercanía / edad de la **persona objetivo** (eventos con `target`, acciones con personas) |
+| `wealth(...n)` | Clase social 1–3 |
+| `trial()` | Hay un juicio pendiente |
+| `asset('house'|'car')` | Tiene ese bien |
+| `invested(min?, max?)` / `loan()` | Inversiones / tiene préstamo |
+
+## Efectos (`fx.*`)
+
+`hap/hea/sma/loo(n)` (stats), `money(n)`, `moneyPct(p)`, `flag(f)` / `unflag(f)`, `add(kind, 'baby'|'peer'|'young')` (persona nueva), `close(who, n)` (cercanía; `who` = `'target'` o un tipo), `becomes(who, kind)`, `marry()`, `remove(who)`, `perf(n)`, `gpa(n)`, `raise(mult)`, `fired()`, `jail(min, max)`, `parole(años)`, `arrest(crimen, min, max)`, `sentence('full'|'half'|'double'|'probation'|'none')`, `loseAsset('house'|'car')`, `invest(n)`, `die(causa)`, `log(texto)`, `trigger(idEvento)`.
+
+## Campos de `GameEvent`
+
+`id` (único, `categoria.nombre`), `title`, `text` (admite placeholders), `tags`, `weight` (default 10), `cooldown` (años, default 4), `once`, `target` (`PersonKind`: elige a alguien que cumpla las condiciones y `{target}` es esa persona), `conditions`, `effects` (sin decisiones) o `choices` (`label`, `conditions?`, `outcomes[{ weight?, text, effects? }]`).
+
+Etiquetas con significado especial: `historical` (siempre se dispara al cumplirse, no cuenta en el cupo anual), `court` (solo por `trigger`), `jail` (solo estando preso; el resto solo estando libre), `dynasty`. Las etiquetas también eligen ícono y escena por defecto (`content/icons.ts`, `content/scenes.ts`).
+
+## Placeholders de texto
+
+`{name}` (vos), `{mother} {father} {sibling} {friend} {partner} {ex} {child}` (primero vivo de ese tipo), `{boss}`, `{job}`, `{crime}` (durante un juicio), `{target}` (persona objetivo).
+
+## Al agregar contenido
+
+1. Escribí en voseo, seco y ácido. 2. Toda decisión con riesgo real. 3. Asigná escena (`content/scenes.ts`, si no la da la etiqueta). 4. `npm run check`. 5. Actualizá el conteo en `CHANGELOG.md` si es un lote grande.

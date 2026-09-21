@@ -1,5 +1,7 @@
 # 03 · Game design
 
+> **Estado de implementación (20/09/2026).** Todo lo descrito abajo como base está hecho salvo: fama, enfermedades/adicciones detalladas, negocios propios, mascotas con sistema propio, sonidos y la capa de IA (ver `docs/tareas/`). Números y fórmulas exactas: `docs/10-motor-y-formulas.md`. Sistemas agregados durante las pruebas: escenarios, ranuras, copia de seguridad, **árbol genealógico jugable** y cambio de personaje (`docs/06`).
+
 ## Ciclo de juego
 1. Pantalla principal: **historial de la vida** (feed de texto por año) + stats + botón **Envejecer**.
 2. Al envejecer: sube la edad, se aplican cambios pasivos (salud, salario, intereses, envejecimiento de NPCs) y se sortean 0–3 **eventos**.
