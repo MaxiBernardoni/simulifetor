@@ -8,9 +8,9 @@ import { Icon } from './Icon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const STAT_META: Record<StatKey, { label: string; icon: string; color: string }> = {
-  happiness: { label: 'Felicidad', icon: 'Sun', color: colors.happiness },
-  health: { label: 'Salud', icon: 'HeartPulse', color: colors.health },
-  smarts: { label: 'Inteligencia', icon: 'Brain', color: colors.smarts },
+  happiness: { label: 'Felicidad', icon: 'Sunrise', color: colors.happiness },
+  health: { label: 'Salud', icon: 'ShieldPlus', color: colors.health },
+  smarts: { label: 'Inteligencia', icon: 'Lightbulb', color: colors.smarts },
   looks: { label: 'Apariencia', icon: 'Sparkles', color: colors.looks },
 };
 
@@ -183,20 +183,22 @@ export function CircleButton({ icon, onPress }: { icon: string; onPress: () => v
   );
 }
 
-/** Fila de stat: etiqueta azul a la izquierda, barra con porcentaje. */
+/** Fila de stat: chip con ícono, etiqueta sobre la barra y porcentaje a la derecha. */
 export function LifeStat({ stat, value }: { stat: StatKey; value: number }) {
   const m = STAT_META[stat];
   const color = barColor(value);
   return (
     <View style={ls.row}>
-      <Text style={ls.label}>{m.label}</Text>
-      <View style={ls.icon}>
-        <Icon name={m.icon} size={18} color={m.color} />
+      <View style={[ls.chip, { backgroundColor: m.color + '26' }]}>
+        <Icon name={m.icon} size={20} color={m.color} />
       </View>
-      <View style={ls.track}>
-        <View style={[ls.fill, { width: `${Math.max(2, Math.min(100, value))}%`, backgroundColor: color }]} />
-        <Text style={ls.pct}>{value}%</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={ls.label}>{m.label}</Text>
+        <View style={ls.track}>
+          <View style={[ls.fill, { width: `${Math.max(3, Math.min(100, value))}%`, backgroundColor: color }]} />
+        </View>
       </View>
+      <Text style={ls.pct}>{value}</Text>
     </View>
   );
 }
@@ -204,19 +206,19 @@ export function LifeStat({ stat, value }: { stat: StatKey; value: number }) {
 const h = StyleSheet.create({
   bar: { backgroundColor: colors.header, paddingHorizontal: 14, paddingBottom: 10, flexDirection: 'row', alignItems: 'center' },
   side: { width: 76, justifyContent: 'center' },
-  circle: { width: 40, height: 40, borderRadius: 20, borderWidth: 2.5, borderColor: '#fff', alignItems: 'center', justifyContent: 'center' },
+  circle: { width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' },
   title: { flex: 1, textAlign: 'center', color: '#fff', fontSize: 20, fontWeight: '800' },
   wordmark: {
     flex: 1, textAlign: 'center', color: colors.headerText, fontSize: 30, fontWeight: '900', letterSpacing: 0.5,
-    textShadowColor: '#0A3A7A', textShadowOffset: { width: 2, height: 2 }, textShadowRadius: 0,
+    textShadowColor: '#08403F', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 0,
   },
 });
 
 const ls = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', marginVertical: 5 },
-  label: { width: 104, textAlign: 'right', color: colors.nameBlue, fontWeight: '800', fontSize: 16, paddingRight: 8 },
-  icon: { width: 28, alignItems: 'center' },
-  track: { flex: 1, height: 26, backgroundColor: colors.track, borderRadius: 3, overflow: 'hidden', justifyContent: 'center', marginLeft: 6 },
-  fill: { position: 'absolute', left: 0, top: 0, bottom: 0 },
-  pct: { position: 'absolute', right: 8, color: colors.text, fontWeight: '800', fontSize: 15 },
+  row: { flexDirection: 'row', alignItems: 'center', marginVertical: 4, gap: 10 },
+  chip: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  label: { color: colors.nameBlue, fontWeight: '700', fontSize: 13, marginBottom: 3 },
+  track: { height: 10, backgroundColor: colors.track, borderRadius: 6, overflow: 'hidden' },
+  fill: { height: 10, borderRadius: 6 },
+  pct: { width: 34, textAlign: 'right', color: colors.text, fontWeight: '800', fontSize: 16 },
 });

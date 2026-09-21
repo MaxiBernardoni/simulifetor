@@ -2,6 +2,7 @@
 
 ## Estilo (actualizado tras probar el MVP)
 - **Estética cercana a los simuladores de vida clásicos** (pedido del usuario): tema claro, barra roja superior con logo propio y contador de logros, barra de personaje con avatar/ocupación/saldo, feed de texto plano con "Edad: N años" en azul, barra azul con botones circulares y el botón verde **Edad** al centro, y stats abajo con barras que cambian de color según el valor. Las demás secciones se abren con barra roja y flecha de volver. No se copian marcas ni logos: el nombre y el wordmark son propios.
+- **Paleta propia** (para diferenciarse): verde petróleo (`#0E7C7B`) en cabeceras y botones, coral (`#E76F51`) en el botón de avanzar, crema (`#FBF7F0`) de fondo y petróleo oscuro (`#12343B`) en la barra de navegación. Íconos propios: trofeo (logros), maletín, alcancía, manos con corazón y grilla para las secciones. Elementos redondeados tipo "squircle" en lugar de círculos, y stats con chip de ícono + etiqueta sobre la barra.
 - Antes (descartado): fondo oscuro minimalista.
 - **Íconos vectoriales** consistentes (Phosphor/Lucide), no emojis.
 - Barras/anillos de progreso para stats, con color por estado (verde/amarillo/rojo).

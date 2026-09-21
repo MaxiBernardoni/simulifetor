@@ -32,9 +32,7 @@ function occupation(l: Life): string {
 function NavItem({ icon, label, onPress }: { icon: string; label: string; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} style={s.navItem}>
-      <View style={s.navCircle}>
-        <Icon name={icon} size={24} color="#fff" />
-      </View>
+      <Icon name={icon} size={26} color={colors.navIcon} />
       <Text style={s.navLabel}>{label}</Text>
     </Pressable>
   );
@@ -67,7 +65,7 @@ export function LifeScreen() {
         left={<CircleButton icon="Menu" onPress={() => setTab('more')} />}
         right={
           <Pressable onPress={() => setTab('more')} style={s.stars} hitSlop={8}>
-            <Icon name="Star" size={26} color={colors.headerText} />
+            <Icon name="Trophy" size={20} color={colors.headerText} />
             <Text style={s.starCount}>{unlocked}</Text>
           </Pressable>
         }
@@ -83,9 +81,9 @@ export function LifeScreen() {
             {occupation(life)}
           </Text>
         </View>
-        <View style={{ alignItems: 'flex-end' }}>
+        <View style={[s.moneyPill, debt && { backgroundColor: '#FBE3E5' }]}>
           <Text style={[s.money, debt && { color: colors.bad }]}>{formatMoney(life.money)}</Text>
-          <Text style={s.moneyLabel}>{debt ? 'Deuda' : 'Saldo bancario'}</Text>
+          <Text style={s.moneyLabel}>{debt ? 'Deuda' : 'En el banco'}</Text>
         </View>
       </View>
 
@@ -96,9 +94,13 @@ export function LifeScreen() {
         keyExtractor={(g) => String(g.age)}
         renderItem={({ item }) => (
           <View style={{ marginBottom: 16 }}>
-            <Text style={s.ageHead}>
-              Edad: {item.age} {item.age === 1 ? 'año' : 'años'}
-            </Text>
+            <View style={s.ageRow}>
+              <Text style={s.ageHead}>
+                {item.age} {item.age === 1 ? 'año' : 'años'}
+              </Text>
+              <Text style={s.ageYear}>{item.year}</Text>
+              <View style={s.ageLine} />
+            </View>
             {item.entries.map((e, i) => (
               <Text key={i} style={s.entry}>
                 {e.title ? <Text style={s.entryTitle}>{e.title}: </Text> : null}
@@ -110,16 +112,16 @@ export function LifeScreen() {
       />
 
       <View style={s.navBar}>
-        <NavItem icon="Briefcase" label="Ocupación" onPress={() => setTab('work')} />
-        <NavItem icon="Wallet" label="Activos" onPress={() => setTab('assets')} />
+        <NavItem icon="BriefcaseBusiness" label="Ocupación" onPress={() => setTab('work')} />
+        <NavItem icon="PiggyBank" label="Activos" onPress={() => setTab('assets')} />
         <View style={s.ageSlot}>
           <Pressable onPress={ageUp} disabled={blocked} style={({ pressed }) => [s.ageButton, { opacity: blocked ? 0.5 : pressed ? 0.85 : 1 }]}>
-            <Icon name="Plus" size={40} color="#fff" />
-            <Text style={s.ageText}>Edad</Text>
+            <Icon name="ChevronsRight" size={38} color="#fff" />
+            <Text style={s.ageText}>Envejecer</Text>
           </Pressable>
         </View>
-        <NavItem icon="Heart" label="Relaciones" onPress={() => setTab('people')} />
-        <NavItem icon="Ellipsis" label="Actividades" onPress={() => setTab('activities')} />
+        <NavItem icon="HeartHandshake" label="Relaciones" onPress={() => setTab('people')} />
+        <NavItem icon="LayoutGrid" label="Actividades" onPress={() => setTab('activities')} />
       </View>
 
       <View style={[s.stats, { paddingBottom: Math.max(insets.bottom, 10) }]}>
@@ -134,27 +136,30 @@ export function LifeScreen() {
 
 const s = StyleSheet.create({
   wrap: { flex: 1, backgroundColor: colors.bg },
-  stars: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  starCount: { color: '#fff', fontWeight: '900', fontSize: 22 },
+  stars: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(255,255,255,0.18)', borderRadius: 12, paddingHorizontal: 10, height: 40 },
+  starCount: { color: '#fff', fontWeight: '900', fontSize: 18 },
   info: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.infoBar, paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.border },
-  name: { color: colors.nameBlue, fontSize: 20, fontWeight: '800', textDecorationLine: 'underline' },
+  name: { color: colors.nameBlue, fontSize: 20, fontWeight: '800' },
   job: { color: colors.muted, fontSize: 15, marginTop: 1 },
-  money: { color: colors.money, fontSize: 22, fontWeight: '800' },
-  moneyLabel: { color: colors.muted, fontSize: 13 },
+  moneyPill: { alignItems: 'flex-end', backgroundColor: '#E1F2E9', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 },
+  money: { color: colors.money, fontSize: 19, fontWeight: '800' },
+  moneyLabel: { color: colors.muted, fontSize: 11 },
   feed: { flex: 1 },
-  ageHead: { color: colors.nameBlue, fontWeight: '800', fontSize: 18, marginBottom: 2 },
-  entry: { color: '#555B66', fontSize: 17, lineHeight: 24, marginTop: 2 },
+  ageRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 2 },
+  ageHead: { color: colors.nameBlue, fontWeight: '800', fontSize: 18 },
+  ageYear: { color: colors.muted, fontSize: 14, fontWeight: '600' },
+  ageLine: { flex: 1, height: 1, backgroundColor: colors.border },
+  entry: { color: '#4A5158', fontSize: 17, lineHeight: 24, marginTop: 2 },
   entryTitle: { color: '#3B4250', fontWeight: '700' },
-  navBar: { flexDirection: 'row', backgroundColor: colors.nav, alignItems: 'flex-end', paddingTop: 8, paddingBottom: 6 },
+  navBar: { flexDirection: 'row', backgroundColor: colors.nav, alignItems: 'flex-end', paddingTop: 12, paddingBottom: 10, borderTopLeftRadius: 22, borderTopRightRadius: 22 },
   navItem: { flex: 1, alignItems: 'center', gap: 4 },
-  navCircle: { width: 50, height: 50, borderRadius: 25, backgroundColor: colors.navIcon, alignItems: 'center', justifyContent: 'center' },
-  navLabel: { color: '#fff', fontSize: 12, fontWeight: '600' },
+  navLabel: { color: '#DCE9E8', fontSize: 12, fontWeight: '600' },
   ageSlot: { flex: 1.15, alignItems: 'center' },
   ageButton: {
-    width: 92, height: 92, borderRadius: 46, backgroundColor: colors.ageButton, borderWidth: 5, borderColor: '#fff',
-    alignItems: 'center', justifyContent: 'center', marginTop: -30, marginBottom: -2,
+    width: 92, height: 92, borderRadius: 30, backgroundColor: colors.ageButton, borderWidth: 5, borderColor: colors.bg,
+    alignItems: 'center', justifyContent: 'center', marginTop: -34, marginBottom: -2,
     shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6,
   },
-  ageText: { color: '#fff', fontWeight: '800', fontSize: 18, marginTop: -6 },
+  ageText: { color: '#fff', fontWeight: '800', fontSize: 15, marginTop: -2 },
   stats: { backgroundColor: colors.bg, paddingHorizontal: 12, paddingTop: 10 },
 });

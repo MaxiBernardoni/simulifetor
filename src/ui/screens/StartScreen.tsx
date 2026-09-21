@@ -21,7 +21,7 @@ const s = StyleSheet.create({
   wrap: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space.xl, gap: 10, backgroundColor: colors.header },
   title: {
     color: colors.headerText, fontSize: 56, fontWeight: '900',
-    textShadowColor: '#0A3A7A', textShadowOffset: { width: 3, height: 3 }, textShadowRadius: 0,
+    textShadowColor: '#08403F', textShadowOffset: { width: 3, height: 3 }, textShadowRadius: 0,
   },
   sub: { color: '#fff', fontSize: 16, textAlign: 'center', fontWeight: '600' },
 });
