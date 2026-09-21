@@ -1,6 +1,6 @@
 // Capa de IA opcional (docs/05-ia.md). Nada de esto se usa si el jugador no la activa.
 
-export type ProviderId = 'gemini' | 'groq';
+export type ProviderId = 'gemini' | 'groq' | 'compat';
 
 /** Un proveedor de texto. `generate` devuelve el texto crudo o lanza AIError. */
 export interface AIProvider {
@@ -23,10 +23,13 @@ export class AIError extends Error {
 export interface AIConfig {
   enabled: boolean;
   provider: ProviderId;
+  /** Solo para `compat`: dirección base de la API estilo OpenAI y nombre del modelo. */
+  baseUrl: string;
+  model: string;
   narrator: boolean;
 }
 
-export const DEFAULT_AI_CONFIG: AIConfig = { enabled: false, provider: 'gemini', narrator: false };
+export const DEFAULT_AI_CONFIG: AIConfig = { enabled: false, provider: 'gemini', narrator: false, baseUrl: '', model: '' };
 
 export interface AuditEntry {
   t: number;

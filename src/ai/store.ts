@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 import { setAiEvents, allEvents } from '../engine/registry';
 import { useGame } from '../store/gameStore';
-import { AUDIT_MAX, POOL_MAX, SESSION_BATCH } from './types';
+import { AUDIT_MAX, DEFAULT_AI_CONFIG, POOL_MAX, SESSION_BATCH } from './types';
 import type { AIConfig, AIProvider, AuditEntry } from './types';
 import { createGemini } from './providers/gemini';
 import { createGroq } from './providers/groq';
+import { createOpenAICompat } from './providers/openai';
 import { createMock, sampleEventJson } from './providers/mock';
 import { generateEvents, narrate } from './service';
 import { summarizeLife } from './prompts';
@@ -15,7 +16,11 @@ import type { GameEvent } from '../engine/types';
 let pool: GameEvent[] = [];
 let sessionGenerated = 0;
 
-export const providerFor = (id: AIConfig['provider']): AIProvider => (id === 'groq' ? createGroq() : createGemini());
+export const providerFor = (c: AIConfig): AIProvider =>
+  c.provider === 'groq' ? createGroq() : c.provider === 'compat' ? createOpenAICompat('compat', c.baseUrl, c.model) : createGemini();
+
+/** Clave del proveedor activo. El modelo propio (`compat`) no la necesita: devuelve '' en vez de null. */
+const keyFor = async (c: AIConfig): Promise<string | null> => (await getApiKey()) ?? (c.provider === 'compat' ? '' : null);
 
 interface AIState {
   config: AIConfig;
@@ -58,7 +63,7 @@ export const useAI = create<AIState>((set, get) => {
   };
 
   return {
-    config: { enabled: false, provider: 'gemini', narrator: false },
+    config: { ...DEFAULT_AI_CONFIG },
     hasKey: false,
     poolCount: 0,
     audit: [],
@@ -72,7 +77,7 @@ export const useAI = create<AIState>((set, get) => {
       set({ config: d.config, audit: d.audit, hasKey: !!key });
       publishPool();
       // Generación en segundo plano: nunca bloquea la UI ni el turno de envejecer.
-      if (d.config.enabled && key) void get().generate(SESSION_BATCH);
+      if (d.config.enabled && (await keyFor(d.config)) !== null) void get().generate(SESSION_BATCH);
     },
 
     setConfig: async (patch) => {
@@ -87,11 +92,11 @@ export const useAI = create<AIState>((set, get) => {
     },
 
     testConnection: async () => {
-      const key = await getApiKey();
-      if (!key) return set({ status: 'Primero pegá tu clave.' });
+      const key = await keyFor(get().config);
+      if (key === null) return set({ status: 'Primero pegá tu clave.' });
       set({ busy: true, status: 'Probando…' });
       try {
-        const out = await providerFor(get().config.provider).generate('Respondé solamente con la palabra OK.', key, { timeoutMs: 8000 });
+        const out = await providerFor(get().config).generate('Respondé solamente con la palabra OK.', key, { timeoutMs: 8000 });
         set({ status: out.trim().length ? 'Conexión correcta.' : 'El proveedor respondió vacío.' });
       } catch (e) {
         const kind = (e as { kind?: string }).kind;
@@ -112,14 +117,14 @@ export const useAI = create<AIState>((set, get) => {
 
     generate: async (n, mock = false) => {
       if (get().busy) return;
-      const key = mock ? 'mock' : await getApiKey();
-      if (!key) return set({ status: 'Falta la clave.' });
+      const key = mock ? 'mock' : await keyFor(get().config);
+      if (key === null) return set({ status: 'Falta la clave.' });
       const room = Math.max(0, POOL_MAX - pool.length);
       const want = mock ? Math.min(n, room) : Math.min(n, room, Math.max(0, SESSION_BATCH - sessionGenerated));
       if (want <= 0) return set({ status: mock ? 'El pool está lleno.' : 'Ya se generó el máximo de esta sesión.' });
       set({ busy: true, status: 'Generando…' });
       try {
-        const provider = mock ? createMock([sampleEventJson(pool.length + 1)]) : providerFor(get().config.provider);
+        const provider = mock ? createMock([sampleEventJson(pool.length + 1)]) : providerFor(get().config);
         const res = await generateEvents(provider, key, want, ctxNow(), knownIds(), { timeoutMs: 15000 });
         pool = [...pool, ...res.added].slice(-POOL_MAX);
         if (!mock) sessionGenerated += res.added.length + res.rejected.length;
@@ -147,9 +152,9 @@ export const useAI = create<AIState>((set, get) => {
     narrateText: async (eventId, text) => {
       const { config } = get();
       if (!config.enabled || !config.narrator) return null;
-      const key = await getApiKey();
-      if (!key) return null;
-      return narrate(providerFor(config.provider), key, eventId, text, ctxNow(), 3000);
+      const key = await keyFor(config);
+      if (key === null) return null;
+      return narrate(providerFor(config), key, eventId, text, ctxNow(), 3000);
     },
   };
 });

@@ -26,7 +26,7 @@ export function summarizeLife(life: Life): string {
 export function eventPrompt(ctx: string): string {
   return `${CONTENT_RULES}
 
-Sos guionista de un simulador de vida en texto para adultos. Inventá UN evento de vida nuevo y original para este personaje: ${ctx}.
+Sos guionista de un simulador de vida en texto para adultos. Podés ser crudo, picante y oscuro (sexo entre adultos, drogas, violencia, humor negro): no hay censura salvo las reglas de arriba. Inventá UN evento de vida nuevo y original para este personaje: ${ctx}.
 
 Respondé SOLO con un objeto JSON, sin texto extra, con esta forma exacta:
 {

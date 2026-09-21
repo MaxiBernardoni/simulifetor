@@ -2,6 +2,12 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [IA: modelo propio sin censura]
+
+- Nuevo proveedor `compat` (servidor con API estilo OpenAI: Ollama, LM Studio, OpenRouter…), con dirección y modelo configurables, clave opcional y presets. Groq pasó a usar el mismo código. El prompt de eventos admite tono crudo y adulto; las reglas fijas (menores, suicidio, marcas, lugares reales) se siguen aplicando en el validador.
+- OpenRouter no tenía hoy ningún modelo gratuito sin filtros: la opción gratuita real es un modelo local (ver `docs/05-ia.md`).
+- Tests: 4 nuevos (URL, sin `Authorization` sin clave, direcciones inválidas, validador con contenido adulto).
+
 ## [Leyes de época] — cierre de T05
 
 - `Outcome.conditions`: un resultado solo puede salir si se cumplen sus condiciones. Nuevas condiciones `c.noLaw()`. Ejemplo: con `drogas_blandas_legales` vender drogas ya no termina en arresto (multa por venta sin habilitación).

@@ -8,6 +8,7 @@ import { colors, radius, space } from '../theme';
 const PROVIDERS: { id: ProviderId; label: string; url: string }[] = [
   { id: 'gemini', label: 'Google Gemini', url: 'aistudio.google.com (clave gratis)' },
   { id: 'groq', label: 'Groq', url: 'console.groq.com (clave gratis)' },
+  { id: 'compat', label: 'Modelo propio (sin censura)', url: '' },
 ];
 
 export function AIScreen() {
@@ -15,6 +16,8 @@ export function AIScreen() {
   const [key, setKey] = useState('');
   const [showLog, setShowLog] = useState(false);
   const prov = PROVIDERS.find((p) => p.id === ai.config.provider)!;
+  const own = ai.config.provider === 'compat';
+  const canUse = ai.hasKey || own; // el modelo propio no necesita clave
 
   return (
     <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
@@ -48,7 +51,52 @@ export function AIScreen() {
           />
         ))}
       </View>
-      <Text style={[s.small, { marginTop: 6 }]}>Conseguí la clave en {prov.url}.</Text>
+      {own ? null : <Text style={[s.small, { marginTop: 6 }]}>Conseguí la clave en {prov.url}.</Text>}
+
+      {own ? (
+        <View style={{ marginTop: space.md, gap: 8 }}>
+          <Text style={s.small}>
+            Sirve con cualquier servidor compatible con OpenAI. Gratis y sin censura: instalá Ollama en tu PC, bajá un modelo sin filtros
+            (por ejemplo dolphin3 o hermes3) y poné la IP de tu PC. Las reglas fijas del juego (nada sexual con menores, sin suicidio) se
+            siguen aplicando a lo que genere.
+          </Text>
+          <TextInput
+            style={s.input}
+            value={ai.config.baseUrl}
+            onChangeText={(v) => void ai.setConfig({ baseUrl: v })}
+            placeholder="Dirección: http://192.168.0.10:11434/v1"
+            placeholderTextColor={colors.muted}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <TextInput
+            style={s.input}
+            value={ai.config.model}
+            onChangeText={(v) => void ai.setConfig({ model: v })}
+            placeholder="Modelo: dolphin3"
+            placeholderTextColor={colors.muted}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flex: 1 }}>
+              <Button
+                label="Preset Ollama"
+                variant="ghost"
+                onPress={() => void ai.setConfig({ baseUrl: 'http://192.168.0.10:11434/v1', model: 'dolphin3' })}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Button
+                label="Preset OpenRouter"
+                variant="ghost"
+                onPress={() => void ai.setConfig({ baseUrl: 'https://openrouter.ai/api/v1', model: 'openrouter/free' })}
+              />
+            </View>
+          </View>
+          <Text style={s.small}>OpenRouter gratis usa modelos con filtros; la clave es opcional para tu propio servidor.</Text>
+        </View>
+      ) : null}
 
       <SectionTitle icon="KeyRound" color="#E9A23B">
         Clave
@@ -76,7 +124,7 @@ export function AIScreen() {
         <Button
           label={ai.busy ? 'Probando…' : 'Probar conexión'}
           variant="ghost"
-          disabled={ai.busy || !ai.hasKey}
+          disabled={ai.busy || !canUse}
           onPress={() => void ai.testConnection()}
         />
       </View>
@@ -103,7 +151,7 @@ export function AIScreen() {
         <Button
           label={ai.busy ? 'Generando…' : 'Generar 5 ahora'}
           variant="ghost"
-          disabled={ai.busy || !ai.hasKey || !ai.config.enabled}
+          disabled={ai.busy || !canUse || !ai.config.enabled}
           onPress={() => void ai.generate(5)}
         />
         {__DEV__ ? (

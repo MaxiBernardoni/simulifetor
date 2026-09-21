@@ -5,6 +5,7 @@ import { generateEvents, narrate } from './service';
 import { createMock, sampleEventJson } from './providers/mock';
 import { createGemini } from './providers/gemini';
 import { createGroq } from './providers/groq';
+import { cleanBaseUrl, createOpenAICompat } from './providers/openai';
 import { postJson } from './http';
 import type { FetchLike } from './http';
 import { AIError } from './types';
@@ -239,6 +240,54 @@ describe('proveedores HTTP (fetch simulado, sin red)', () => {
     await createGroq(f).generate('hola', 'SECRETA123');
     expect(seen!.headers.Authorization).toContain('SECRETA123');
     expect(seen!.body).not.toContain('SECRETA123');
+  });
+});
+
+describe('modelo propio compatible con OpenAI (sin censura, sin clave)', () => {
+  const capture = () => {
+    const seen: { url: string; headers: Record<string, string>; body: string }[] = [];
+    const f: FetchLike = async (url, init) => {
+      seen.push({ url, headers: init.headers, body: init.body });
+      return { ok: true, status: 200, json: async () => ({ choices: [{ message: { content: 'ok' } }] }), text: async () => '' };
+    };
+    return { seen, f };
+  };
+
+  it('arma la URL, manda el modelo y no manda Authorization sin clave', async () => {
+    const { seen, f } = capture();
+    const p = createOpenAICompat('compat', 'http://192.168.0.10:11434/v1/', ' dolphin3 ', f);
+    expect(await p.generate('hola', '')).toBe('ok');
+    expect(seen[0].url).toBe('http://192.168.0.10:11434/v1/chat/completions');
+    expect(seen[0].headers.Authorization).toBeUndefined();
+    expect(JSON.parse(seen[0].body).model).toBe('dolphin3');
+  });
+
+  it('con clave la manda en el encabezado', async () => {
+    const { seen, f } = capture();
+    await createOpenAICompat('compat', 'https://openrouter.ai/api/v1', 'openrouter/free', f).generate('hola', 'K123');
+    expect(seen[0].headers.Authorization).toBe('Bearer K123');
+  });
+
+  it('rechaza direcciones o modelos inválidos sin hacer pedidos', async () => {
+    const { seen, f } = capture();
+    for (const [url, model] of [
+      ['', 'm'],
+      ['ftp://x', 'm'],
+      ['http://x', '  '],
+    ]) {
+      await expect(createOpenAICompat('compat', url, model, f).generate('h', '')).rejects.toMatchObject({ kind: 'bad-response' });
+    }
+    expect(seen).toHaveLength(0);
+    expect(cleanBaseUrl('https://a.b/v1//')).toBe('https://a.b/v1');
+    expect(cleanBaseUrl('javascript:alert(1)')).toBeNull();
+  });
+
+  it('lo que genere un modelo sin filtros sigue pasando por el validador (menores, suicidio, marcas)', () => {
+    const crudo = mut((o) => (o.text = 'Una noche de sexo salvaje con alguien que conociste en un boliche, sin nombres ni promesas.'));
+    expect(validateAiEvent(crudo).ok).toBe(true); // adultos: permitido
+    expect(validateAiEvent(mut((o) => (o.text = 'Una escena de sexo con un adolescente de 15 años en la escuela del barrio.'))).ok).toBe(
+      false,
+    );
   });
 });
 
