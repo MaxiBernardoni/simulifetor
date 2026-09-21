@@ -2,6 +2,11 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Tutorial y ayuda] — T15
+
+- Tutorial de 5 tarjetas la primera vez (con "Saltar"), pantalla **Cómo se juega** con secciones plegables y glosario, consejos contextuales al morir y aviso en el árbol cuando no hay a quién cambiarse. Las partidas existentes no ven el tutorial (`meta.seenTutorial` opcional).
+- Tests: `content/help.test.ts` y del store (`seenTutorial`).
+
 ## [Árbol: anti-abuso y novedades] — T16 (parcial)
 
 - **Anti-abuso**: la distancia de sangre también se mide desde el personaje ancla (los saltos encadenados ya no te alejan de tu línea), enfriamiento de 5 años entre cambios y máximo 3 cambios por generación. La muerte del personaje actual anula todo. Los motivos se muestran en la ficha de cada persona (los bloqueos temporales, en ámbar). Valores configurables en `engine/kinship.ts`.

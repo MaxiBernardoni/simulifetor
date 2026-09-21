@@ -43,6 +43,7 @@ export function MoreScreen() {
           variant="ghost"
           onPress={() => setTab('tree')}
         />
+        <Button label="Cómo se juega" icon="BookOpen" variant="ghost" onPress={() => setTab('help')} />
         <Button label="IA (opcional)" icon="Bot" variant="ghost" onPress={() => setTab('ai')} />
         <Button label="Copia de seguridad" icon="Upload" variant="ghost" onPress={() => setTab('backup')} />
         <Button label="Borrar todos los datos" variant="danger" onPress={confirmWipe} />

@@ -23,6 +23,8 @@ import { SlotsScreen } from './src/ui/screens/SlotsScreen';
 import { FamilyTreeScreen } from './src/ui/screens/FamilyTreeScreen';
 import { BackupScreen } from './src/ui/screens/BackupScreen';
 import { AIScreen } from './src/ui/screens/AIScreen';
+import { HelpScreen } from './src/ui/screens/HelpScreen';
+import { TutorialScreen } from './src/ui/screens/TutorialScreen';
 import { useAI } from './src/ai/store';
 import { getScenario } from './src/content/scenarios';
 
@@ -36,6 +38,7 @@ const TITLES: Record<Exclude<Tab, 'life'>, string> = {
   slots: 'Partidas',
   backup: 'Copia de seguridad',
   ai: 'IA (opcional)',
+  help: 'Cómo se juega',
 };
 
 function Main() {
@@ -47,6 +50,7 @@ function Main() {
   const cancelCreate = useGame((s) => s.cancelCreate);
   const setCreating = useGame((s) => s.setCreating);
   const load = useGame((s) => s.load);
+  const seenTutorial = useGame((s) => s.seenTutorial);
 
   useEffect(() => {
     void load().then(() => useAI.getState().load());
@@ -78,6 +82,8 @@ function Main() {
     );
   }
   if (!life) return <StartScreen />;
+  // Primera vez: 5 tarjetas de introducción (con "Saltar").
+  if (!seenTutorial && life.alive && life.age <= 1) return <TutorialScreen />;
 
   // Con decisiones pendientes se muestra el modal por encima; si murió y no queda nada pendiente, resumen.
   if (!life.alive && life.pending.length === 0) {
@@ -114,6 +120,7 @@ function Main() {
             {tab === 'slots' && <SlotsScreen />}
             {tab === 'backup' && <BackupScreen />}
             {tab === 'ai' && <AIScreen />}
+            {tab === 'help' && <HelpScreen />}
           </FadeIn>
         </>
       )}

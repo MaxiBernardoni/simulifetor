@@ -25,7 +25,7 @@ const slotKey = (i: number) => `vidasim.slot.${i}`;
 const worldKey = (i: number) => `vidasim.world.${i}`;
 const OLD_KEY = 'vidasim.save.v1';
 
-export type Tab = 'life' | 'activities' | 'work' | 'people' | 'assets' | 'more' | 'tree' | 'slots' | 'backup' | 'ai';
+export type Tab = 'life' | 'activities' | 'work' | 'people' | 'assets' | 'more' | 'tree' | 'slots' | 'backup' | 'ai' | 'help';
 
 export interface Creating {
   step: 'mode' | 'scenarios' | 'create';
@@ -38,6 +38,8 @@ interface Meta {
   achievements: string[];
   scenarioWins: string[];
   activeSlot: number;
+  /** Opcional: las partidas viejas no lo tienen (se asume visto si ya había partidas). */
+  seenTutorial?: boolean;
 }
 
 interface GameState {
@@ -64,6 +66,8 @@ interface GameState {
   /** Pasa a vivir la vida de otro familiar. Devuelve un mensaje si no se pudo. */
   switchCharacter: (nodeId: string) => string | null;
   markNewsRead: () => void;
+  seenTutorial: boolean;
+  markTutorialSeen: () => void;
   switchSlot: (i: number) => void;
   deleteSlot: (i: number) => void;
   exportData: () => string;
@@ -156,7 +160,14 @@ function reconcile(life: Life | null, wd: WorldData | null | undefined): WorldDa
 export const useGame = create<GameState>((set, get) => {
   const meta = (over: Partial<Meta> = {}): Omit<Meta, 'schemaVersion'> => {
     const s = get();
-    return { history: s.history, achievements: s.achievements, scenarioWins: s.scenarioWins, activeSlot: s.activeSlot, ...over };
+    return {
+      history: s.history,
+      achievements: s.achievements,
+      scenarioWins: s.scenarioWins,
+      activeSlot: s.activeSlot,
+      seenTutorial: s.seenTutorial,
+      ...over,
+    };
   };
 
   /** Aplica un cambio sobre una copia de la vida, guarda y registra logros, escenario, familia y muerte. */
@@ -288,6 +299,7 @@ export const useGame = create<GameState>((set, get) => {
             history: m.history ?? [],
             achievements: m.achievements ?? [],
             scenarioWins: m.scenarioWins ?? [],
+            seenTutorial: m.seenTutorial ?? true,
             ready: true,
           });
           slots.forEach((l, i) => {
@@ -331,6 +343,12 @@ export const useGame = create<GameState>((set, get) => {
       const sid = get().creating?.scenarioId;
       const life = (sid ? createScenarioLife(sid, opts) : null) ?? createLife(undefined, opts);
       applyLife(life);
+    },
+
+    seenTutorial: false,
+    markTutorialSeen: () => {
+      set({ seenTutorial: true });
+      void saveMeta(meta({ seenTutorial: true }));
     },
 
     markNewsRead: () => {

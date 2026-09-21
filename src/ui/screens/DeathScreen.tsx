@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useGame } from '../../store/gameStore';
 import { formatMoney } from '../../engine/format';
 import { estateOf, legacyPoints } from '../../engine/dynasty';
 import { canSwitchTo, commonAncestor, relationLabel } from '../../engine/kinship';
 import { getScenario } from '../../content/scenarios';
+import { tipFor } from '../../content/help';
 import { Button, Card, IconTile, SectionTitle } from '../components';
 import { Avatar } from '../Avatar';
 import { Icon } from '../Icon';
@@ -18,6 +19,8 @@ export function DeathScreen() {
   const switchCharacter = useGame((st) => st.switchCharacter);
   const wd = useGame((st) => st.world);
   const setTab = useGame((st) => st.setTab);
+  const achievements = useGame((st) => st.achievements);
+  const tip = useMemo(() => tipFor(life, achievements), [life.id]); // eslint-disable-line react-hooks/exhaustive-deps
   const children = life.people.filter((p) => p.kind === 'child');
   const last = life.log.slice(-6, -1);
   // Parientes de sangre vivos a hasta 2 generaciones: quienes pueden continuar la historia.
@@ -154,6 +157,14 @@ export function DeathScreen() {
       ) : null}
 
       <View style={{ marginTop: space.xl, gap: 10 }}>
+        {tip ? (
+          <Card>
+            <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+              <Icon name="Lightbulb" size={20} color="#E9A23B" />
+              <Text style={{ flex: 1, color: colors.text, fontSize: 13.5, lineHeight: 19 }}>{tip.text}</Text>
+            </View>
+          </Card>
+        ) : null}
         <Button label="Ver árbol genealógico" icon="Users" variant="ghost" onPress={() => setTab('tree')} />
         <Button label={heirs.length ? 'Empezar una vida nueva (otra familia)' : 'Nueva vida'} icon="Baby" onPress={start} />
       </View>

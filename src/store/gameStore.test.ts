@@ -126,6 +126,23 @@ describe('store: guardado y ranuras', () => {
   });
 });
 
+describe('store: tutorial', () => {
+  it('una instalación nueva muestra el tutorial y una partida existente sin la marca no', async () => {
+    mem.clear();
+    useGame.setState({ ready: false, seenTutorial: false });
+    await get().load();
+    expect(get().seenTutorial).toBe(false);
+    get().markTutorialSeen();
+    expect(get().seenTutorial).toBe(true);
+    await tick();
+    // meta de una versión anterior: no tiene `seenTutorial`
+    mem.set('vidasim.meta.v2', JSON.stringify({ schemaVersion: 4, history: [], achievements: [], scenarioWins: [], activeSlot: 0 }));
+    useGame.setState({ ready: false, seenTutorial: false });
+    await get().load();
+    expect(get().seenTutorial).toBe(true);
+  });
+});
+
 describe('store: cambio de personaje', () => {
   beforeEach(fresh);
 

@@ -3,7 +3,7 @@
 - **Prioridad / esfuerzo:** media · M
 - **Depende de:** —
 - **Autonomía:** ✅ segura
-- **Estado:** todo
+- **Estado:** review (tutorial, ayuda, glosario y consejos hechos; los estados vacíos de Activos/Trabajo ya existían y se agregó el del árbol)
 
 ## Objetivo
 El juego ya tiene muchos sistemas (actividades, relaciones, justicia, finanzas, escenarios, árbol con cambio de personaje) y nada los explica. Agregar una introducción corta la primera vez y una pantalla de ayuda siempre disponible.

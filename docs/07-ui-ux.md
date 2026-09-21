@@ -33,3 +33,10 @@
 - Nunca perder progreso: autoguardado por año.
 - Feedback inmediato de cambios de stat (+/- flotante).
 - Una mano, sesiones cortas.
+
+
+## Tutorial y ayuda (T15)
+
+- **Tutorial de primer uso** (`ui/screens/TutorialScreen.tsx`, textos en `content/help.ts`): 5 tarjetas ilustradas con Siguiente / Atrás / Saltar. Aparece una sola vez, al empezar la primera vida (`meta.seenTutorial`, opcional: quien ya tenía partidas guardadas lo tiene como visto).
+- **Cómo se juega** (Menú → Cómo se juega, `HelpScreen`): secciones plegables (stats y sus bandas, envejecer, actividades, trabajo, dinero, crimen, escenarios, ranuras, árbol, logros) y glosario.
+- **Consejos** en la pantalla de muerte (`tipFor`): sugiere algo que la vida no probó (casa financiada, universidad, inversión, hijos, escenarios…).

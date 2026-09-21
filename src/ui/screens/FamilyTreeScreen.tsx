@@ -303,6 +303,7 @@ export function FamilyTreeScreen() {
           (!q || `${n.name} ${n.surname}`.toLowerCase().includes(q)) && (!onlyPlayable || st === 'ok' || st === 'wait' || st === 'me')
       : undefined;
   const news = (w.news ?? []).slice().reverse();
+  const anyPlayable = Object.values(w.nodes).some((n) => n.id !== w.currentId && canSwitchTo(w, w.currentId, n.id).ok);
   const unread = (w.news ?? []).filter((n) => n.id > (w.newsSeen ?? 0)).length;
 
   if (tab === 'news') {
@@ -371,6 +372,11 @@ export function FamilyTreeScreen() {
             <Icon name={onlyPlayable ? 'CircleCheck' : 'Circle'} size={18} color={onlyPlayable ? '#2A9D6F' : colors.muted} />
             <Text style={{ color: colors.text, fontSize: 13 }}>Resaltar solo a quienes puedo jugar</Text>
           </Pressable>
+          {!anyPlayable ? (
+            <Text style={[s.sub, { marginTop: 10 }]}>
+              Ahora no hay nadie a quien puedas cambiarte (por el enfriamiento o porque no hay parientes vivos elegibles).
+            </Text>
+          ) : null}
           <View style={s.legend}>
             <Legend color={colors.accent} label="Vos" />
             <Legend color="#2A9D6F" label="Podés jugar" />
