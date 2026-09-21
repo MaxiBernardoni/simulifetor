@@ -81,7 +81,8 @@ export async function postJson(url: string, headers: Record<string, string>, bod
         }
         throw e;
       }
-      last = timedOut ? new AIError('timeout', 'tardó demasiado') : new AIError('network', 'sin conexión');
+      const why = e instanceof Error && e.message ? ` (${e.message.slice(0, 80)})` : '';
+      last = timedOut ? new AIError('timeout', 'tardó demasiado') : new AIError('network', `sin conexión${why}`);
       if (timedOut && attempt >= RETRIES) throw last;
     } finally {
       clearTimeout(timer);

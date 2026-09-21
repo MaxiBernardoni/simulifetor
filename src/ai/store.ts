@@ -116,7 +116,7 @@ export const useAI = create<AIState>((set, get) => {
                   ? 'Tardó demasiado.'
                   : kind === 'bad-response'
                     ? `La IA respondió con un error: ${message ?? 'desconocido'}`
-                    : 'No se pudo conectar (sin internet o el navegador bloqueó el pedido).',
+                    : `No se pudo conectar: ${message ?? 'sin detalle'}. Puede ser falta de internet o que el navegador (o un bloqueador de anuncios/contenido) bloqueó el pedido.`,
         });
       } finally {
         set({ busy: false });

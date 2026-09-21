@@ -358,6 +358,18 @@ describe('errores del proveedor con detalle y modelo configurable', () => {
   });
 });
 
+describe('falla de red: el mensaje conserva la causa', () => {
+  it('incluye el error original (por ejemplo "Failed to fetch")', async () => {
+    const f: FetchLike = async () => {
+      throw new TypeError('Failed to fetch');
+    };
+    await expect(postJson('https://x.example', {}, {}, { fetchImpl: f })).rejects.toMatchObject({
+      kind: 'network',
+      message: expect.stringContaining('Failed to fetch'),
+    });
+  });
+});
+
 describe('integración con el motor', () => {
   it('sin eventos de IA el motor es idéntico (mismas semillas, mismas vidas)', () => {
     setAiEvents([]);
