@@ -27,7 +27,7 @@ Cada archivo `Txx-*.md` es una tarea **autocontenida**: objetivo, contexto (arch
 | 11 | [T08](T08-fama-y-carreras.md) | Fama y carreras (músico, actor, deportista, político…) | L | T05 | ✅ segura | todo |
 | 12 | [T11](T11-educacion-universitaria.md) | Carreras universitarias, notas, becas, préstamos estudiantiles | L | T04 | ✅ segura | todo |
 | 13 | [T10](T10-negocios-propios.md) | Negocios propios | L | T05 | ✅ segura | todo |
-| 14 | [T06](T06-capa-de-ia-opcional.md) | Capa de IA opcional con clave gratuita | XL | T12 | ⚠️ dependencias y red | todo |
+| 14 | [T06](T06-capa-de-ia-opcional.md) | Capa de IA opcional con clave gratuita | XL | T12 | ⚠️ dependencias y red | review |
 | 15 | [T07](T07-npcs-persistentes.md) | NPCs persistentes fuera de la familia | XL | T16 | ⚠️ cambia el mundo | todo |
 | 16 | [T13](T13-pwa-e-instalacion.md) | PWA y build para instalar en el iPhone (sin desplegar) | M | T12 | ✅ segura | todo |
 
