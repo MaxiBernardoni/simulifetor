@@ -1,8 +1,8 @@
-import type { GameEvent } from '../engine/types';
+import type { GameEvent, Outcome } from '../engine/types';
 import { AIError } from './types';
 import type { AIProvider, AuditEntry } from './types';
-import { eventPrompt, narratorPrompt } from './prompts';
-import { validateAiEvent } from './validate';
+import { eventPrompt, freeTextPrompt, narratorPrompt } from './prompts';
+import { validateAiEvent, validateFreeTextOutcome } from './validate';
 import { contentProblem, norm } from './filter';
 
 export interface GenResult {
@@ -91,4 +91,45 @@ export async function narrate(
   } catch {
     return null;
   }
+}
+
+export type FreeTextAnswer = { ok: true; outcome: Outcome } | { ok: false; message: string };
+
+const ERROR_MESSAGE: Record<string, string> = {
+  timeout: 'La IA tardó demasiado.',
+  quota: 'La IA se quedó sin cuota por ahora.',
+  auth: 'La clave de la IA fue rechazada.',
+  network: 'No hay conexión con la IA.',
+  filtered: 'El proveedor no quiso responder a eso.',
+  'bad-response': 'La IA respondió algo que no se pudo usar.',
+};
+
+/**
+ * Le pide a la IA que juzgue la respuesta escrita del jugador y devuelve un resultado validado (texto + puntos).
+ * Nunca lanza: ante cualquier falla devuelve un mensaje para mostrar y el jugador puede elegir una opción.
+ */
+export async function resolveFreeText(
+  provider: AIProvider,
+  apiKey: string,
+  input: { title: string; situation: string; answer: string; ctx: string; age: number },
+  timeoutMs = 30000,
+): Promise<FreeTextAnswer> {
+  let reason = 'sin respuesta';
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const raw = await provider.generate(freeTextPrompt(input.title, input.situation, input.answer, input.ctx), apiKey, {
+        timeoutMs,
+        temperature: 0.8,
+      });
+      const res = validateFreeTextOutcome(raw, input.age);
+      if (res.ok) return res;
+      reason = res.reason;
+    } catch (e) {
+      const kind = e instanceof AIError ? e.kind : 'network';
+      // Fallas que no se arreglan reintentando.
+      if (kind !== 'bad-response') return { ok: false, message: ERROR_MESSAGE[kind] ?? 'La IA no respondió.' };
+      reason = 'respuesta vacía';
+    }
+  }
+  return { ok: false, message: `La IA no dio una respuesta válida (${reason}).` };
 }

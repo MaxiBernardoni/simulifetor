@@ -147,7 +147,8 @@ export function AIScreen() {
         <View style={{ flex: 1 }}>
           <Text style={s.label}>Modo narrador</Text>
           <Text style={s.small}>
-            Reescribe el texto de los eventos con tu contexto. Si tarda más de 3 segundos, se muestra el original.
+            Reescribe el texto de los eventos con tu contexto (si tarda más de 3 segundos o no conserva los hechos, se muestra el original).
+            Además te deja responder las situaciones escribiendo: la IA decide qué pasa y cuántos puntos ganás o perdés.
           </Text>
         </View>
         <Switch

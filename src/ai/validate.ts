@@ -129,3 +129,44 @@ export function validateAiEvent(
   };
   return { ok: true, event };
 }
+
+const FREE_TEXT_MAX = 320;
+
+/** Si el texto se pasa de largo, se corta en el último punto que entre en el límite (o a la fuerza). */
+function clipText(t: string): string {
+  const x = t.trim();
+  if (x.length <= FREE_TEXT_MAX) return x;
+  const cut = x.slice(0, FREE_TEXT_MAX);
+  const dot = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('.'), cut.lastIndexOf('!'), cut.lastIndexOf('?'));
+  return dot > 60 ? cut.slice(0, dot + 1) : cut.trimEnd() + '…';
+}
+
+const freeTextSchema = z.strictObject({
+  text: z.string().min(15).max(1200).transform(clipText),
+  effects: effectsSchema.default({}),
+});
+
+export type FreeTextResult = { ok: true; outcome: Outcome } | { ok: false; reason: string };
+
+/** Convierte el veredicto de la IA sobre la respuesta escrita del jugador en un resultado seguro (mismos límites que los eventos). */
+export function validateFreeTextOutcome(raw: unknown, age: number): FreeTextResult {
+  let data: unknown = raw;
+  if (typeof raw === 'string') {
+    try {
+      data = extractJson(raw);
+    } catch {
+      return { ok: false, reason: 'JSON inválido' };
+    }
+  }
+  const parsed = freeTextSchema.safeParse(data);
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    return { ok: false, reason: `formato: ${issue?.path.join('.') || 'raíz'} — ${issue?.message ?? 'inválido'}` };
+  }
+  const { text, effects } = parsed.data;
+  if (text.includes('{') || text.includes('}')) return { ok: false, reason: 'llaves en el texto' };
+  const problem = contentProblem(text, age);
+  if (problem) return { ok: false, reason: problem };
+  if (magnitude(effects) > 30) return { ok: false, reason: 'efectos demasiado grandes' };
+  return { ok: true, outcome: { weight: 1, text: text.trim(), effects: toEffects(effects) } };
+}

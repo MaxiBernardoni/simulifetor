@@ -96,13 +96,22 @@ export function resolveChoice(life: Life, index: number): void {
     life.pending.unshift(prompt);
     return;
   }
+  finishOutcome(
+    life,
+    fill(life, ev.title, target),
+    styleForTags(ev.tags).icon,
+    sceneForEvent(ev.id, ev.tags),
+    target,
+    pickOutcome(life, choice.outcomes),
+  );
+}
+
+/** Aplica un resultado ya elegido: efectos, historial y el cartel de resultado. */
+function finishOutcome(life: Life, title: string, icon: string, baseScene: string, target: Person | undefined, outcome: Outcome): void {
   const rng = rngOf(life);
-  const outcome = pickOutcome(life, choice.outcomes);
   const ctx = newEffectCtx(target);
   const text = fill(life, outcome.text, target);
   applyEffects(life, outcome.effects, ctx, rng);
-  const title = fill(life, ev.title, target);
-  const icon = styleForTags(ev.tags).icon;
   addLog(life, text, toneOf(ctx.deltas), title, icon);
   flushCtx(life, ctx);
   life.pending.unshift({
@@ -111,10 +120,30 @@ export function resolveChoice(life: Life, index: number): void {
     text,
     deltas: ctx.deltas,
     icon,
-    scene: refineScene(sceneForEvent(ev.id, ev.tags), ctx.deltas),
+    scene: refineScene(baseScene, ctx.deltas),
     targetId: target?.id,
   });
   runTriggers(life, ctx);
+}
+
+/**
+ * Resuelve la decisión pendiente con un resultado que no sale del evento (por ejemplo, el veredicto de la IA sobre una
+ * respuesta escrita). El resultado tiene que venir ya validado y acotado.
+ */
+export function resolveWithOutcome(life: Life, outcome: Outcome): void {
+  const prompt = life.pending[0];
+  if (!prompt || prompt.kind !== 'choice') return;
+  const ev = getEvent(prompt.eventId);
+  const target = life.people.find((p) => p.id === prompt.targetId);
+  life.pending.shift();
+  finishOutcome(
+    life,
+    prompt.title,
+    prompt.icon ?? styleForTags(ev?.tags).icon,
+    prompt.scene ?? (ev ? sceneForEvent(ev.id, ev.tags) : 'random'),
+    target,
+    outcome,
+  );
 }
 
 export function dismissPrompt(life: Life): void {

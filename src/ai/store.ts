@@ -7,10 +7,10 @@ import { createGemini } from './providers/gemini';
 import { createGroq } from './providers/groq';
 import { createOpenAICompat } from './providers/openai';
 import { createMock, sampleEventJson } from './providers/mock';
-import { generateEvents, narrate } from './service';
+import { generateEvents, narrate, resolveFreeText } from './service';
 import { summarizeLife } from './prompts';
 import { getApiKey, loadAIData, saveAIData, setApiKey } from './storage';
-import { norm } from './filter';
+import { inputProblem, norm } from './filter';
 import type { GameEvent } from '../engine/types';
 
 let pool: GameEvent[] = [];
@@ -36,6 +36,8 @@ interface AIState {
   generate: (n: number, mock?: boolean) => Promise<void>;
   clearPool: () => Promise<void>;
   narrateText: (eventId: string, text: string) => Promise<string | null>;
+  /** Responde una situación escribiendo: la IA juzga y se aplica el resultado. Devuelve un mensaje de error o null si salió bien. */
+  answerText: (answer: string) => Promise<string | null>;
 }
 
 export const useAI = create<AIState>((set, get) => {
@@ -155,6 +157,32 @@ export const useAI = create<AIState>((set, get) => {
       const key = await keyFor(config);
       if (key === null) return null;
       return narrate(providerFor(config), key, eventId, text, ctxNow(), 3000);
+    },
+
+    answerText: async (answer) => {
+      const life = useGame.getState().life;
+      const prompt = life?.pending[0];
+      if (!life || prompt?.kind !== 'choice') return 'No hay ninguna situación para responder.';
+      const text = answer.trim();
+      if (text.length < 3) return 'Escribí qué hacés (aunque sea una frase corta).';
+      if (inputProblem(text, life.age)) return 'Esa respuesta no la puedo usar. Escribí otra cosa o elegí una opción.';
+      const { config } = get();
+      if (!config.enabled || !config.narrator) return 'Activá la IA y el modo narrador para responder escribiendo.';
+      const key = await keyFor(config);
+      if (key === null) return 'Falta la clave de la IA.';
+      const res = await resolveFreeText(providerFor(config), key, {
+        title: prompt.title,
+        situation: prompt.text,
+        answer: text,
+        ctx: ctxNow(),
+        age: life.age,
+      });
+      if (!res.ok) return res.message;
+      // Si mientras tanto cambió la situación, no se aplica.
+      const now = useGame.getState().life?.pending[0];
+      if (now?.kind !== 'choice' || now.eventId !== prompt.eventId) return 'La situación cambió mientras la IA pensaba.';
+      useGame.getState().chooseFree(res.outcome);
+      return null;
     },
   };
 });

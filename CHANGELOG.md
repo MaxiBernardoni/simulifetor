@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Responder escribiendo]
+
+- Con la IA y el modo narrador activos, las situaciones con opciones permiten **escribir qué hacés**: la IA cuenta el resultado y asigna puntos, acotados por el validador (mismos límites que los eventos generados). Respuestas tratadas como datos (anti-inyección), filtros de entrada y salida según la edad del personaje, reintento y mensaje claro si falla. `resolveWithOutcome` en el motor. Verificado en el navegador con Ollama real. Tests nuevos (`freetext.test.ts`, 29).
+
 ## [Narrador coherente]
 
 - El modo narrador ya no puede inventar hechos: temperatura baja, prompt de cambios mínimos y guarda que descarta reescrituras que pierden datos del original. Reportado desde el iPhone ("Un tío por el parque siempre de ti te da la lata"). `temperature` es ahora una opción del proveedor. Tests nuevos.

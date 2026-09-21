@@ -144,3 +144,18 @@ export function contentProblem(text: string, minAge = 18): string | null {
   if (w) return `contenido técnico o enlace: ${w}`;
   return null;
 }
+
+/**
+ * ¿Se puede mandar esto a la IA? Solo frena lo que las reglas fijas prohíben siempre: pedofilia, suicidio/autolesión
+ * y contenido sexual cuando el personaje es menor de 18. (Las marcas, lugares y nombres reales sí se permiten en lo
+ * que escribe el jugador; el filtro de salida se ocupa de la respuesta de la IA.)
+ */
+export function inputProblem(text: string, age: number): string | null {
+  const t = norm(text);
+  let w = has(t, ALWAYS_BANNED);
+  if (w) return `término vetado: ${w}`;
+  w = has(t, SELF_HARM);
+  if (w) return `tema no permitido: ${w}`;
+  if (age < 18 && has(t, SEXUAL)) return 'contenido sexual con un personaje menor de edad';
+  return null;
+}

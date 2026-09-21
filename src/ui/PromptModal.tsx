@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAI } from '../ai/store';
-import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useGame } from '../store/gameStore';
 import { getEvent } from '../engine/registry';
 import { choiceAvailable } from '../engine/events';
@@ -21,8 +21,17 @@ export function PromptModal() {
   const prompt = life?.pending[0];
   const narrateText = useAI((st) => st.narrateText);
   const narratorOn = useAI((st) => st.config.enabled && st.config.narrator);
+  // Responder escribiendo: hace falta la IA activa, el modo narrador y un proveedor usable (el modelo propio no pide clave).
+  const canWrite = useAI((st) => st.config.enabled && st.config.narrator && (st.hasKey || st.config.provider === 'compat'));
+  const answerText = useAI((st) => st.answerText);
+  const [draft, setDraft] = useState<{ key: string; text: string; error: string | null }>({ key: '', text: '', error: null });
+  const [thinking, setThinking] = useState(false);
   const [narrated, setNarrated] = useState<{ key: string; text: string } | null>(null);
   const promptKey = prompt ? `${prompt.kind}:${prompt.title}:${prompt.text}` : '';
+  // El borrador pertenece a una situación: si cambia la situación, arranca vacío.
+  const answer = draft.key === promptKey ? draft.text : '';
+  const answerError = draft.key === promptKey ? draft.error : null;
+  const setAnswer = (text: string) => setDraft({ key: promptKey, text, error: null });
   useEffect(() => {
     if (!narratorOn || !prompt || prompt.kind !== 'choice') return;
     let alive = true;
@@ -35,6 +44,12 @@ export function PromptModal() {
   }, [promptKey, narratorOn, narrateText]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!life || !prompt) return null;
   const shownText = narrated?.key === promptKey ? narrated.text : prompt.text;
+  const submitAnswer = async () => {
+    setThinking(true);
+    const err = await answerText(answer);
+    setThinking(false);
+    if (err) setDraft({ key: promptKey, text: answer, error: err });
+  };
 
   const ev = prompt.kind === 'choice' ? getEvent(prompt.eventId) : undefined;
   const target = life.people.find((p) => p.id === prompt.targetId);
@@ -44,7 +59,7 @@ export function PromptModal() {
 
   return (
     <Modal transparent animationType="fade" visible statusBarTranslucent>
-      <View style={s.backdrop}>
+      <KeyboardAvoidingView style={s.backdrop} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <Pop key={key} from={0.82} style={s.card}>
           {prompt.scene ? (
             <Scene scene={prompt.scene} life={life} target={target} height={160} shake={bad} />
@@ -69,7 +84,12 @@ export function PromptModal() {
               {prompt.kind === 'choice' && ev?.choices ? (
                 ev.choices.map((c, i) => (
                   <FadeIn key={i} delay={200 + i * 90} from={10}>
-                    <Button label={c.label} variant="primary" disabled={!choiceAvailable(life, c, target)} onPress={() => choose(i)} />
+                    <Button
+                      label={c.label}
+                      variant="primary"
+                      disabled={thinking || !choiceAvailable(life, c, target)}
+                      onPress={() => choose(i)}
+                    />
                   </FadeIn>
                 ))
               ) : (
@@ -78,9 +98,31 @@ export function PromptModal() {
                 </FadeIn>
               )}
             </View>
+            {prompt.kind === 'choice' && ev?.choices && canWrite ? (
+              <View style={s.free}>
+                <Text style={s.or}>o escribí qué hacés</Text>
+                <TextInput
+                  style={s.input}
+                  value={answer}
+                  onChangeText={setAnswer}
+                  editable={!thinking}
+                  multiline
+                  maxLength={200}
+                  placeholder="Contá qué hacés… la IA decide qué pasa"
+                  placeholderTextColor={colors.muted}
+                />
+                {answerError ? <Text style={s.error}>{answerError}</Text> : null}
+                <Button
+                  label={thinking ? 'La IA está pensando…' : 'Responder'}
+                  variant="coral"
+                  disabled={thinking || answer.trim().length < 3}
+                  onPress={() => void submitAnswer()}
+                />
+              </View>
+            ) : null}
           </View>
         </Pop>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -93,4 +135,19 @@ const s = StyleSheet.create({
   hero: { alignItems: 'center', paddingTop: 22, paddingBottom: 4 },
   text: { color: colors.text, fontSize: 16, lineHeight: 23, textAlign: 'center' },
   actions: { marginTop: 16, gap: 10 },
+  free: { marginTop: 14, gap: 8, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 12 },
+  or: { color: colors.muted, fontSize: 12, fontWeight: '700', textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.6 },
+  input: {
+    backgroundColor: colors.bg,
+    borderColor: colors.border,
+    borderWidth: 1,
+    borderRadius: radius.md,
+    color: colors.text,
+    fontSize: 15,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    minHeight: 64,
+    textAlignVertical: 'top',
+  },
+  error: { color: colors.bad, fontSize: 13, textAlign: 'center' },
 });
