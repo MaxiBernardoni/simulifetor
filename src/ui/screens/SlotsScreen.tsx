@@ -1,5 +1,6 @@
 import React from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { showAlert } from '../dialog';
 import { SLOT_COUNT, useGame } from '../../store/gameStore';
 import type { Life } from '../../engine/types';
 import { formatMoney } from '../../engine/format';
@@ -24,7 +25,7 @@ export function SlotsScreen() {
   const startCreating = useGame((st) => st.startCreating);
 
   const confirmDelete = (i: number) =>
-    Alert.alert('Borrar partida', `Se borra la partida de la ranura ${i + 1}. No se puede deshacer.`, [
+    showAlert('Borrar partida', `Se borra la partida de la ranura ${i + 1}. No se puede deshacer.`, [
       { text: 'Cancelar', style: 'cancel' },
       { text: 'Borrar', style: 'destructive', onPress: () => deleteSlot(i) },
     ]);

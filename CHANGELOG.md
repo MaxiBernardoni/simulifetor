@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Arreglo web] confirmaciones
+
+- En la versión web "Nueva vida" desde el Menú (y borrar todo, borrar partida, importar copia y los avisos del árbol) no hacían nada: `Alert.alert` no funciona en `react-native-web`. Nuevo `ui/dialog.ts` (`showAlert`): usa `Alert` en el celular y el cuadro del navegador en la web. Verificado en el navegador; 3 tests.
+
 ## [Responder escribiendo]
 
 - Con la IA y el modo narrador activos, las situaciones con opciones permiten **escribir qué hacés**: la IA cuenta el resultado y asigna puntos, acotados por el validador (mismos límites que los eventos generados). Respuestas tratadas como datos (anti-inyección), filtros de entrada y salida según la edad del personaje, reintento y mensaje claro si falla. `resolveWithOutcome` en el motor. Verificado en el navegador con Ollama real. Tests nuevos (`freetext.test.ts`, 29).

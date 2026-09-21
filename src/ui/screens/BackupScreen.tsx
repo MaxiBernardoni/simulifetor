@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Alert, Platform, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native';
+import { showAlert } from '../dialog';
 import { useGame } from '../../store/gameStore';
 import { Button, Card, SectionTitle } from '../components';
 import { colors, radius, space } from '../theme';
@@ -36,7 +37,7 @@ export function BackupScreen() {
       setMsg(err ? { ok: false, text: err } : { ok: true, text: 'Copia importada. Se cargaron tus partidas.' });
       if (!err) setText('');
     };
-    Alert.alert('Importar copia', 'Esto reemplaza TODAS tus partidas actuales por las de la copia. ¿Seguir?', [
+    showAlert('Importar copia', 'Esto reemplaza TODAS tus partidas actuales por las de la copia. ¿Seguir?', [
       { text: 'Cancelar', style: 'cancel' },
       { text: 'Importar', style: 'destructive', onPress: run },
     ]);

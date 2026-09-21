@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
+import { showAlert } from '../dialog';
 import { useGame } from '../../store/gameStore';
 import { formatMoney } from '../../engine/format';
 import { Button, Card, Row, SectionTitle } from '../components';
@@ -21,13 +22,13 @@ export function MoreScreen() {
 
   const confirmNew = () => {
     if (!life.alive) return start();
-    Alert.alert('¿Empezar otra vida?', 'La vida actual se abandona (no se guarda en el historial).', [
+    showAlert('¿Empezar otra vida?', 'La vida actual se abandona (no se guarda en el historial).', [
       { text: 'Cancelar', style: 'cancel' },
       { text: 'Nueva vida', style: 'destructive', onPress: start },
     ]);
   };
   const confirmWipe = () =>
-    Alert.alert('Borrar todo', 'Se borran la vida actual y el historial. No se puede deshacer.', [
+    showAlert('Borrar todo', 'Se borran la vida actual y el historial. No se puede deshacer.', [
       { text: 'Cancelar', style: 'cancel' },
       { text: 'Borrar todo', style: 'destructive', onPress: () => void wipe() },
     ]);

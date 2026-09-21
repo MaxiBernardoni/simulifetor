@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { showAlert } from '../dialog';
 import { useGame } from '../../store/gameStore';
 import { formatMoney } from '../../engine/format';
 import { estateOf, legacyPoints } from '../../engine/dynasty';
@@ -51,7 +52,7 @@ export function DeathScreen() {
 
   const pickHeir = (id: string) => {
     const err = switchCharacter(id);
-    if (err) Alert.alert('No se pudo continuar', err);
+    if (err) showAlert('No se pudo continuar', err);
   };
 
   return (

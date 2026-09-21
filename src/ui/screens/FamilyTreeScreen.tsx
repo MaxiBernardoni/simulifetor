@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { showAlert } from '../dialog';
 import { useGame } from '../../store/gameStore';
 import type { TreeNode, World, WorldData } from '../../engine/world';
 import { buildForest, canSwitchTo, relationLabel, SWITCH_COOLDOWN_YEARS } from '../../engine/kinship';
@@ -188,7 +189,7 @@ function NodeSheet({ id, wd, onClose }: { id: string | null; wd: WorldData; onCl
 
   const go = () => {
     const err = switchCharacter(n.id);
-    if (err) Alert.alert('No se puede cambiar', err);
+    if (err) showAlert('No se puede cambiar', err);
     else onClose();
   };
 
