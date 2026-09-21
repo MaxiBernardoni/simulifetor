@@ -66,10 +66,29 @@ export function runActivity(life: Life, id: string): void {
 }
 
 // ───────── Acciones sobre personas ─────────
+/** Qué parte de las acciones "rotativas" se ofrece cada año (p. ej. 60 %): así la lista no se vuelve repetitiva. */
+const ROTATE_SHARE = 0.6;
+
+/** Hash estable (FNV-1a) → número entre 0 y 1. */
+function unit(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+  return (h >>> 0) / 4294967296;
+}
+
+/**
+ * ¿Toca ofrecer esta acción rotativa con esta persona este año? Depende solo de la vida, el año, la persona y la
+ * acción (no del azar del juego, ni de los niveles, ni de ids con la hora, como el de la vida), así que no cambia al reabrir la pantalla ni tras actuar.
+ */
+export function offeredThisYear(life: Life, a: PersonAction, p: Person): boolean {
+  return !a.rotate || unit(`${life.name}${life.surname}${life.birthYear}|${life.year}|${p.kind}|${p.name}|${a.id}`) < ROTATE_SHARE;
+}
+
 export function personActionStatus(life: Life, a: PersonAction, p: Person): Status {
   const rng = rngOf(life);
   if (!p.alive || !a.kinds.includes(p.kind)) return { visible: false };
   if (!allConds(life, a.conditions, rng, { target: p })) return { visible: false };
+  if (!offeredThisYear(life, a, p)) return { visible: false };
   if (life.usedThisYear.includes(`${a.id}:${p.id}`)) return { visible: true, reason: 'Ya lo hiciste este año' };
   if (a.cost && life.money < costOf(life, a)) return { visible: true, reason: `Necesitás ${formatMoney(costOf(life, a))}` };
   return { visible: true };

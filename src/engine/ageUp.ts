@@ -8,6 +8,7 @@ import { getCareer } from './registry';
 import { firstAlive } from './text';
 import { formatMoney } from './format';
 import { carCost, housingCost, updateAssets } from './assets';
+import { clampFriendship } from './people';
 
 const TAX = 0.8;
 const RETIRE_AGE = 65;
@@ -51,7 +52,7 @@ function computeDelta(life: Life, before: ReturnType<typeof snapshot>): Delta[] 
 /** Consecuencias de que muera un familiar o conocido. */
 export function personDied(life: Life, p: Life['people'][number], rng: Rng): void {
   p.alive = false;
-  const loss = Math.round(p.closeness / 7);
+  const loss = Math.round(Math.max(0, p.friendship) / 7);
   life.stats.happiness = clamp(life.stats.happiness - loss);
   addLog(life, `${p.name.split(' ')[0]} (${labelOf(p.kind)}) murió a los ${p.age} años.`, 'bad', undefined, 'Ghost');
   if ((p.kind === 'mother' || p.kind === 'father') && life.age >= 22 && life.wealthClass >= 2) {
@@ -61,31 +62,39 @@ export function personDied(life: Life, p: Life['people'][number], rng: Rng): voi
   }
 }
 
+/** El paso del tiempo enfría la amistad (solo la positiva: los rencores no se apagan solos). */
+function cool(p: Life['people'][number], n: number): void {
+  if (p.friendship > 0) p.friendship = clampFriendship(Math.max(0, p.friendship - n));
+}
+
 function agePeople(life: Life, rng: Rng): void {
   for (const p of life.people) {
     if (!p.alive || p.frozen) continue;
     p.age++;
     // Los familiares del árbol: su muerte la decide el mundo, acá solo se enfría o no la relación.
     if (p.nodeId) {
-      if (rng.chance(0.4)) p.closeness = clamp(p.closeness - rng.int(0, 3));
+      if (rng.chance(0.4)) cool(p, rng.int(0, 3));
       continue;
     }
     if (rng.chance(baseMortality(p.age) * 0.9)) {
       personDied(life, p, rng);
     } else if (p.kind === 'friend' || p.kind === 'ex') {
-      if (rng.chance(0.5)) p.closeness = clamp(p.closeness - rng.int(1, 4));
+      if (rng.chance(0.5)) cool(p, rng.int(1, 4));
     } else if (rng.chance(0.4)) {
-      p.closeness = clamp(p.closeness - rng.int(0, 3));
+      cool(p, rng.int(0, 3));
     }
+    // El amor también se enfría si no se cuida.
+    if (p.romance && rng.chance(0.3)) p.romance = clamp(p.romance - rng.int(0, 2));
   }
   // Consecuencias de descuidar relaciones.
   for (const p of [...life.people]) {
     if (!p.alive || p.frozen) continue;
     const first = p.name.split(' ')[0];
-    if ((p.kind === 'friend' || p.kind === 'ex') && p.closeness <= 8) {
+    // Los amigos que se alejan se pierden; los enemigos (amistad negativa) no se olvidan.
+    if ((p.kind === 'friend' || p.kind === 'ex') && p.friendship >= 0 && p.friendship <= 8) {
       life.people = life.people.filter((x) => x !== p);
       addLog(life, `Perdiste el contacto con ${first}. Ya ni se saludan.`, 'neutral', 'Distancia');
-    } else if (p.kind === 'partner' && p.closeness <= 15 && rng.chance(0.5)) {
+    } else if (p.kind === 'partner' && Math.min(p.friendship, p.romance ?? p.friendship) <= 15 && rng.chance(0.5)) {
       const was = p.married;
       p.kind = 'ex';
       p.married = false;

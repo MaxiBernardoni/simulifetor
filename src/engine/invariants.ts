@@ -33,7 +33,8 @@ export function checkLife(l: Life): string[] {
     add(!ids.has(p.id), `persona duplicada ${p.id}`);
     ids.add(p.id);
     add(Number.isFinite(p.age) && p.age >= 0, `edad inválida de ${p.name} (${p.age})`);
-    add(p.closeness >= 0 && p.closeness <= 100, `closeness de ${p.name} = ${p.closeness}`);
+    add(p.friendship >= -100 && p.friendship <= 100, `amistad de ${p.name} = ${p.friendship}`);
+    if (p.romance !== undefined) add(p.romance >= 0 && p.romance <= 100, `amor de ${p.name} = ${p.romance}`);
     if (p.kind === 'partner' && p.alive) partners++;
     if (p.married) add(p.kind === 'partner' || p.kind === 'ex', `casado/a no-pareja: ${p.kind}`);
   }

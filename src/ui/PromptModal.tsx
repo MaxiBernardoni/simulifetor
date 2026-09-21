@@ -5,6 +5,7 @@ import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, Te
 import { useGame } from '../store/gameStore';
 import { getEvent } from '../engine/registry';
 import { choiceAvailable } from '../engine/events';
+import { isStatDelta } from '../engine/effects';
 import { Button, DeltaChips, IconTile } from './components';
 import { Scene } from './art/Scene';
 import { FadeIn, Pop } from './anim';
@@ -12,7 +13,7 @@ import { styleForTags } from '../content/icons';
 import { colors, radius } from './theme';
 
 function score(deltas: { key: string; amount: number }[]): number {
-  return deltas.filter((d) => d.key !== 'money').reduce((a, d) => a + d.amount, 0);
+  return deltas.filter((d) => isStatDelta(d.key)).reduce((a, d) => a + d.amount, 0);
 }
 
 export function PromptModal() {

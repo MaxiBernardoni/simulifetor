@@ -27,7 +27,8 @@ export function evalCond(life: Life, cond: Cond, rng: Rng, ctx: Ctx = {}): boole
   if ('hasNot' in cond) return !firstAlive(life, cond.hasNot);
   if ('chance' in cond) return rng.chance(cond.chance);
   if ('jailed' in cond) return life.jailYears > 0 === cond.jailed;
-  if ('targetCloseness' in cond) return !!ctx.target && inRange(ctx.target.closeness, cond.targetCloseness);
+  if ('targetFriendship' in cond) return !!ctx.target && inRange(ctx.target.friendship, cond.targetFriendship);
+  if ('targetRomance' in cond) return !!ctx.target && ctx.target.romance !== undefined && inRange(ctx.target.romance, cond.targetRomance);
   if ('targetAge' in cond) return !!ctx.target && inRange(ctx.target.age, cond.targetAge);
   if ('performance' in cond) return !!life.job && inRange(life.job.performance, cond.performance);
   if ('wealth' in cond) return cond.wealth.includes(life.wealthClass);

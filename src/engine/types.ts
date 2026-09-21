@@ -20,7 +20,8 @@ export type Cond =
   | { hasNot: PersonKind }
   | { chance: number }
   | { jailed: boolean }
-  | { targetCloseness: { gte?: number; lte?: number } }
+  | { targetFriendship: { gte?: number; lte?: number } }
+  | { targetRomance: { gte?: number; lte?: number } }
   | { targetAge: { gte?: number; lte?: number } }
   | { performance: { gte?: number; lte?: number } }
   | { wealth: number[] }
@@ -44,7 +45,7 @@ export type Effect =
   | { setFlag: string }
   | { clearFlag: string }
   | { addPerson: { kind: PersonKind; age?: 'baby' | 'peer' | 'young' } }
-  | { relation: { who: Who; closeness?: number; becomes?: PersonKind; married?: boolean; remove?: boolean } }
+  | { relation: { who: Who; friendship?: number; romance?: number; becomes?: PersonKind; married?: boolean; remove?: boolean } }
   | { performance: number }
   | { gpa: number }
   | { salaryMult: number }
@@ -108,6 +109,8 @@ export interface PersonAction {
   kinds: PersonKind[];
   cost?: number;
   conditions?: Cond[];
+  /** Rota: cada año solo se ofrece una parte al azar (determinista) de las que ya están desbloqueadas. */
+  rotate?: boolean;
   outcomes: Outcome[];
 }
 
@@ -132,7 +135,10 @@ export interface Person {
   gender: Gender;
   age: number;
   alive: boolean;
-  closeness: number;
+  /** Amistad: de -100 a 100. Por debajo de -30 es "mala onda". */
+  friendship: number;
+  /** Amor: 0 a 100. `undefined` = todavía bloqueado (se desbloquea con acciones románticas). */
+  romance?: number;
   married?: boolean;
   /** Aspecto propio (hijos heredan rasgos). Si falta, se deriva del id. */
   look?: Look;
@@ -171,7 +177,8 @@ export interface LogEntry {
 }
 
 export interface Delta {
-  key: StatKey | 'money';
+  /** Stats, plata, o cuánto cambió la amistad o el amor con la persona de la acción. */
+  key: StatKey | 'money' | 'friendship' | 'romance';
   amount: number;
 }
 
@@ -281,4 +288,4 @@ export interface LifeSummary {
   scenarioResult?: 'won' | 'lost' | 'active';
 }
 
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;

@@ -13,7 +13,7 @@
 
 ## Versión de esquema
 
-`SCHEMA_VERSION` (`engine/types.ts`) — hoy **4**.
+`SCHEMA_VERSION` (`engine/types.ts`) — hoy **5**.
 
 | Versión | Cambio |
 |---|---|
@@ -21,6 +21,7 @@
 | 2 | Aspecto (`look`) del personaje |
 | 3 | Bienes, préstamo, inversiones, juicio (`trial`) |
 | 4 | Linaje (`lineageId`, `generation`), escenarios, ranuras |
+| 5 | Relaciones con doble medidor: `Person.closeness` (0–100) pasa a `friendship` (−100–100) y se agrega `romance?` (0–100; la pareja arranca con el amor igual a la cercanía anterior). `migrateLife` lo hace también con las vidas de los bots del mundo (`loadSlotsFrom`) |
 | (sin subir) | `nodeId` en `Life` y `Person`: se rellena al cargar (`reconcile`) |
 
 ## Cómo se carga (`store.load`)

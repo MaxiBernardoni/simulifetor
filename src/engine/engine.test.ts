@@ -293,7 +293,7 @@ describe('relación con el jugador en los textos', () => {
   it('la primera vez que se nombra a alguien se aclara qué es del jugador', async () => {
     const { fill, relationLabel } = await import('./text');
     const l = createLife(3);
-    l.people.push({ id: 'p1', kind: 'friend', name: 'Marcos Paz', gender: 'M', age: 30, alive: true, closeness: 50 });
+    l.people.push({ id: 'p1', kind: 'friend', name: 'Marcos Paz', gender: 'M', age: 30, alive: true, friendship: 50 });
     const madre = l.people.find((p) => p.kind === 'mother')!.name.split(' ')[0];
     expect(fill(l, '{friend} te pidió plata. {friend} insistió.')).toBe('Marcos (tu amigo) te pidió plata. Marcos insistió.');
     expect(fill(l, 'Tu madre {mother} llamó.')).toBe(`Tu madre ${madre} llamó.`);

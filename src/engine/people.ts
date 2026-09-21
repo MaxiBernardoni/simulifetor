@@ -13,7 +13,7 @@ export function randomFirstName(rng: Rng, gender: Gender): string {
 export function makePerson(
   rng: Rng,
   kind: PersonKind,
-  opts: { gender?: Gender; age: number; surname?: string; closeness?: number },
+  opts: { gender?: Gender; age: number; surname?: string; friendship?: number; romance?: number },
 ): Person {
   const gender: Gender = opts.gender ?? (rng.chance(0.5) ? 'M' : 'F');
   const surname = opts.surname ?? rng.pick(SURNAMES);
@@ -24,7 +24,8 @@ export function makePerson(
     gender,
     age: opts.age,
     alive: true,
-    closeness: opts.closeness ?? rng.int(40, 70),
+    friendship: opts.friendship ?? rng.int(40, 70),
+    ...(opts.romance !== undefined ? { romance: opts.romance } : {}),
   };
 }
 
@@ -36,9 +37,11 @@ export function spawnPerson(life: Life, rng: Rng, kind: PersonKind, age?: 'baby'
   else if (kind === 'partner' || kind === 'ex') a = Math.max(18, life.age + rng.int(-5, 5));
   else a = Math.max(1, life.age + rng.int(-3, 3));
   const gender: Gender | undefined = kind === 'mother' ? 'F' : kind === 'father' ? 'M' : undefined;
-  const closeness = kind === 'child' ? rng.int(60, 90) : kind === 'partner' ? rng.int(45, 70) : undefined;
+  const friendship = kind === 'child' ? rng.int(60, 90) : kind === 'partner' ? rng.int(45, 70) : undefined;
+  // La pareja arranca con amor desbloqueado; el resto lo desbloquea con acciones.
+  const romance = kind === 'partner' ? rng.int(45, 70) : undefined;
   const surname = kind === 'child' || kind === 'sibling' ? life.surname : undefined;
-  const p = makePerson(rng, kind, { gender, age: a, surname, closeness });
+  const p = makePerson(rng, kind, { gender, age: a, surname, friendship, romance });
   if (kind === 'child') p.look = inheritLook(life.look, p.gender, rng);
   return p;
 }
@@ -53,3 +56,8 @@ export function inheritLook(parent: Look, gender: Gender, rng: Rng): Look {
     hairColor: rng.chance(0.6) ? parent.hairColor : rng.int(0, 7),
   };
 }
+
+export const clampFriendship = (n: number): number => Math.max(-100, Math.min(100, n));
+/** Por debajo de este valor de amistad la persona es "mala onda". */
+export const BAD_VIBES = -30;
+export const isBadVibes = (p: { friendship: number }): boolean => p.friendship < BAD_VIBES;

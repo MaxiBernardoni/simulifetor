@@ -119,7 +119,14 @@ export function DeltaChips({ deltas }: { deltas: Delta[] }) {
       {deltas.map((d, idx) => {
         const up = d.amount > 0;
         const color = up ? colors.good : colors.bad;
-        const meta = d.key === 'money' ? { icon: 'Banknote', label: '' } : STAT_META[d.key];
+        const meta =
+          d.key === 'money'
+            ? { icon: 'Banknote', label: '' }
+            : d.key === 'friendship'
+              ? { icon: 'Handshake', label: 'Amistad' }
+              : d.key === 'romance'
+                ? { icon: 'Heart', label: 'Amor' }
+                : STAT_META[d.key];
         return (
           <Pop key={d.key + d.amount} delay={idx * 110}>
             <View style={[s.chip, { borderColor: color, backgroundColor: color + '14' }]}>

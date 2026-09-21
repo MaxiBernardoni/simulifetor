@@ -257,6 +257,7 @@ export const useGame = create<GameState>((set, get) => {
       if (i >= SLOT_COUNT) return;
       slots[i] = l ? migrateLife(l) : null;
       worlds[i] = reconcile(slots[i], worldsIn[i]);
+      for (const bot of Object.values(worlds[i]?.lives ?? {})) migrateLife(bot);
     });
     return { slots, worlds };
   };

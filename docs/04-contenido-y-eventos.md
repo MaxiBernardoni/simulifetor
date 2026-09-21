@@ -128,7 +128,7 @@ Se importan desde `src/content/dsl.ts`: `c` (condiciones) y `fx` (efectos).
 | `married()` / `single()` | Pareja casada / no |
 | `chance(p)` | Probabilidad (0–1) |
 | `jailed()` / `free()` | Preso / libre |
-| `tClose(min?, max?)` / `tAge(min?, max?)` | Cercanía / edad de la **persona objetivo** (eventos con `target`, acciones con personas) |
+| `tClose(min?, max?)` / `tLove(min?, max?)` / `tAge(min?, max?)` | Amistad / amor (bloqueado = no cumple) / edad de la **persona objetivo** (eventos con `target`, acciones con personas) |
 | `wealth(...n)` | Clase social 1–3 |
 | `trial()` | Hay un juicio pendiente |
 | `asset('house'|'car')` | Tiene ese bien |
@@ -136,7 +136,7 @@ Se importan desde `src/content/dsl.ts`: `c` (condiciones) y `fx` (efectos).
 
 ## Efectos (`fx.*`)
 
-`hap/hea/sma/loo(n)` (stats), `money(n)`, `moneyPct(p)`, `flag(f)` / `unflag(f)`, `add(kind, 'baby'|'peer'|'young')` (persona nueva), `close(who, n)` (cercanía; `who` = `'target'` o un tipo), `becomes(who, kind)`, `marry()`, `remove(who)`, `perf(n)`, `gpa(n)`, `raise(mult)`, `fired()`, `jail(min, max)`, `parole(años)`, `arrest(crimen, min, max)`, `sentence('full'|'half'|'double'|'probation'|'none')`, `loseAsset('house'|'car')`, `invest(n)`, `die(causa)`, `log(texto)`, `trigger(idEvento)`.
+`hap/hea/sma/loo(n)` (stats), `money(n)`, `moneyPct(p)`, `flag(f)` / `unflag(f)`, `add(kind, 'baby'|'peer'|'young')` (persona nueva), `close(who, n)` (amistad; `who` = `'target'` o un tipo), `love(who, n)` (amor; lo desbloquea si es positivo), `bond(who, amistad, amor)` (ambos a la vez), `becomes(who, kind)`, `marry()`, `remove(who)`, `perf(n)`, `gpa(n)`, `raise(mult)`, `fired()`, `jail(min, max)`, `parole(años)`, `arrest(crimen, min, max)`, `sentence('full'|'half'|'double'|'probation'|'none')`, `loseAsset('house'|'car')`, `invest(n)`, `die(causa)`, `log(texto)`, `trigger(idEvento)`.
 
 ## Campos de `GameEvent`
 

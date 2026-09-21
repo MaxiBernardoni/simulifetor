@@ -9,7 +9,7 @@ import { formatMoney } from './format';
 import { realNetWorth } from './assets';
 import { syncLifeToWorld } from './world';
 
-const person = (n: TreeNode, kind: PersonKind, closeness: number, patch: Partial<Person> = {}): Person => ({
+const person = (n: TreeNode, kind: PersonKind, friendship: number, patch: Partial<Person> = {}): Person => ({
   id: n.id,
   nodeId: n.id,
   kind,
@@ -17,7 +17,7 @@ const person = (n: TreeNode, kind: PersonKind, closeness: number, patch: Partial
   gender: n.gender,
   age: n.age,
   alive: n.alive,
-  closeness,
+  friendship,
   married: undefined,
   look: n.look,
   ...patch,

@@ -20,7 +20,10 @@ export const c = {
   chance: (p: number): Cond => ({ chance: p }),
   jailed: (): Cond => ({ jailed: true }),
   free: (): Cond => ({ jailed: false }),
-  tClose: (gte?: number, lte?: number): Cond => ({ targetCloseness: { gte, lte } }),
+  /** Amistad con la persona objetivo. */
+  tClose: (gte?: number, lte?: number): Cond => ({ targetFriendship: { gte, lte } }),
+  /** Amor con la persona objetivo (bloqueado = no cumple). */
+  tLove: (gte?: number, lte?: number): Cond => ({ targetRomance: { gte, lte } }),
   tAge: (gte?: number, lte?: number): Cond => ({ targetAge: { gte, lte } }),
   perf: (gte?: number, lte?: number): Cond => ({ performance: { gte, lte } }),
   wealth: (...n: number[]): Cond => ({ wealth: n }),
@@ -46,7 +49,12 @@ export const fx = {
   flag: (f: string): Effect => ({ setFlag: f }),
   unflag: (f: string): Effect => ({ clearFlag: f }),
   add: (kind: PersonKind, age?: 'baby' | 'peer' | 'young'): Effect => ({ addPerson: { kind, age } }),
-  close: (who: 'target' | PersonKind, n: number): Effect => ({ relation: { who, closeness: n } }),
+  /** Suma o resta amistad. */
+  close: (who: 'target' | PersonKind, n: number): Effect => ({ relation: { who, friendship: n } }),
+  /** Suma o resta amor (lo desbloquea si era positivo). */
+  love: (who: 'target' | PersonKind, n: number): Effect => ({ relation: { who, romance: n } }),
+  /** Cambia amistad y amor a la vez. */
+  bond: (who: 'target' | PersonKind, friendship: number, romance: number): Effect => ({ relation: { who, friendship, romance } }),
   becomes: (who: 'target' | PersonKind, kind: PersonKind): Effect => ({
     relation: { who, becomes: kind },
   }),

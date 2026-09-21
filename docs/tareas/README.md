@@ -30,7 +30,7 @@ Cada archivo `Txx-*.md` es una tarea **autocontenida**: objetivo, contexto (arch
 | 14 | [T06](T06-capa-de-ia-opcional.md) | Capa de IA opcional con clave gratuita | XL | T12 | ⚠️ dependencias y red | review |
 | 15 | [T07](T07-npcs-persistentes.md) | NPCs persistentes fuera de la familia | XL | T16 | ⚠️ cambia el mundo | todo |
 | 16 | [T13](T13-pwa-e-instalacion.md) | PWA y build para instalar en el iPhone (sin desplegar) | M | T12 | ✅ segura | todo |
-| 17 | [T17](T17-relaciones-amistad-y-amor.md) | Doble medidor de relación (amistad y amor), mala onda e infidelidad | XL | — | ⚠️ cambia el esquema | todo |
+| 17 | [T17](T17-relaciones-amistad-y-amor.md) | Doble medidor de relación (amistad y amor), mala onda e infidelidad | XL | — | ⚠️ cambia el esquema | wip (hitos 1–3) |
 | 18 | [T18](T18-mejoras-de-experiencia.md) | Mejoras de experiencia: vibración, ficha de persona, pantalla de muerte, IA, vida del día | M | — | ✅ segura | todo |
 
 Esfuerzo: S ≈ 1 h · M ≈ 2–3 h · L ≈ 4–6 h · XL ≈ 1 noche completa o más (dividir en hitos).

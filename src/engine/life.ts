@@ -58,11 +58,11 @@ export function createLife(seed?: number, opts: CreateOpts = {}): Life {
   const people: Person[] = [];
   const momAge = rng.int(20, 38);
   const dadAge = momAge + rng.int(-3, 8);
-  people.push(makePerson(rng, 'mother', { gender: 'F', age: momAge, closeness: rng.int(60, 95), surname: rng.pick(SURNAMES) }));
-  people.push(makePerson(rng, 'father', { gender: 'M', age: Math.max(20, dadAge), closeness: rng.int(50, 95), surname }));
+  people.push(makePerson(rng, 'mother', { gender: 'F', age: momAge, friendship: rng.int(60, 95), surname: rng.pick(SURNAMES) }));
+  people.push(makePerson(rng, 'father', { gender: 'M', age: Math.max(20, dadAge), friendship: rng.int(50, 95), surname }));
   const sibs = rng.weighted([0, 1, 2], (n) => (n === 0 ? 35 : n === 1 ? 40 : 25)) ?? 0;
   for (let i = 0; i < sibs; i++) {
-    people.push(makePerson(rng, 'sibling', { age: Math.max(0, rng.int(-6, 8)), closeness: rng.int(35, 80), surname }));
+    people.push(makePerson(rng, 'sibling', { age: Math.max(0, rng.int(-6, 8)), friendship: rng.int(35, 80), surname }));
   }
 
   const lifeId = `life-${Date.now().toString(36)}-${rng.int(0, 9999)}`;
@@ -128,6 +128,14 @@ export function migrateLife(raw: Life): Life {
   l.trial ??= null;
   l.lineageId ??= l.id;
   l.generation ??= 1;
+  // Amistad y amor: `closeness` (0–100) pasó a `friendship` (−100–100); la pareja arranca con el amor igual a la cercanía que tenía.
+  for (const p of l.people as (Person & { closeness?: number })[]) {
+    if (p.friendship === undefined) {
+      p.friendship = p.closeness ?? 50;
+      if (p.kind === 'partner' && p.romance === undefined) p.romance = p.friendship;
+    }
+    delete p.closeness;
+  }
   // Los peinados ahora son de hombre o de mujer: las partidas viejas pasan al equivalente.
   if (l.look) l.look.hairStyle = hairForGender(l.look.hairStyle, l.gender);
   l.schemaVersion = SCHEMA_VERSION;

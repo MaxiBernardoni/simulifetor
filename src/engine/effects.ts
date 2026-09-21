@@ -2,7 +2,7 @@ import type { Delta, Effect, Life, LogEntry, Person, StatKey, Tone } from './typ
 import type { Rng } from './rng';
 import { firstAlive } from './text';
 import { scaleMoney } from '../content/eras';
-import { spawnPerson } from './people';
+import { clampFriendship, spawnPerson } from './people';
 
 export interface EffectCtx {
   target?: Person;
@@ -92,7 +92,18 @@ export function applyEffect(life: Life, e: Effect, ctx: EffectCtx, rng: Rng): vo
   if ('relation' in e) {
     const p = resolveWho(life, ctx, e.relation.who);
     if (!p) return;
-    if (e.relation.closeness) p.closeness = clamp(p.closeness + e.relation.closeness);
+    if (e.relation.friendship) {
+      const was = p.friendship;
+      p.friendship = clampFriendship(was + e.relation.friendship);
+      addDelta(ctx, 'friendship', p.friendship - was);
+    }
+    // El amor solo existe entre adultos (regla fija): si alguno es menor, se ignora.
+    if (e.relation.romance && life.age >= 18 && p.age >= 18) {
+      const was = p.romance ?? 0;
+      if (p.romance !== undefined) p.romance = clamp(p.romance + e.relation.romance);
+      else if (e.relation.romance > 0) p.romance = clamp(e.relation.romance);
+      addDelta(ctx, 'romance', (p.romance ?? 0) - was);
+    }
     if (e.relation.remove) {
       life.people = life.people.filter((x) => x !== p);
       return;
@@ -188,7 +199,10 @@ export function applyEffects(life: Life, effects: Effect[] | undefined, ctx: Eff
   }
 }
 
+/** ¿Es un cambio de stat (felicidad, salud…)? Distingue de plata y de las barras de relación. */
+export const isStatDelta = (key: string): boolean => key !== 'money' && key !== 'friendship' && key !== 'romance';
+
 export function toneOf(deltas: Delta[]): Tone {
-  const score = deltas.filter((d) => d.key !== 'money').reduce((s, d) => s + d.amount, 0);
+  const score = deltas.filter((d) => isStatDelta(d.key)).reduce((s, d) => s + d.amount, 0);
   return score > 0 ? 'good' : score < 0 ? 'bad' : 'neutral';
 }

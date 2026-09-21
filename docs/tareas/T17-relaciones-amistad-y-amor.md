@@ -3,7 +3,7 @@
 - **Prioridad / esfuerzo:** alta / XL (dividir en hitos)
 - **Depende de:** —
 - **Autonomía:** ⚠️ cambia el esquema de `Person` y las reglas de pareja; revisar antes de unir
-- **Estado:** todo
+- **Estado:** wip (hitos 1, 2 y 3 hechos; faltan 4–6)
 
 ## Objetivo
 Reemplazar el único medidor de cercanía por dos, al estilo Los Sims 4: **amistad** (siempre visible) y **amor** (oculto hasta que una acción lo desbloquea). Si la amistad cae mucho pasa a negativo y la persona se vuelve **mala onda** (enemigo). Permite varios amoríos a la vez y la posibilidad de que la pareja oficial se entere y acuse de infidelidad.
@@ -45,3 +45,12 @@ Reemplazar el único medidor de cercanía por dos, al estilo Los Sims 4: **amist
 ## Riesgos y cómo mitigarlos
 - Rompe partidas: migración + test. Rompe el balance: correr `npm run balance` antes y después.
 - Contenido sexual: siempre adultos; mantener el tono de humor negro de siempre.
+
+## Progreso
+- ✅ **Hito 1 · Modelo y migración** (21/09/2026): `friendship` (−100..100) y `romance?`; `SCHEMA_VERSION` 5; migración de partidas y de las vidas de los bots; condiciones `targetFriendship`/`targetRomance`; efectos `friendship`/`romance` (el amor exige adultos).
+- ✅ **Hito 2 · UI:** barra de amistad y, si está desbloqueada, barra de amor (en la lista y en la ficha); "Mala onda" por debajo de −30; los resultados muestran chips de amistad y amor.
+- ✅ **Hito 3 · Acciones por niveles y rotación anual:** 6 amistosas y 8 románticas nuevas (`rotate: true`), con reacciones buenas/malas que mueven las barras cantidades distintas; 60 % de oferta anual determinista; también con familia adulta.
+- ⏳ **Hito 4 · Varios amoríos** con la pareja oficial (pasar un amorío a pareja, reemplazarla).
+- ⏳ **Hito 5 · Infidelidad:** rastro, descubrimiento, consecuencias y reacción del tercero (hoy las acciones románticas con terceros no tienen consecuencias con la pareja).
+- ⏳ **Hito 6 · Balance** con perfiles "familia" y "crimen"; eventos de hostilidad para la "mala onda" (hoy solo se le ocultan los gestos amistosos).
+

@@ -4,6 +4,7 @@ import { useGame } from '../../store/gameStore';
 import { personActionStatus } from '../../engine/actions';
 import { allPersonActions } from '../../engine/registry';
 import type { Person, PersonKind } from '../../engine/types';
+import { isBadVibes } from '../../engine/people';
 import { Bar, PersonAvatar, Row, SectionTitle } from '../components';
 import { Icon } from '../Icon';
 import { colors, radius, space } from '../theme';
@@ -25,6 +26,11 @@ const LABEL: Record<PersonKind, string> = {
   child: 'Hijo/a',
   ex: 'Ex',
 };
+
+const LOVE = '#E0517A';
+
+/** Color de la amistad: verde alta, ámbar media, rojo baja o negativa ("mala onda"). */
+const friendColor = (f: number) => (f > 60 ? colors.good : f > 30 ? colors.warn : colors.bad);
 
 export function PeopleScreen() {
   const life = useGame((st) => st.life)!;
@@ -56,12 +62,9 @@ export function PeopleScreen() {
                   onPress={() => setSelected(p.id)}
                   right={
                     p.alive ? (
-                      <View style={{ width: 54 }}>
-                        <Bar
-                          value={p.closeness}
-                          color={p.closeness > 60 ? colors.good : p.closeness > 30 ? colors.warn : colors.bad}
-                          height={6}
-                        />
+                      <View style={{ width: 54, gap: 4 }}>
+                        <Bar value={Math.abs(p.friendship)} color={friendColor(p.friendship)} height={6} />
+                        {p.romance !== undefined ? <Bar value={p.romance} color={LOVE} height={6} /> : null}
                       </View>
                     ) : undefined
                   }
@@ -85,16 +88,23 @@ export function PeopleScreen() {
                       {kindLabel(person)} · {person.age} años
                     </Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}>
-                      <Icon name="Heart" size={14} color={colors.bad} />
+                      <Icon name="Handshake" size={14} color={friendColor(person.friendship)} />
                       <View style={{ flex: 1 }}>
-                        <Bar
-                          value={person.closeness}
-                          color={person.closeness > 60 ? colors.good : person.closeness > 30 ? colors.warn : colors.bad}
-                          height={8}
-                        />
+                        <Bar value={Math.abs(person.friendship)} color={friendColor(person.friendship)} height={8} />
                       </View>
-                      <Text style={{ color: colors.text, fontWeight: '800' }}>{person.closeness}</Text>
+                      <Text style={{ color: friendColor(person.friendship), fontWeight: '800' }}>
+                        {isBadVibes(person) ? `Mala onda ${person.friendship}` : person.friendship}
+                      </Text>
                     </View>
+                    {person.romance !== undefined ? (
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}>
+                        <Icon name="Heart" size={14} color={LOVE} />
+                        <View style={{ flex: 1 }}>
+                          <Bar value={person.romance} color={LOVE} height={8} />
+                        </View>
+                        <Text style={{ color: LOVE, fontWeight: '800' }}>{person.romance}</Text>
+                      </View>
+                    ) : null}
                   </View>
                 </View>
                 <ScrollView style={{ maxHeight: 380, marginTop: 12 }}>

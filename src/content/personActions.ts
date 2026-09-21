@@ -15,6 +15,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
   },
   {
     id: 'spend_time', label: 'Pasar tiempo juntos', icon: 'Clock', kinds: [...ALL],
+    conditions: [c.tClose(-30)],
     outcomes: [
       { weight: 7, text: 'Pasaste un día genial con {target}.', effects: [fx.close('target', 8), fx.hap(4)] },
       { weight: 2, text: 'El plan con {target} fue un fiasco, pero se rieron igual.', effects: [fx.close('target', 3), fx.hap(1)] },
@@ -22,7 +23,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
   },
   {
     id: 'gift', label: 'Hacer un regalo', icon: 'Gift', kinds: [...ALL], cost: 200,
-    conditions: [c.age(8, 99)],
+    conditions: [c.age(8, 99), c.tClose(-30)],
     outcomes: [
       { weight: 7, text: '{target} amó tu regalo.', effects: [fx.close('target', 10), fx.hap(2)] },
       { weight: 3, text: '{target} sonrió con cortesía. Claramente no le gustó.', effects: [fx.close('target', 2)] },
@@ -85,7 +86,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
   },
   {
     id: 'party_friend', label: 'Salir de joda', icon: 'PartyPopper', kinds: ['friend', 'sibling'],
-    conditions: [c.age(16, 80)], cost: 150,
+    conditions: [c.age(16, 80), c.tClose(-30)], cost: 150,
     outcomes: [
       { weight: 7, text: 'Noche épica con {target}. Se van a acordar de esta salida para siempre.', effects: [fx.close('target', 10), fx.hap(5), fx.hea(-1)] },
       { weight: 2, text: '{target} se pasó de copas. Terminaste cuidándolo/a.', effects: [fx.close('target', 5), fx.hap(-1)] },
@@ -108,7 +109,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
   },
   {
     id: 'hug', label: 'Dar un abrazo', icon: 'Heart', kinds: ['mother', 'father', 'sibling', 'partner', 'child', 'friend'],
-    conditions: [c.tAge(1)],
+    conditions: [c.tAge(1), c.tClose(-30)],
     outcomes: [
       { weight: 8, text: 'Le diste un abrazo enorme a {target}. Se quedaron así un rato.', effects: [fx.close('target', 6), fx.hap(3)] },
       { weight: 2, text: '{target} se sorprendió, pero terminó abrazándote fuerte.', effects: [fx.close('target', 9), fx.hap(4)] },
@@ -166,6 +167,138 @@ export const PERSON_ACTIONS: PersonAction[] = [
     outcomes: [
       { weight: 8, text: 'Pasaron la tarde con la tarea de {target}. Aprendiste que ya no te acordás de nada.', effects: [fx.close('target', 8), fx.hap(2)] },
       { weight: 2, text: 'Terminaron discutiendo por una división.', effects: [fx.close('target', -3)] },
+    ],
+  },
+
+  // ───────── Acciones que van apareciendo según amistad y amor (rotan cada año) ─────────
+  // Amistosas: se desbloquean al subir la amistad. Cada resultado suma o resta una cantidad distinta.
+  {
+    id: 'deep_talk', label: 'Tener una charla profunda', icon: 'MessageCircle', kinds: [...ALL], rotate: true,
+    conditions: [c.tClose(30), c.age(10, 99), c.tAge(10)],
+    outcomes: [
+      { weight: 5, text: 'Hablaron de todo hasta la madrugada con {target}. Salieron más cerca.', effects: [fx.close('target', 9), fx.hap(2)] },
+      { weight: 3, text: 'La charla con {target} fue tibia, pero sincera.', effects: [fx.close('target', 3)] },
+      { weight: 2, text: 'Dijiste algo de más y {target} se quedó callado/a un buen rato.', effects: [fx.close('target', -5), fx.hap(-1)] },
+    ],
+  },
+  {
+    id: 'share_secret', label: 'Contarle un secreto', icon: 'Lock', kinds: [...ALL], rotate: true,
+    conditions: [c.tClose(45), c.age(10, 99), c.tAge(10)],
+    outcomes: [
+      { weight: 5, text: '{target} guardó tu secreto y te lo agradeció. Se sintieron unidos.', effects: [fx.close('target', 12), fx.hap(2)] },
+      { weight: 3, text: '{target} escuchó en silencio y no supo qué decir.', effects: [fx.close('target', 4)] },
+      { weight: 2, text: '{target} no aguantó y se lo contó a otra persona. Qué traición.', effects: [fx.close('target', -14), fx.hap(-4)] },
+    ],
+  },
+  {
+    id: 'cook_dinner', label: 'Cocinarle una cena', icon: 'UtensilsCrossed', kinds: [...ALL], rotate: true,
+    conditions: [c.tClose(35), c.age(12, 99), c.tAge(12)],
+    outcomes: [
+      { weight: 6, text: 'La cena para {target} salió riquísima. Repitieron dos veces.', effects: [fx.close('target', 8), fx.hap(2)] },
+      { weight: 3, text: 'Se te quemó todo, pero pidieron pizza y se rieron un buen rato con {target}.', effects: [fx.close('target', 4), fx.hap(1)] },
+      { weight: 1, text: '{target} terminó con una descompostura. Tu cocina es un arma.', effects: [fx.close('target', -4), fx.hea(-1)] },
+    ],
+  },
+  {
+    id: 'roast', label: 'Cargarlo/a con humor negro', icon: 'Drama', kinds: ['friend', 'sibling', 'partner', 'ex'], rotate: true,
+    conditions: [c.tClose(40), c.age(14, 99), c.tAge(14)],
+    outcomes: [
+      { weight: 5, text: 'Le tiraste una humorada cruel a {target} y se cagó de risa.', effects: [fx.close('target', 6), fx.hap(2)] },
+      { weight: 3, text: '{target} se ofendió de verdad. Se acabó la gracia.', effects: [fx.close('target', -8), fx.hap(-1)] },
+    ],
+  },
+  {
+    id: 'defend', label: 'Defenderlo/a de un desconocido', icon: 'Shield', kinds: [...ALL], rotate: true,
+    conditions: [c.tClose(50), c.age(14, 90), c.tAge(8)],
+    outcomes: [
+      { weight: 6, text: 'Te plantaste por {target} frente a un desconocido. Lo va a recordar siempre.', effects: [fx.close('target', 11), fx.hap(2)] },
+      { weight: 2, text: 'Te metiste en una pelea por {target} y saliste con un ojo morado.', effects: [fx.close('target', 15), fx.hea(-3)] },
+      { weight: 1, text: '{target} te dijo que no hacía falta que hagas el papelón.', effects: [fx.close('target', -3)] },
+    ],
+  },
+  {
+    id: 'trip', label: 'Hacer un viaje juntos', icon: 'Plane', kinds: [...ALL], rotate: true, cost: 800,
+    conditions: [c.tClose(55), c.age(16, 90), c.tAge(12)],
+    outcomes: [
+      { weight: 6, text: 'El viaje con {target} fue inolvidable. Volvieron con mil anécdotas.', effects: [fx.close('target', 14), fx.hap(6)] },
+      { weight: 2, text: 'Se perdieron el vuelo, pero {target} y vos se rieron de todo.', effects: [fx.close('target', 6), fx.hap(2)] },
+      { weight: 2, text: 'Discutieron cada día del viaje con {target}. Volvieron sin hablarse.', effects: [fx.close('target', -9), fx.hap(-3)] },
+    ],
+  },
+
+  // Románticas: aparecen con amistad de 50 para arriba entre adultos (también en la familia) y suben con el amor.
+  // La otra persona reacciona bien o mal: cada reacción mueve las barras de amistad y de amor una cantidad distinta.
+  {
+    id: 'flirt', label: 'Coquetear', icon: 'Sparkles', kinds: [...ALL], rotate: true,
+    conditions: [c.tClose(50), c.age(18, 99), c.tAge(18)],
+    outcomes: [
+      { weight: 4, text: 'Le tiraste onda a {target} y te siguió el juego. Hay algo en el aire.', effects: [fx.bond('target', 2, 8), fx.hap(2)] },
+      { weight: 3, text: '{target} lo tomó como una broma y siguió con lo suyo.', effects: [fx.bond('target', 0, 2)] },
+      { weight: 2, text: '{target} se incomodó bastante. Se puso raro el clima.', effects: [fx.bond('target', -10, -4), fx.hap(-2)] },
+      { weight: 1, text: '{target} te frenó en seco y se lo contó a medio mundo.', effects: [fx.bond('target', -18, -8), fx.hap(-4)] },
+    ],
+  },
+  {
+    id: 'love_letter', label: 'Escribirle una carta de amor', icon: 'Mail', kinds: [...ALL], rotate: true,
+    conditions: [c.tClose(55), c.age(18, 99), c.tAge(18)],
+    outcomes: [
+      { weight: 5, text: '{target} leyó tu carta dos veces y te miró distinto.', effects: [fx.bond('target', 3, 10), fx.hap(3)] },
+      { weight: 3, text: '{target} sonrió, pero no contestó nada.', effects: [fx.love('target', 3)] },
+      { weight: 2, text: '{target} se rió de las faltas de ortografía. Te dolió.', effects: [fx.bond('target', -6, -3), fx.hap(-2)] },
+    ],
+  },
+  {
+    id: 'confess', label: 'Confesarle lo que sentís', icon: 'Heart', kinds: [...ALL], rotate: true,
+    conditions: [c.tClose(50), c.tLove(30), c.age(18, 99), c.tAge(18)],
+    outcomes: [
+      { weight: 4, text: '{target} te confesó que sentía lo mismo. Se quedaron abrazados un rato largo.', effects: [fx.bond('target', 6, 15), fx.hap(6)] },
+      { weight: 3, text: '{target} dijo que prefiere que sigan como están. Doloroso, pero honesto.', effects: [fx.bond('target', 2, -5), fx.hap(-3)] },
+      { weight: 2, text: '{target} se alejó sin decir nada. No volvió a escribirte.', effects: [fx.bond('target', -12, -12), fx.hap(-6)] },
+    ],
+  },
+  {
+    id: 'date', label: 'Invitarlo/a a una cita', icon: 'Wine', kinds: [...ALL], rotate: true, cost: 150,
+    conditions: [c.tLove(10), c.age(18, 99), c.tAge(18)],
+    outcomes: [
+      { weight: 5, text: 'La cita con {target} salió mejor de lo esperado. Se despidieron sin ganas.', effects: [fx.bond('target', 3, 12), fx.hap(4)] },
+      { weight: 3, text: 'Cenaron con {target}. Buena comida, charla a media máquina.', effects: [fx.bond('target', 1, 4), fx.hap(1)] },
+      { weight: 2, text: '{target} se pasó la cita mirando el celular. Qué desperdicio de cena.', effects: [fx.bond('target', -5, -7), fx.hap(-2)] },
+    ],
+  },
+  {
+    id: 'romantic_surprise', label: 'Hacerle una sorpresa romántica', icon: 'Gift', kinds: [...ALL], rotate: true, cost: 300,
+    conditions: [c.tLove(40), c.age(18, 99), c.tAge(18)],
+    outcomes: [
+      { weight: 6, text: '{target} se emocionó hasta las lágrimas con tu sorpresa.', effects: [fx.bond('target', 5, 13), fx.hap(5)] },
+      { weight: 2, text: 'La sorpresa para {target} salió más o menos. Se agradece el esfuerzo.', effects: [fx.bond('target', 1, 3)] },
+      { weight: 2, text: '{target} es alérgico/a a las flores. Terminaron en la guardia.', effects: [fx.bond('target', -2, -6), fx.hea(-1), fx.hap(-2)] },
+    ],
+  },
+  {
+    id: 'kiss', label: 'Darle un beso', icon: 'HeartHandshake', kinds: [...ALL], rotate: true,
+    conditions: [c.tLove(25), c.age(18, 99), c.tAge(18)],
+    outcomes: [
+      { weight: 5, text: 'Besaste a {target} y el mundo se detuvo un segundo. Se acordarán de ese beso.', effects: [fx.bond('target', 4, 12), fx.hap(5)] },
+      { weight: 2, text: 'El beso con {target} fue torpe, chocaron los dientes. Igual se rieron.', effects: [fx.bond('target', 1, 4), fx.hap(1)] },
+      { weight: 2, text: '{target} esquivó el beso y se hizo un silencio incómodo.', effects: [fx.bond('target', -10, -9), fx.hap(-3)] },
+      { weight: 1, text: '{target} te dio una cachetada y se fue. Merecido o no, quedó claro.', effects: [fx.bond('target', -20, -18), fx.hap(-6)] },
+    ],
+  },
+  {
+    id: 'jealous_scene', label: 'Hacer una escena de celos', icon: 'Flame', kinds: [...ALL], rotate: true,
+    conditions: [c.tLove(30), c.age(18, 99), c.tAge(18)],
+    outcomes: [
+      { weight: 6, text: 'Le hiciste una escena de celos a {target} en plena calle. Todos miraron.', effects: [fx.bond('target', -8, -10), fx.hap(-3)] },
+      { weight: 2, text: '{target} lo tomó como una muestra de cariño. Increíble.', effects: [fx.bond('target', 1, 5)] },
+    ],
+  },
+  {
+    id: 'lover_night', label: 'Pasar la noche con esta persona', icon: 'Moon', kinds: [...ALL], rotate: true,
+    conditions: [c.tLove(45), c.age(18, 99), c.tAge(18)],
+    outcomes: [
+      { weight: 5, text: 'La noche con {target} fue intensa. Amanecieron enredados y sin ganas de salir de la cama.', effects: [fx.bond('target', 5, 10), fx.hap(6)] },
+      { weight: 2, text: 'Con {target} fue un desastre torpe. Se rieron hasta las lágrimas.', effects: [fx.bond('target', 3, 3), fx.hap(2)] },
+      { weight: 2, text: '{target} se fue a la madrugada sin dejar una nota.', effects: [fx.bond('target', -8, -7), fx.hap(-4)] },
     ],
   },
 ];
