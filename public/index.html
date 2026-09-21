@@ -15,7 +15,8 @@
     <style id="expo-reset">
       html, body { height: 100%; background: #FBF7F0; }
       body { overflow: hidden; }
-      #root { display: flex; height: 100%; flex: 1; }
+      /* Fija la app a toda la pantalla: en el iPhone (PWA) height:100% dejaba una franja vacía abajo. */
+      #root { display: flex; position: fixed; top: 0; right: 0; bottom: 0; left: 0; }
     </style>
   </head>
   <body>

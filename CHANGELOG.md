@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Web: pantalla completa en el iPhone]
+
+- `public/index.html`: el contenedor raíz pasa a `position: fixed` con los cuatro bordes en 0, porque con `height: 100%` la versión instalada en el iPhone dejaba una franja vacía debajo de la barra de navegación. No se pudo reproducir en el navegador de escritorio; hay que confirmarlo en el iPhone tras `npm run deploy:web`.
+
 ## [Pantalla de vida: barra abajo]
 
 - La barra de navegación (Ocupación, Activos, Envejecer, Relaciones, Actividades) pasó al borde inferior, debajo de las barras de stats, como en BitLife; antes flotaba a mitad de pantalla en el celular. Verificado en el navegador a 390×844.
