@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { validateAiEvent, extractJson } from './validate';
-import { contentProblem } from './filter';
+import { contentProblem, speaksToYou, thirdPersonProblem } from './filter';
 import { generateEvents, keepsFacts, narrate } from './service';
 import { createMock, sampleEventJson } from './providers/mock';
 import { createGemini } from './providers/gemini';
@@ -389,5 +389,20 @@ describe('integración con el motor', () => {
     for (let s = 1; s <= 30; s++) expect(simulateLife(s).alive).toBe(false);
     setAiEvents([]);
     expect(getEvent(r.event.id)).toBeUndefined();
+  });
+});
+
+describe('segunda persona obligatoria', () => {
+  it('rechaza eventos en tercera persona con nombre inventado', () => {
+    const e = { ...base(), text: 'Marcos está despierto hasta tarde viendo el final de la clase en una librería cercana.' };
+    const r = validateAiEvent(JSON.stringify(e));
+    expect(r.ok).toBe(false);
+  });
+
+  it('rechaza un texto que no le habla al jugador y acepta uno en voseo', () => {
+    expect(speaksToYou('El final de la clase en una librería cercana.')).toBe(false);
+    expect(speaksToYou('Te quedás despierto hasta tarde.')).toBe(true);
+    expect(thirdPersonProblem('Marcos se queda dormido.')).not.toBeNull();
+    expect(thirdPersonProblem('Nadie está despierto. Tu jefe se va.')).toBeNull();
   });
 });

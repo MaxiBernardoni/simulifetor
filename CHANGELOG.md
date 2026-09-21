@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [IA: segunda persona obligatoria]
+
+- Los eventos que genera la IA se rechazan si no le hablan al jugador (te/tu/voseo) o si tienen un nombre propio de sujeto en tercera persona ("Marcos está despierto…"); lo mismo para resultados y continuaciones. Al cargar, se descartan los eventos ya guardados que incumplan. El prompt prohíbe nombres propios. 2 tests nuevos (208).
+
 ## [IA: la IA retruca]
 
 - Al responder escribiendo, la IA puede plantear una situación nueva que continúa la anterior y se basa en tu respuesta; volvés a decidir (opción sugerida o texto libre). Hasta 3 seguidas, con hilo de contexto y las mismas reglas de contenido. 4 tests nuevos (206 en total).

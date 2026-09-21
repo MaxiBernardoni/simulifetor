@@ -18,7 +18,7 @@ export function createMock(responses: (string | Error)[]): AIProvider {
 export function sampleEventJson(n: number): string {
   return JSON.stringify({
     title: `Rumor en la oficina ${n}`,
-    text: `Un compañero cuenta que la empresa va a recortar personal el próximo mes (versión ${n}). Nadie sabe si es verdad.`,
+    text: `Te enterás de que la empresa va a recortar personal el próximo mes (versión ${n}). Nadie sabe si es verdad.`,
     category: 'work',
     minAge: 20,
     maxAge: 62,

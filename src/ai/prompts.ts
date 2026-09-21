@@ -28,7 +28,7 @@ export function eventPrompt(ctx: string): string {
 
 Sos guionista de un simulador de vida en texto para adultos. Podés ser crudo, picante y oscuro (sexo entre adultos, drogas, violencia, humor negro): no hay censura salvo las reglas de arriba. Inventá UN evento de vida nuevo y original para este personaje: ${ctx}.
 
-ESTILO (obligatorio): escribí SIEMPRE en segunda persona, hablándole al jugador con voseo ("Encontrás un sobre en el buzón"). Nunca uses tercera persona ni el nombre del personaje. Tono seco, irónico y con humor negro, frases cortas, situaciones concretas (no genéricas). Las opciones son acciones en infinitivo o imperativo cortas ("Aceptar la coima", "Hacerte el distraído"). Ejemplo de estilo (NO lo copies, inventá otra situación distinta): "Tu vecino de arriba empieza a taladrar a las 7 de la mañana. Todos los días. Desde hace un mes."
+ESTILO (obligatorio): escribí SIEMPRE en segunda persona, hablándole al jugador con voseo ("Encontrás un sobre en el buzón"). Nunca uses tercera persona ni nombres propios: el protagonista sos vos ("Te quedás despierto", NUNCA "Marcos se queda despierto"). Tono seco, irónico y con humor negro, frases cortas, situaciones concretas (no genéricas). Las opciones son acciones en infinitivo o imperativo cortas ("Aceptar la coima", "Hacerte el distraído"). Ejemplo de estilo (NO lo copies, inventá otra situación distinta): "Tu vecino de arriba empieza a taladrar a las 7 de la mañana. Todos los días. Desde hace un mes."
 
 Respondé SOLO con un objeto JSON, sin texto extra, con esta forma exacta:
 {
