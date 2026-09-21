@@ -39,7 +39,15 @@ Se definen como eventos con condición `era` y efectos sobre el **estado del mun
 - ¿Cuánto influye una vida pasada en las siguientes (pequeño guiño vs. gran consecuencia)?
 - ¿Se permite "vida nueva desde cero" sin mundo (modo clásico)?
 
-## Estado actual (implementado en la Fase 3)
+## Familia viva y árbol jugable (implementado tras la Fase 3)
+- **Mundo compartido**: cada partida tiene un `World` con todas las personas de la familia como nodos de un árbol (`engine/world.ts`). Todos comparten el mismo año calendario: cada vez que envejecés, el resto de la familia también.
+- **Dos niveles de simulación**: quien ya jugaste sigue con una **vida completa** que maneja un bot (`engine/autoplay.ts`, trabaja, gasta, se casa, tiene hijos y muere); quien nunca controlaste se simula de forma **liviana** (edad, pareja, hijos y muerte). Al cambiar a alguien liviano, se le **genera su vida completa** (`engine/materialize.ts`), coherente con su edad, sus padres, hermanos, pareja e hijos reales.
+- **Regla anti-abuso** (`engine/kinship.ts`): solo se puede vivir la vida de **parientes de sangre vivos con hasta 2 generaciones de distancia** hasta el ancestro común (padres, abuelos, hermanos, hijos, nietos, tíos, sobrinos y primos). Cuñados, suegros, parejas, sobrinos nietos y primos segundos aparecen en el árbol pero están **bloqueados**.
+- **Árbol dibujado** como el de una familia: parejas unidas por una línea y sus hijos colgando; anillo verde = se puede jugar, gris punteado = bloqueado, gris = fallecido.
+- Al morir, se elige entre los parientes elegibles (los hijos heredan la mayor parte del patrimonio).
+- Tope de simulación medido: ~0,5 ms por año para ~50 personas.
+
+## Estado (Fase 3, versión anterior: solo herederos)
 - **Linaje**: cada vida tiene `lineageId` y `generation`; al morir se elige un heredero (hijo vivo o, si no hay, hermano) y la nueva vida continúa desde la edad que ese pariente tenía al morir el personaje anterior, en el mismo año calendario.
 - **Pasado del heredero**: se simula automáticamente (`engine/autoplay.ts`) con la familia real (el personaje anterior y su pareja como padres, hermanos verdaderos) "congelada" durante la simulación.
 - **Herencia**: se reparte el patrimonio neto menos 20% de impuesto; el heredero recibe 85% si es hijo único, 60% si tiene hermanos. Se heredan `famous_family` (patrimonio ≥ $500.000) o `infamous_family` (antecedentes/homicidio), que activan eventos de dinastía.

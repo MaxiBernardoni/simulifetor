@@ -4,6 +4,7 @@ import type { ViewStyle } from 'react-native';
 import type { Delta, Life, Look, Person, StatKey } from '../engine/types';
 import { Avatar } from './Avatar';
 import { getScenario } from '../content/scenarios';
+import { deriveLook } from '../engine/looks';
 import { formatMoney } from '../engine/format';
 import { colors, radius, space, barColor } from './theme';
 import { Icon } from './Icon';
@@ -253,24 +254,8 @@ const ls = StyleSheet.create({
 });
 
 // ───────── Extras visuales ─────────
-function hash(str: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
-  return h >>> 0;
-}
-
-/** Aspecto determinístico para una persona, según su id, género y edad. Los familiares comparten tono de piel. */
 export function lookForPerson(p: Person, life: Life): Look {
-  if (p.look) return p.look;
-  const h = hash(p.id);
-  const family = p.kind === 'mother' || p.kind === 'father' || p.kind === 'sibling' || p.kind === 'child';
-  const styles = p.age < 12 ? [0, 5, 6] : p.gender === 'F' ? [1, 1, 5, 6, 2, 0] : [0, 0, 3, 4, 7, 0];
-  return {
-    skin: family ? life.look.skin : h % 6,
-    eyes: (h >> 4) % 6,
-    hairStyle: styles[(h >> 7) % styles.length],
-    hairColor: p.age >= 65 ? 6 : [0, 1, 2, 3, 4, 5, 7, 1, 0, 2][(h >> 11) % 10],
-  };
+  return deriveLook(p, life.look);
 }
 
 export function PersonAvatar({ person, life, size = 44 }: { person: Person; life: Life; size?: number }) {

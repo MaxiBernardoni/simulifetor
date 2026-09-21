@@ -127,6 +127,8 @@ export interface Person {
   look?: Look;
   /** No envejece ni muere mientras se simula el pasado de un heredero. */
   frozen?: boolean;
+  /** Si es un miembro de la familia: su id en el árbol (el mundo decide su edad y su muerte). */
+  nodeId?: string;
 }
 
 export interface Job {
@@ -226,6 +228,8 @@ export interface Life {
   lineageId: string;
   generation: number;
   parentLifeId?: string;
+  /** Id de esta persona en el árbol genealógico. */
+  nodeId?: string;
   scenario?: { id: string; status: 'active' | 'won' | 'lost'; wonAge?: number };
 }
 

@@ -47,20 +47,30 @@ function computeDelta(life: Life, before: ReturnType<typeof snapshot>): Delta[] 
   return out;
 }
 
+/** Consecuencias de que muera un familiar o conocido. */
+export function personDied(life: Life, p: Life['people'][number], rng: Rng): void {
+  p.alive = false;
+  const loss = Math.round(p.closeness / 7);
+  life.stats.happiness = clamp(life.stats.happiness - loss);
+  addLog(life, `${p.name.split(' ')[0]} (${labelOf(p.kind)}) murió a los ${p.age} años.`, 'bad', undefined, 'Ghost');
+  if ((p.kind === 'mother' || p.kind === 'father') && life.age >= 22 && life.wealthClass >= 2) {
+    const inh = rng.int(1500, 9000) * life.wealthClass;
+    life.money += inh;
+    addLog(life, `Heredás ${formatMoney(inh)}.`, 'good', undefined, 'Coins');
+  }
+}
+
 function agePeople(life: Life, rng: Rng): void {
   for (const p of life.people) {
     if (!p.alive || p.frozen) continue;
     p.age++;
+    // Los familiares del árbol: su muerte la decide el mundo, acá solo se enfría o no la relación.
+    if (p.nodeId) {
+      if (rng.chance(0.4)) p.closeness = clamp(p.closeness - rng.int(0, 3));
+      continue;
+    }
     if (rng.chance(baseMortality(p.age) * 0.9)) {
-      p.alive = false;
-      const loss = Math.round(p.closeness / 7);
-      life.stats.happiness = clamp(life.stats.happiness - loss);
-      addLog(life, `${p.name.split(' ')[0]} (${labelOf(p.kind)}) murió a los ${p.age} años.`, 'bad');
-      if ((p.kind === 'mother' || p.kind === 'father') && life.age >= 22 && life.wealthClass >= 2) {
-        const inh = rng.int(1500, 9000) * life.wealthClass;
-        life.money += inh;
-        addLog(life, `Heredás ${formatMoney(inh)}.`, 'good');
-      }
+      personDied(life, p, rng);
     } else if (p.kind === 'friend' || p.kind === 'ex') {
       if (rng.chance(0.5)) p.closeness = clamp(p.closeness - rng.int(1, 4));
     } else if (rng.chance(0.4)) {

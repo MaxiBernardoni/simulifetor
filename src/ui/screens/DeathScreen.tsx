@@ -2,9 +2,10 @@ import React from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useGame } from '../../store/gameStore';
 import { formatMoney } from '../../engine/format';
-import { estateOf, heirsOf, legacyPoints } from '../../engine/dynasty';
+import { estateOf, legacyPoints } from '../../engine/dynasty';
+import { canSwitchTo, commonAncestor, relationLabel } from '../../engine/kinship';
 import { getScenario } from '../../content/scenarios';
-import { Bar, Button, Card, IconTile, PersonAvatar, SectionTitle } from '../components';
+import { Button, Card, IconTile, SectionTitle } from '../components';
 import { Avatar } from '../Avatar';
 import { Icon } from '../Icon';
 import { Scene } from '../art/Scene';
@@ -14,16 +15,29 @@ import { colors, radius, space } from '../theme';
 export function DeathScreen() {
   const life = useGame((st) => st.life)!;
   const start = useGame((st) => st.startCreating);
-  const continueAsHeir = useGame((st) => st.continueAsHeir);
+  const switchCharacter = useGame((st) => st.switchCharacter);
+  const wd = useGame((st) => st.world);
   const setTab = useGame((st) => st.setTab);
   const children = life.people.filter((p) => p.kind === 'child');
   const last = life.log.slice(-6, -1);
-  const heirs = heirsOf(life);
+  // Parientes de sangre vivos a hasta 2 generaciones: quienes pueden continuar la historia.
+  const heirs = wd
+    ? Object.values(wd.world.nodes)
+        .filter((n) => canSwitchTo(wd.world, wd.world.currentId, n.id).ok)
+        .map((n) => {
+          const c = commonAncestor(wd.world, wd.world.currentId, n.id)!;
+          const rank = c.da === 0 && c.db === 1 ? 0 : c.da === 0 && c.db === 2 ? 1 : c.da === 1 && c.db === 1 ? 2 : c.db === 0 ? 3 : c.da === 1 && c.db === 2 ? 4 : 5;
+          return { n, rank };
+        })
+        .sort((a, b) => a.rank - b.rank || a.n.birthYear - b.n.birthYear)
+        .slice(0, 8)
+    : [];
   const legacy = legacyPoints(life);
   const sc = life.scenario ? getScenario(life.scenario.id) : undefined;
 
   const pickHeir = (id: string) => {
-    if (!continueAsHeir(id)) Alert.alert('No se pudo continuar', 'No se pudo generar al heredero. Probá con otro o empezá una vida nueva.');
+    const err = switchCharacter(id);
+    if (err) Alert.alert('No se pudo continuar', err);
   };
 
   return (
@@ -70,34 +84,41 @@ export function DeathScreen() {
         <Line icon="Scale" color="#7A5C2E" label="Antecedentes" value={life.flags.criminal_record ? 'Sí' : 'Ninguno'} />
       </Card>
 
-      {heirs.length > 0 ? (
+      {heirs.length > 0 && wd ? (
         <>
-          <SectionTitle icon="Crown" color="#B77A12">Continuar la dinastía</SectionTitle>
+          <SectionTitle icon="Crown" color="#B77A12">Continuar la historia</SectionTitle>
           <Text style={{ color: colors.muted, marginBottom: 8, lineHeight: 19 }}>
-            Elegí a quién vas a ser ahora. Hereda el apellido, {formatMoney(estateOf(life))} (menos lo que se reparta) y la fama de la familia.
+            Elegí a qué familiar vas a ser ahora. Los hijos heredan la mayor parte del patrimonio ({formatMoney(estateOf(life))}); el resto de los parientes, una parte chica. Solo aparecen los de sangre hasta 2 generaciones.
           </Text>
-          {heirs.map((h, i) => (
-            <FadeIn key={h.id} delay={300 + i * 100}>
-              <Pressable onPress={() => pickHeir(h.id)} style={({ pressed }) => [s.heir, { opacity: pressed ? 0.85 : 1 }]}>
-                <PersonAvatar person={h} life={life} size={52} />
+          {heirs.map(({ n }, i) => (
+            <FadeIn key={n.id} delay={300 + i * 90}>
+              <Pressable onPress={() => pickHeir(n.id)} style={({ pressed }) => [s.heir, { opacity: pressed ? 0.85 : 1 }]}>
+                <View style={s.heirAv}>
+                  <Avatar look={n.look} size={50} />
+                </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.heirName}>{h.name}</Text>
-                  <Text style={s.heirSub}>
-                    {h.kind === 'child' ? 'Hijo/a' : 'Hermano/a'} · {h.age} años
+                  <Text style={s.heirName}>
+                    {n.name} {n.surname}
                   </Text>
-                  <View style={{ marginTop: 5, width: 90 }}>
-                    <Bar value={h.closeness} color={h.closeness > 60 ? colors.good : colors.warn} height={6} />
-                  </View>
+                  <Text style={s.heirSub}>
+                    {relationLabel(wd.world, wd.world.currentId, n.id)} · {n.age} años
+                  </Text>
                 </View>
                 <View style={s.heirCta}>
-                  <Text style={s.heirCtaText}>Ser {h.name.split(' ')[0]}</Text>
+                  <Text style={s.heirCtaText}>Ser {n.name}</Text>
                   <Icon name="ChevronRight" size={16} color="#fff" />
                 </View>
               </Pressable>
             </FadeIn>
           ))}
         </>
-      ) : null}
+      ) : (
+        <Card style={{ marginTop: space.lg }}>
+          <Text style={{ color: colors.text, lineHeight: 20 }}>
+            No queda ningún pariente de sangre vivo a hasta 2 generaciones. La línea se corta acá: podés empezar una vida nueva.
+          </Text>
+        </Card>
+      )}
 
       {last.length ? (
         <Card style={{ marginTop: space.lg }}>
@@ -113,7 +134,7 @@ export function DeathScreen() {
 
       <View style={{ marginTop: space.xl, gap: 10 }}>
         <Button label="Ver árbol genealógico" icon="Users" variant="ghost" onPress={() => setTab('tree')} />
-        <Button label={heirs.length ? 'Empezar una vida nueva (otra dinastía)' : 'Nueva vida'} icon="Baby" onPress={start} />
+        <Button label={heirs.length ? 'Empezar una vida nueva (otra familia)' : 'Nueva vida'} icon="Baby" onPress={start} />
       </View>
     </ScrollView>
   );
@@ -140,6 +161,7 @@ const s = StyleSheet.create({
   heir: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.surface, borderRadius: radius.md, padding: 12, borderWidth: 2, borderColor: '#E9A23B', marginBottom: 10 },
   heirName: { color: colors.text, fontSize: 16, fontWeight: '800' },
   heirSub: { color: colors.muted, fontSize: 12, marginTop: 1 },
+  heirAv: { width: 50, height: 50, borderRadius: 25, overflow: 'hidden' },
   heirCta: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.ageButton, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 9 },
   heirCtaText: { color: '#fff', fontWeight: '800', fontSize: 13 },
 });
