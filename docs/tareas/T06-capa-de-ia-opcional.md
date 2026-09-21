@@ -3,7 +3,7 @@
 - **Prioridad / esfuerzo:** baja-media (Fase 4) · XL — dividir en hitos
 - **Depende de:** T12 (pantalla de Ajustes)
 - **Autonomía:** ⚠️ agrega dependencias y pedidos de red; **el juego debe seguir 100 % igual sin IA**
-- **Estado:** todo
+- **Estado:** review (implementado en la sesión de la Fase 4; no se probó con un proveedor real porque no hay clave: verificar a mano con tu clave gratuita)
 
 ## Objetivo
 Cumplir la decisión de `docs/05-ia.md`: la IA es **opcional**, usa una **clave propia gratuita** (sin costo para Max), nunca es necesaria y nunca puede romper el juego. Sirve para dos cosas: **narrar** (reescribir el texto de un evento con el contexto de la vida) y **generar eventos nuevos** en el formato estándar, que entran a un pool local después de validarse.

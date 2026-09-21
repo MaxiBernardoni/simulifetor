@@ -2,6 +2,15 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [IA opcional] — T06
+
+- **Capa de IA** (`src/ai/`), desactivada por defecto y sin efecto en el motor si está apagada. Proveedores gratuitos con clave propia: Google Gemini y Groq (`fetch`, timeout 8 s, 1 reintento; errores de cuota y clave informados sin romper nada).
+- **Eventos generados**: cada respuesta pasa por un validador Zod estricto y un filtro de contenido (menores, suicidio, marcas, lugares y personas reales, enlaces) antes de entrar a un pool local (máx. 200). Los efectos están acotados; no pueden matar, arrestar ni marcar flags.
+- **Modo narrador**: reescribe el texto de los eventos con decisiones usando el contexto de tu vida; si tarda más de 3 s o falla, se muestra el original.
+- **Ajustes** (Menú → IA): activar, proveedor, clave en almacenamiento seguro (`expo-secure-store`), probar conexión, generar, vaciar pool, diagnóstico de rechazos. La clave no viaja en la copia de seguridad.
+- Dependencias nuevas: `zod`, `expo-secure-store`.
+- Tests: `ai.test.ts` (55): ≥ 25 casos de rechazo, proveedores con `fetch` simulado, determinismo con la IA apagada. Ningún test usa la red.
+
 ## [Avatares pulidos] — peinados por género
 
 - **Peinados separados por género**: 9 de hombre (corto, pelado, cresta, afro, jopo, raya al costado, rulos cortos, despeinado, entradas) y 11 de mujer (largo, rulos, rodete, carré, trenza, colitas, pixie, ondas largas, flequillo, cola alta, afro rizado). Ninguno es unisex (`content/look.ts`: `HAIRS`, `hairStylesFor`, `hairForGender`).

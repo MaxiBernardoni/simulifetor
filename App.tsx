@@ -22,6 +22,8 @@ import { ModeScreen, ScenariosScreen } from './src/ui/screens/NewGameScreens';
 import { SlotsScreen } from './src/ui/screens/SlotsScreen';
 import { FamilyTreeScreen } from './src/ui/screens/FamilyTreeScreen';
 import { BackupScreen } from './src/ui/screens/BackupScreen';
+import { AIScreen } from './src/ui/screens/AIScreen';
+import { useAI } from './src/ai/store';
 import { getScenario } from './src/content/scenarios';
 
 const TITLES: Record<Exclude<Tab, 'life'>, string> = {
@@ -33,6 +35,7 @@ const TITLES: Record<Exclude<Tab, 'life'>, string> = {
   tree: 'Árbol genealógico',
   slots: 'Partidas',
   backup: 'Copia de seguridad',
+  ai: 'IA (opcional)',
 };
 
 function Main() {
@@ -46,7 +49,7 @@ function Main() {
   const load = useGame((s) => s.load);
 
   useEffect(() => {
-    void load();
+    void load().then(() => useAI.getState().load());
   }, [load]);
 
   if (!ready) {
@@ -106,6 +109,7 @@ function Main() {
             {tab === 'tree' && <FamilyTreeScreen />}
             {tab === 'slots' && <SlotsScreen />}
             {tab === 'backup' && <BackupScreen />}
+            {tab === 'ai' && <AIScreen />}
           </FadeIn>
         </>
       )}

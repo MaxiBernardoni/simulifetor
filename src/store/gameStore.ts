@@ -33,7 +33,7 @@ const slotKey = (i: number) => `vidasim.slot.${i}`;
 const worldKey = (i: number) => `vidasim.world.${i}`;
 const OLD_KEY = 'vidasim.save.v1';
 
-export type Tab = 'life' | 'activities' | 'work' | 'people' | 'assets' | 'more' | 'tree' | 'slots' | 'backup';
+export type Tab = 'life' | 'activities' | 'work' | 'people' | 'assets' | 'more' | 'tree' | 'slots' | 'backup' | 'ai';
 
 export interface Creating {
   step: 'mode' | 'scenarios' | 'create';

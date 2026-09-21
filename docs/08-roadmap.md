@@ -23,6 +23,7 @@ Escenarios (9), 3 ranuras, copia de seguridad, puntaje de legado, eventos de din
 
 ## 🚧 Fase 4 — Mundo e historia (en curso)
 - ✅ **Eras**: tecnología, leyes y precios/salarios por época (`content/eras.ts`), carreras y actividades de época, 48 eventos históricos, aviso de cambio de década.
+- ✅ **IA opcional** (T06): eventos generados validados, narrador, clave propia gratuita (`src/ai/`).
 - 🔜 Resto de T05: leyes que cambian probabilidades, pena de muerte, escenas nuevas.
 - Capa opcional de **IA** con clave gratuita propia (T06).
 

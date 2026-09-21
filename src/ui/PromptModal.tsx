@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useAI } from '../ai/store';
 import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useGame } from '../store/gameStore';
 import { getEvent } from '../engine/registry';
@@ -18,7 +19,22 @@ export function PromptModal() {
   const choose = useGame((st) => st.choose);
   const dismiss = useGame((st) => st.dismiss);
   const prompt = life?.pending[0];
+  const narrateText = useAI((st) => st.narrateText);
+  const narratorOn = useAI((st) => st.config.enabled && st.config.narrator);
+  const [narrated, setNarrated] = useState<{ key: string; text: string } | null>(null);
+  const promptKey = prompt ? `${prompt.kind}:${prompt.title}:${prompt.text}` : '';
+  useEffect(() => {
+    if (!narratorOn || !prompt || prompt.kind !== 'choice') return;
+    let alive = true;
+    void narrateText(prompt.eventId, prompt.text).then((t) => {
+      if (alive && t) setNarrated({ key: promptKey, text: t });
+    });
+    return () => {
+      alive = false;
+    };
+  }, [promptKey, narratorOn, narrateText]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!life || !prompt) return null;
+  const shownText = narrated?.key === promptKey ? narrated.text : prompt.text;
 
   const ev = prompt.kind === 'choice' ? getEvent(prompt.eventId) : undefined;
   const target = life.people.find((p) => p.id === prompt.targetId);
@@ -41,7 +57,7 @@ export function PromptModal() {
             <Text style={s.title}>{prompt.title}</Text>
             <ScrollView style={{ maxHeight: 230 }}>
               <FadeIn delay={120}>
-                <Text style={s.text}>{prompt.text}</Text>
+                <Text style={s.text}>{shownText}</Text>
               </FadeIn>
               {prompt.kind === 'result' ? (
                 <View style={{ alignItems: 'center' }}>
@@ -58,7 +74,7 @@ export function PromptModal() {
                   ))
                 : (
                   <FadeIn delay={250} from={10}>
-                    <Button label="Continuar" onPress={dismiss} />
+                    <Button label="Continuar" onPress={() => (prompt.kind === "choice" ? choose(0) : dismiss())} />
                   </FadeIn>
                 )}
             </View>

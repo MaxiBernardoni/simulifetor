@@ -47,3 +47,8 @@
 3. Escribí un test que cargue una vida "vieja" (sin el campo) y compruebe que se migra.
 4. Anotalo en `CHANGELOG.md` y en la tabla de arriba.
 5. **Nunca** borres datos del usuario para "arreglar" una incompatibilidad.
+
+
+## Datos de la IA opcional
+
+`vidasim.ai.v1` (AsyncStorage): `{ config: { enabled, provider, narrator }, pool: GameEvent[], audit: [] }`. Es independiente del esquema de la partida y **no** entra en la copia de seguridad. La clave de API vive en `expo-secure-store` (`vidasim_ai_key`; en web, `vidasim.ai.key.web`) y nunca se exporta.

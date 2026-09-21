@@ -36,6 +36,7 @@ export function MoreScreen() {
         <Button label="Nueva vida" icon="Baby" onPress={confirmNew} />
         <Button label="Partidas guardadas" icon="Library" variant="ghost" onPress={() => setTab('slots')} />
         <Button label="Árbol genealógico" icon="Users" variant="ghost" onPress={() => setTab('tree')} />
+        <Button label="IA (opcional)" icon="Bot" variant="ghost" onPress={() => setTab('ai')} />
         <Button label="Copia de seguridad" icon="Upload" variant="ghost" onPress={() => setTab('backup')} />
         <Button label="Borrar todos los datos" variant="danger" onPress={confirmWipe} />
         {__DEV__ ? <Button label={gallery ? 'Ocultar galería de escenas' : 'Galería de escenas (dev)'} variant="ghost" onPress={() => setGallery((g) => !g)} /> : null}
