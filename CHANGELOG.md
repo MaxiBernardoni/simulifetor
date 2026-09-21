@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [IA desde el iPhone]
+
+- `scripts/ollama-proxy.mjs` (`npm run ollama:proxy`): mini-proxy local que permite publicar Ollama con Tailscale Serve (HTTPS privado, solo tus dispositivos). Guía y verificación en `docs/05-ia.md`.
+
 ## [IA: sin campo de clave para servidores locales]
 
 - Con el preset Ollama (o cualquier dirección local: `localhost`, `127.x`, `192.168.x`, `10.x`, `172.16-31.x`) la pantalla de IA oculta el campo y los botones de clave. El preset Ollama usa `http://localhost:11434/v1`. Verificado en el navegador: "Probar conexión" contra un Ollama real responde "Conexión correcta".
