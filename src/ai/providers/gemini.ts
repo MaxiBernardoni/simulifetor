@@ -14,7 +14,7 @@ export function createGemini(fetchImpl?: FetchLike): AIProvider {
       const data = (await postJson(
         `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
         { 'x-goog-api-key': apiKey },
-        { contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 1, responseMimeType: 'text/plain' } },
+        { contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 1 } },
         { ...opts, fetchImpl },
       )) as {
         candidates?: { content?: { parts?: { text?: string }[] }; finishReason?: string }[];

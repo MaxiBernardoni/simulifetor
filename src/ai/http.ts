@@ -15,7 +15,6 @@ export type FetchLike = (
 export interface PostOpts {
   timeoutMs?: number;
   retries?: number;
-  signal?: AbortSignal;
   fetchImpl?: FetchLike;
 }
 
@@ -27,8 +26,6 @@ export async function postJson(url: string, headers: Record<string, string>, bod
   let last: AIError = new AIError('network', 'sin conexión');
   for (let attempt = 0; attempt <= retries; attempt++) {
     const ctrl = new AbortController();
-    const onAbort = () => ctrl.abort();
-    opts.signal?.addEventListener('abort', onAbort);
     let timedOut = false;
     const timer = setTimeout(() => {
       timedOut = true;
@@ -63,12 +60,10 @@ export async function postJson(url: string, headers: Record<string, string>, bod
         }
         throw e;
       }
-      if (opts.signal?.aborted) throw new AIError('timeout', 'cancelado');
       last = timedOut ? new AIError('timeout', 'tardó demasiado') : new AIError('network', 'sin conexión');
       if (timedOut && attempt >= retries) throw last;
     } finally {
       clearTimeout(timer);
-      opts.signal?.removeEventListener('abort', onAbort);
     }
   }
   throw last;

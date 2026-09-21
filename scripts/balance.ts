@@ -1,4 +1,4 @@
-// Informe de balance. Uso: npm run balance -- --n=1000 --seed=1 --profile=normal|crimen|familia|pasivo [--json] [--out]
+// Informe de balance. Uso: npm run balance -- --n=1000 --seed=1 --profile=normal|crimen|familia|pasivo [--out]
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { reportToMarkdown, runBalance } from '../src/engine/balance';
 import type { Profile } from '../src/engine/balance';
@@ -9,8 +9,7 @@ const seed = Number(arg('seed', '1'));
 const profile = arg('profile', 'normal') as Profile;
 
 const report = runBalance({ n, seed, profile });
-if (process.argv.includes('--json')) console.log(JSON.stringify(report, null, 2));
-else console.log(reportToMarkdown(report));
+console.log(reportToMarkdown(report));
 
 if (process.argv.includes('--out')) {
   mkdirSync('docs/balance', { recursive: true });

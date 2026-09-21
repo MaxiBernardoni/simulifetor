@@ -2,12 +2,14 @@ import type { Life } from './types';
 import type { WorldData } from './world';
 import { getCareer } from './registry';
 
+const check = (bad: string[]) => (cond: boolean, msg: string) => {
+  if (!cond) bad.push(msg);
+};
+
 /** Devuelve la lista de violaciones de invariantes de una vida (vacía si está sana). */
 export function checkLife(l: Life): string[] {
   const bad: string[] = [];
-  const add = (cond: boolean, msg: string) => {
-    if (!cond) bad.push(msg);
-  };
+  const add = check(bad);
   for (const [k, v] of Object.entries(l.stats)) add(Number.isInteger(v) && v >= 0 && v <= 100, `stat ${k}=${v} fuera de 0–100 o no entero`);
   for (const k of ['money', 'loan', 'invested', 'pension'] as const) add(Number.isFinite(l[k]), `${k} no es finito (${l[k]})`);
   add(l.loan >= 0, `loan negativo (${l.loan})`);
@@ -53,9 +55,7 @@ export function checkLife(l: Life): string[] {
 /** Devuelve la lista de violaciones de invariantes del mundo familiar. */
 export function checkWorld(wd: WorldData, current?: Life): string[] {
   const bad: string[] = [];
-  const add = (cond: boolean, msg: string) => {
-    if (!cond) bad.push(msg);
-  };
+  const add = check(bad);
   const w = wd.world;
   const nodes = w.nodes;
   add(!!nodes[w.currentId], 'currentId no existe');

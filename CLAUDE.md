@@ -14,6 +14,9 @@ npm run check          # OBLIGATORIO antes de cada commit: tsc --noEmit + vitest
 npm test               # solo tests (simula cientos de vidas completas)
 npm run typecheck      # solo tipos
 npx expo start --web --port 8081   # app en el navegador (para verificar la UI)
+npm run check:all      # + ESLint y Prettier --check
+npm run balance -- --n=500 --profile=normal   # informe de balance (perfiles: normal, crimen, familia, pasivo)
+npm run icons          # regenera src/ui/Icon.tsx (falla si falta un ícono)
 ```
 
 El motor se puede probar sin celular ni navegador: los tests corren en Node.
@@ -64,7 +67,7 @@ Conceptos clave (detalle en `docs/10-motor-y-formulas.md`):
 
 ## Trampas conocidas (aprendidas a los golpes)
 
-- **Servidor Expo en modo CI** (`CI=1 npx expo start --web`) **no recarga** los cambios: hay que reiniciarlo para ver código nuevo. Además usa un puerto nuevo para no chocar con procesos viejos (8081 puede estar tomado).
+- **Servidor Expo en modo CI** (`CI=1 npx expo start --web`) **no recarga** los cambios: hay que reiniciarlo para ver código nuevo. Además usa un puerto nuevo para no chocar con procesos viejos (8081 puede estar tomado). Para detener *tu* servidor filtrá por línea de comando y puerto (`Get-CimInstance Win32_Process` con `expo` + el puerto).
 - **Nunca mates todos los procesos `node`** (`taskkill /IM node.exe`): rompe otras herramientas. Filtrá por línea de comando (`expo` + puerto).
 - Para inspeccionar la app en el navegador hay ganchos solo en desarrollo: `globalThis.__game` (store de Zustand: `getState()`, `setState()`, acciones) y `globalThis.__kin` (parentesco). Sirven para jugar años rápido y preparar estados.
 - En la web las animaciones usan `useNativeDriver: false`; en un navegador en segundo plano `requestAnimationFrame` se frena, así que **esperá 2 s** antes de sacar capturas (las filas con `FadeIn` pueden parecer ausentes).

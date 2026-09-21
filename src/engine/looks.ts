@@ -1,5 +1,5 @@
 import type { Look, Person } from './types';
-import { hairForGender, hairStylesFor, kidHairStyles } from '../content/look';
+import { hairForGender, hairStylesFor } from '../content/look';
 
 function hash(str: string): number {
   let h = 2166136261;
@@ -12,7 +12,7 @@ export function deriveLook(p: Person, base: Look): Look {
   if (p.look) return { ...p.look, hairStyle: hairForGender(p.look.hairStyle, p.gender) };
   const h = hash(p.id);
   const family = p.kind === 'mother' || p.kind === 'father' || p.kind === 'sibling' || p.kind === 'child';
-  const styles = p.age < 12 ? kidHairStyles(p.gender) : hairStylesFor(p.gender);
+  const styles = hairStylesFor(p.gender);
   return {
     skin: family ? base.skin : h % 6,
     eyes: (h >> 4) % 6,

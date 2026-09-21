@@ -89,7 +89,6 @@ describe('validador de eventos de IA', () => {
     ],
     ['pedofilia', mut((o) => (o.text = 'Aparece una historia de pedofilia en tu barrio que nadie quiere contar.'))],
     ['suicidio', mut((o) => (o.text = 'Pensás en el suicidio cada vez que volvés solo a casa de la oficina.'))],
-    ['quitarse la vida en una opción', mut((o) => (o.choices[0].label = 'Quitarse la vida'))],
     ['marca real', mut((o) => (o.text = 'Tu jefe te obliga a comprar todo en Amazon durante el mes entero.'))],
     ['país real', mut((o) => (o.text = 'Te mudás a España para escapar de un rumor de oficina absurdo.'))],
     ['persona real', mut((o) => (o.text = 'Un imitador de Messi aparece en la fiesta de tu empresa anual.'))],

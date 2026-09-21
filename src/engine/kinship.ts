@@ -56,7 +56,7 @@ export function bloodDistance(w: World, a: string, b: string): number | null {
 
 export const MAX_SWITCH_DISTANCE = 2;
 
-// ── Anti-abuso de los cambios de personaje (T16). Poné un valor en 0 para desactivar la regla. ──
+// ── Anti-abuso de los cambios de personaje (T16). Ajustá estos valores si te resultan duros o blandos. ──
 /** Años de juego que tienen que pasar entre dos cambios voluntarios. */
 export const SWITCH_COOLDOWN_YEARS = 5;
 /** Máximo de cambios voluntarios mientras dura una generación (la muerte siempre permite continuar). */
@@ -95,7 +95,7 @@ export function canSwitchTo(w: World, fromId: string, toId: string): SwitchCheck
         return { ok: false, reason: 'Se aleja demasiado de tu línea familiar de origen. Se destraba cuando tu personaje actual muera.' };
       }
     }
-    if (SWITCH_COOLDOWN_YEARS > 0 && w.lastSwitchYear !== undefined) {
+    if (w.lastSwitchYear !== undefined) {
       const left = SWITCH_COOLDOWN_YEARS - (w.year - w.lastSwitchYear);
       if (left > 0) {
         return {
@@ -106,7 +106,7 @@ export function canSwitchTo(w: World, fromId: string, toId: string): SwitchCheck
       }
     }
     const gen = depthOf(w, fromId);
-    if (MAX_SWITCHES_PER_GENERATION > 0 && (w.switchesInGeneration?.[gen] ?? 0) >= MAX_SWITCHES_PER_GENERATION) {
+    if ((w.switchesInGeneration?.[gen] ?? 0) >= MAX_SWITCHES_PER_GENERATION) {
       return {
         ok: false,
         reason: 'Ya cambiaste de personaje demasiadas veces en esta generación. Se destraba cuando tu personaje actual muera.',

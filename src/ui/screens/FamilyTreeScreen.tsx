@@ -17,20 +17,19 @@ const NODE_H = 108; // alto aproximado de avatar + textos
 const LINE = '#6B7480';
 const LW = 2;
 
-type Status = 'me' | 'ok' | 'wait' | 'locked' | 'dead';
+type Status = 'me' | 'ok' | 'locked' | 'dead';
 const CLASS_LABEL = { 1: 'Humilde', 2: 'Clase media', 3: 'Acomodada' } as const;
 
 function statusOf(w: World, curId: string, n: TreeNode): Status {
   if (n.id === curId) return 'me';
   if (!n.alive) return 'dead';
   const c = canSwitchTo(w, curId, n.id);
-  return c.ok ? 'ok' : c.temporary ? 'wait' : 'locked';
+  return c.ok ? 'ok' : 'locked';
 }
 
 const RING_STYLE: Record<Status, { color: string; width: number; dashed?: boolean }> = {
   me: { color: colors.accent, width: 4 },
   ok: { color: '#2A9D6F', width: 3 },
-  wait: { color: '#E9A23B', width: 3, dashed: true },
   locked: { color: '#A8A08F', width: 2, dashed: true },
   dead: { color: '#9AA0A6', width: 2 },
 };
@@ -193,7 +192,7 @@ function NodeSheet({ id, wd, onClose }: { id: string | null; wd: WorldData; onCl
     else onClose();
   };
 
-  const tone = st === 'ok' ? '#2A9D6F' : st === 'me' ? colors.accent : st === 'wait' ? '#B77A12' : colors.muted;
+  const tone = st === 'ok' ? '#2A9D6F' : st === 'me' ? colors.accent : colors.muted;
   return (
     <Modal transparent animationType="slide" visible onRequestClose={onClose}>
       <Pressable style={s.backdrop} onPress={onClose}>
@@ -245,7 +244,7 @@ function NodeSheet({ id, wd, onClose }: { id: string | null; wd: WorldData; onCl
           </View>
 
           <View style={[s.note, { borderColor: tone + '66', backgroundColor: tone + '14' }]}>
-            <Icon name={st === 'ok' ? 'CircleCheck' : st === 'me' ? 'Star' : st === 'wait' ? 'Hourglass' : 'Lock'} size={18} color={tone} />
+            <Icon name={st === 'ok' ? 'CircleCheck' : st === 'me' ? 'Star' : 'Lock'} size={18} color={tone} />
             <Text style={{ flex: 1, color: colors.text, fontSize: 13, lineHeight: 18 }}>
               {st === 'me'
                 ? 'Este es tu personaje actual.'
@@ -300,7 +299,7 @@ export function FamilyTreeScreen() {
   const match =
     q || onlyPlayable
       ? (n: TreeNode, st: Status) =>
-          (!q || `${n.name} ${n.surname}`.toLowerCase().includes(q)) && (!onlyPlayable || st === 'ok' || st === 'wait' || st === 'me')
+          (!q || `${n.name} ${n.surname}`.toLowerCase().includes(q)) && (!onlyPlayable || st === 'ok' || st === 'me')
       : undefined;
   const news = (w.news ?? []).slice().reverse();
   const anyPlayable = Object.values(w.nodes).some((n) => n.id !== w.currentId && canSwitchTo(w, w.currentId, n.id).ok);
@@ -380,7 +379,6 @@ export function FamilyTreeScreen() {
           <View style={s.legend}>
             <Legend color={colors.accent} label="Vos" />
             <Legend color="#2A9D6F" label="Podés jugar" />
-            <Legend color="#E9A23B" label="Esperando (enfriamiento)" dashed />
             <Legend color="#A8A08F" label="Bloqueado" dashed />
             <Legend color="#9AA0A6" label="Fallecido" />
           </View>

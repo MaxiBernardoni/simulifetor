@@ -1,7 +1,7 @@
 import type { NewsItem, World } from './world';
 import { relationLabel } from './kinship';
 
-export const NEWS_MAX = 60;
+const NEWS_MAX = 60;
 
 export type Snapshot = Map<string, { alive: boolean; partnerId?: string; married?: boolean }>;
 

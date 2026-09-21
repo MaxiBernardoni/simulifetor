@@ -6,15 +6,16 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-// Íconos usados por el código aunque no aparezcan como `icon: '…'`.
-export const EXTRA_ICONS = [
-  'Circle', 'Check', 'ChevronRight', 'Gavel', 'Lock', 'Scale', 'Smartphone', 'Landmark', 'Hourglass', 'Sparkles', 'Flag', 'TriangleAlert',
-  'CircleCheck', 'MessageCircle', 'TrendingDown', 'Trophy', 'Ghost', 'Baby', 'Star', 'Plus', 'X', 'ArrowLeft', 'Menu', 'Cake', 'Car', 'Siren',
-  'Handshake', 'Crown', 'Medal', 'Rocket', 'Target', 'Globe', 'Music', 'Camera', 'Palette', 'Scissors', 'Droplet', 'Eye', 'IdCard', 'Heart',
-  'HeartCrack', 'Briefcase', 'School', 'TreePalm', 'Gamepad2', 'Clapperboard', 'PawPrint', 'Pill', 'Coins', 'Banknote', 'Gem',
-];
+// Íconos usados por el código sin literal `icon: '…'` / `name="…"` (agregalos acá si hiciera falta).
+export const EXTRA_ICONS = ['Circle', 'Camera', 'Medal', 'Music', 'TreePalm'];
 
-const PATTERNS = [/icon:\s*'([A-Za-z0-9]+)'/g, /icon="([A-Za-z0-9]+)"/g, /icon='([A-Za-z0-9]+)'/g, /name="([A-Z][A-Za-z0-9]+)"/g, /name='([A-Z][A-Za-z0-9]+)'/g];
+const PATTERNS = [
+  /icon:\s*'([A-Za-z0-9]+)'/g,
+  /icon="([A-Za-z0-9]+)"/g,
+  /icon='([A-Za-z0-9]+)'/g,
+  /name="([A-Z][A-Za-z0-9]+)"/g,
+  /name='([A-Z][A-Za-z0-9]+)'/g,
+];
 
 /** 'Gamepad2' → 'gamepad-2', 'HeartPulse' → 'heart-pulse' (nombre de archivo de lucide). */
 export function kebab(name) {
@@ -55,11 +56,9 @@ function chunk(items, n = 7) {
 }
 
 export function renderIconFile(ok) {
-  const imports = ok.map((n) => (n === 'Activity' ? 'Activity as ActivityIcon' : n));
-  const entries = ok.map((n) => (n === 'Activity' ? 'Activity: ActivityIcon' : n));
   return (
-    `import React from 'react';\nimport {\n${chunk(imports)}\n} from 'lucide-react-native';\n` +
-    `import type { LucideIcon } from 'lucide-react-native';\n\nconst MAP: Record<string, LucideIcon> = {\n${chunk(entries)}\n};\n\n` +
+    `import React from 'react';\nimport {\n${chunk(ok)}\n} from 'lucide-react-native';\n` +
+    `import type { LucideIcon } from 'lucide-react-native';\n\nconst MAP: Record<string, LucideIcon> = {\n${chunk(ok)}\n};\n\n` +
     `export function Icon({ name, size = 20, color = '#fff' }: { name: string; size?: number; color?: string }) {\n` +
     `  const C = MAP[name] ?? Circle;\n  return <C size={size} color={color} strokeWidth={1.8} />;\n}\n`
   );

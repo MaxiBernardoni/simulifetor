@@ -33,7 +33,6 @@ export const LAWS: Record<string, [number, number | null]> = {
   divorcio: [1972, null],
   drogas_blandas_legales: [2014, null],
   matrimonio_igualitario: [2010, null],
-  voto_joven: [2012, null],
   jornada_reducida: [2040, null],
 };
 
@@ -73,43 +72,22 @@ export const hasLaw = (law: string, year: number): boolean => {
   return !!r && year >= r[0] && (r[1] === null || year <= r[1]);
 };
 
-const ERAS: { id: string; label: string; from: number }[] = [
-  { id: '40s', label: 'Años 40', from: 1900 },
-  { id: '50s', label: 'Años 50', from: 1950 },
-  { id: '60s', label: 'Años 60', from: 1960 },
-  { id: '70s', label: 'Años 70', from: 1970 },
-  { id: '80s', label: 'Años 80', from: 1980 },
-  { id: '90s', label: 'Años 90', from: 1990 },
-  { id: '2000s', label: 'Años 2000', from: 2000 },
-  { id: '2010s', label: 'Años 2010', from: 2010 },
-  { id: '2020s', label: 'Años 2020', from: 2020 },
-  { id: '2030s', label: 'Años 2030', from: 2030 },
-  { id: '2040s', label: 'Años 2040', from: 2040 },
-  { id: '2050s', label: 'Años 2050', from: 2050 },
-  { id: '2060s', label: 'Años 2060', from: 2060 },
-  { id: '2070s', label: 'Años 2070', from: 2070 },
-  { id: '2080s', label: 'Años 2080', from: 2080 },
-  { id: '2090s', label: 'Años 2090', from: 2090 },
-  { id: '2100s', label: 'Años 2100', from: 2100 },
-];
-
-const cache = new Map<number, Era>();
+/** Década de una época: 40s (todo lo anterior a 1950), 50s … 90s, 2000s, 2010s… */
+function decadeOf(year: number): number {
+  return Math.max(1940, Math.floor(year / 10) * 10);
+}
 
 export function eraAt(year: number): Era {
-  const hit = cache.get(year);
-  if (hit) return hit;
-  let base = ERAS[0];
-  for (const e of ERAS) if (year >= e.from) base = e;
-  const era: Era = {
-    id: base.id,
-    label: base.label,
+  const d = decadeOf(year);
+  const short = d < 2000 ? String(d % 100) : String(d);
+  return {
+    id: `${short}s`,
+    label: `Años ${short}`,
     tech: new Set(Object.keys(TECH).filter((t) => hasTech(t, year))),
     laws: new Set(Object.keys(LAWS).filter((l) => hasLaw(l, year))),
     priceIndex: priceIndex(year),
     wageIndex: wageIndex(year),
   };
-  cache.set(year, era);
-  return era;
 }
 
 /** Redondeo "legible": pocas cifras significativas para cifras grandes. */

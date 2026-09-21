@@ -3,7 +3,6 @@
 export type ProviderId = 'gemini' | 'groq';
 
 export interface GenerateOpts {
-  signal?: AbortSignal;
   timeoutMs?: number;
 }
 

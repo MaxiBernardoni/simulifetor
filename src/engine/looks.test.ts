@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { HAIRS, hairForGender, hairGenderOf, hairStylesFor, kidHairStyles } from '../content/look';
+import { HAIRS, hairForGender, hairGenderOf, hairStylesFor } from '../content/look';
 import { createLife, migrateLife } from './life';
 import { deriveLook } from './looks';
 import type { Person } from './types';
@@ -9,7 +9,6 @@ describe('peinados por género', () => {
     expect(hairStylesFor('M').length).toBeGreaterThanOrEqual(8);
     expect(hairStylesFor('F').length).toBeGreaterThanOrEqual(8);
     expect(hairStylesFor('M').length + hairStylesFor('F').length).toBe(HAIRS.length);
-    for (const g of ['M', 'F'] as const) for (const k of kidHairStyles(g)) expect(hairGenderOf(k)).toBe(g);
   });
 
   it('hairForGender convierte siempre a un peinado válido del género', () => {

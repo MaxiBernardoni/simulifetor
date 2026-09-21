@@ -35,8 +35,6 @@ export interface BalanceReport {
   neverFired: string[];
   dominant: { id: string; share: number }[];
   eventsPerYear: number;
-  goodShare: number;
-  msPerLife: number;
 }
 
 const pct = (a: number[], q: number) => {
@@ -49,14 +47,11 @@ export function runBalance(opts: { n: number; seed?: number; profile?: Profile }
   const profile = opts.profile ?? 'normal';
   const cfg = PROFILES[profile];
   const seed0 = opts.seed ?? 1;
-  const t0 = Date.now();
   const ages: number[] = [];
   const wealth: number[] = [];
   const causes: Record<string, number> = {};
   const fired: Record<string, number> = {};
   const c = { bankrupt: 0, millionaire: 0, record: 0, married: 0, children: 0, degree: 0, house: 0, jailed: 0 };
-  let logsGood = 0;
-  let logsAll = 0;
   let eventCount = 0;
   let yearsLived = 0;
 
@@ -80,10 +75,6 @@ export function runBalance(opts: { n: number; seed?: number; profile?: Profile }
     for (const id of Object.keys(life.eventLast)) {
       fired[id] = (fired[id] ?? 0) + 1;
       eventCount++;
-    }
-    for (const e of life.log) {
-      if (e.tone === 'good') logsGood++;
-      if (e.tone === 'good' || e.tone === 'bad') logsAll++;
     }
   }
 
@@ -116,8 +107,6 @@ export function runBalance(opts: { n: number; seed?: number; profile?: Profile }
       .map(([id, v]) => ({ id, share: +((v / totalFired) * 100).toFixed(2) }))
       .filter((d) => d.share > 5),
     eventsPerYear: +(eventCount / Math.max(1, yearsLived)).toFixed(2),
-    goodShare: +((logsGood / Math.max(1, logsAll)) * 100).toFixed(1),
-    msPerLife: +((Date.now() - t0) / n).toFixed(2),
   };
 }
 
@@ -131,7 +120,7 @@ export function reportToMarkdown(r: BalanceReport): string {
     `- % de vidas: ${Object.entries(r.pct)
       .map(([k, v]) => `${k} ${v}%`)
       .join(' · ')}`,
-    `- Eventos por año vivido: ${r.eventsPerYear} · resultados buenos: ${r.goodShare}% · ${r.msPerLife} ms por vida`,
+    `- Eventos por año vivido: ${r.eventsPerYear}`,
     '',
     '## Edades de muerte',
     ...Object.entries(r.ageHistogram)

@@ -18,7 +18,6 @@ let sessionGenerated = 0;
 export const providerFor = (id: AIConfig['provider']): AIProvider => (id === 'groq' ? createGroq() : createGemini());
 
 interface AIState {
-  loaded: boolean;
   config: AIConfig;
   hasKey: boolean;
   poolCount: number;
@@ -59,7 +58,6 @@ export const useAI = create<AIState>((set, get) => {
   };
 
   return {
-    loaded: false,
     config: { enabled: false, provider: 'gemini', narrator: false },
     hasKey: false,
     poolCount: 0,
@@ -71,7 +69,7 @@ export const useAI = create<AIState>((set, get) => {
       const d = await loadAIData();
       pool = d.pool.slice(-POOL_MAX);
       const key = await getApiKey();
-      set({ loaded: true, config: d.config, audit: d.audit, hasKey: !!key });
+      set({ config: d.config, audit: d.audit, hasKey: !!key });
       publishPool();
       // Generación en segundo plano: nunca bloquea la UI ni el turno de envejecer.
       if (d.config.enabled && key) void get().generate(SESSION_BATCH);

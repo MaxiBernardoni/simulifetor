@@ -35,19 +35,11 @@ export const hairGenderOf = (style: number): HairGender => HAIRS[style]?.g ?? 'M
 /** Ids de peinados disponibles para un género. */
 export const hairStylesFor = (g: HairGender): number[] => HAIRS.map((h, i) => (h.g === g ? i : -1)).filter((i) => i >= 0);
 
-const KID_HAIR: Record<HairGender, number[]> = { M: [0, 9, 10], F: [6, 14, 15, 13] };
-export const kidHairStyles = (g: HairGender): number[] => KID_HAIR[g];
-
-// Equivalente más parecido en el otro género (para partidas viejas donde los peinados eran unisex).
-const SWAP: Record<number, number> = {
-  0: 15, 3: 15, 4: 18, 7: 19, 8: 17, 9: 6, 10: 2, 11: 1, 12: 15,
-  1: 11, 2: 10, 5: 11, 6: 9, 13: 11, 14: 10, 15: 0, 16: 11, 17: 8, 18: 4, 19: 7,
-};
-
-/** Devuelve un peinado válido para el género: si ya lo es, el mismo; si no, su equivalente. */
+/** Devuelve un peinado válido para el género: si ya lo es, el mismo; si no, uno del género pedido (para partidas viejas unisex). */
 export function hairForGender(style: number, g: HairGender): number {
   if (hairGenderOf(style) === g) return style;
-  return SWAP[style] ?? hairStylesFor(g)[0];
+  const list = hairStylesFor(g);
+  return list[style % list.length];
 }
 
 export const EYE_NAMES = ['Marrón', 'Verde', 'Azul', 'Gris', 'Miel', 'Negro'];

@@ -138,6 +138,8 @@ export interface Tip {
   done: (life: Life, achievements: string[]) => boolean;
 }
 
+const BACKUP_TIP: Tip = { id: 'backup', text: 'Hacé una copia de seguridad de vez en cuando (Menú → Copia de seguridad).', done: () => false };
+
 export const TIPS: Tip[] = [
   { id: 'house', text: 'Probá comprar una casa financiada: el alquiler se come el sueldo.', done: (l) => l.log.some((e) => e.title === 'Compra') || l.assets.length > 0 },
   { id: 'invest', text: 'Invertir tiene riesgo, pero la plata quieta pierde contra la inflación.', done: (l) => l.invested > 0 || l.log.some((e) => e.title === 'Inversiones') },
@@ -146,12 +148,11 @@ export const TIPS: Tip[] = [
   { id: 'tree', text: 'Mirá el árbol genealógico: seguro tenés un pariente al que podés jugar.', done: (l) => (l.generation ?? 1) > 1 },
   { id: 'crime', text: 'Alguna vez probá el lado oscuro. Solo por ver qué pasa. Después no digas que no te avisamos.', done: (l) => !!l.flags.criminal_record || !!l.flags.ex_convict },
   { id: 'scenario', text: 'Los escenarios son desafíos con objetivo: elegilos al crear una vida.', done: (l) => !!l.scenario },
-  { id: 'backup', text: 'Hacé una copia de seguridad de vez en cuando (Menú → Copia de seguridad).', done: () => false },
 ];
 
 /** Elige un consejo sobre algo que el jugador todavía no probó (determinístico con `pick` de 0 a 1). */
-export function tipFor(life: Life, achievements: string[], pick = Math.random()): Tip | null {
+export function tipFor(life: Life, achievements: string[], pick = Math.random()): Tip {
   const pending = TIPS.filter((t) => !t.done(life, achievements));
-  if (!pending.length) return null;
+  if (!pending.length) return BACKUP_TIP;
   return pending[Math.min(pending.length - 1, Math.floor(pick * pending.length))];
 }

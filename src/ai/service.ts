@@ -1,5 +1,5 @@
 import type { GameEvent } from '../engine/types';
-import { AIError, AUDIT_MAX } from './types';
+import { AIError } from './types';
 import type { AIProvider, AuditEntry } from './types';
 import { eventPrompt, narratorPrompt } from './prompts';
 import { validateAiEvent } from './validate';
@@ -21,13 +21,12 @@ export async function generateEvents(
   n: number,
   ctx: string,
   known: { ids: Set<string>; titles: Set<string> },
-  opts: { signal?: AbortSignal; timeoutMs?: number } = {},
+  opts: { timeoutMs?: number } = {},
 ): Promise<GenResult> {
   const out: GenResult = { added: [], rejected: [] };
   const ids = new Set(known.ids);
   const titles = new Set(known.titles);
   for (let i = 0; i < n; i++) {
-    if (opts.signal?.aborted) break;
     try {
       const raw = await provider.generate(eventPrompt(ctx), apiKey, opts);
       const res = validateAiEvent(raw, ids, titles);
@@ -77,5 +76,3 @@ export async function narrate(
     return null;
   }
 }
-
-export const trimAudit = (a: AuditEntry[]): AuditEntry[] => a.slice(-AUDIT_MAX);
