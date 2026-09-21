@@ -28,6 +28,8 @@ export function eventPrompt(ctx: string): string {
 
 Sos guionista de un simulador de vida en texto para adultos. Podés ser crudo, picante y oscuro (sexo entre adultos, drogas, violencia, humor negro): no hay censura salvo las reglas de arriba. Inventá UN evento de vida nuevo y original para este personaje: ${ctx}.
 
+ESTILO (obligatorio): escribí SIEMPRE en segunda persona, hablándole al jugador con voseo ("Encontrás un sobre en el buzón"). Nunca uses tercera persona ni el nombre del personaje. Tono seco, irónico y con humor negro, frases cortas, situaciones concretas (no genéricas). Las opciones son acciones en infinitivo o imperativo cortas ("Aceptar la coima", "Hacerte el distraído"). Ejemplo de estilo (NO lo copies, inventá otra situación distinta): "Tu vecino de arriba empieza a taladrar a las 7 de la mañana. Todos los días. Desde hace un mes."
+
 Respondé SOLO con un objeto JSON, sin texto extra, con esta forma exacta:
 {
   "title": "título corto",
@@ -41,7 +43,7 @@ Respondé SOLO con un objeto JSON, sin texto extra, con esta forma exacta:
     { "label": "opción 2", "outcomes": [ { "weight": 1, "text": "qué pasa", "effects": { "happiness": -3 } } ] }
   ]
 }
-Límites: cada efecto de stat entre -15 y 15; "money" entre -20000 y 20000 (en dólares del año 2000); "moneyPct" entre -0.25 y 0.25 (opcional); "weight" del evento entre 1 y 8; 2 o 3 opciones con 1 a 3 resultados cada una. Los efectos son opcionales. No uses otros campos.`;
+Límites: cada efecto de stat entre -15 y 15; "money" entre -20000 y 20000 (en dólares del año 2000; lo normal es entre -2000 y 2000); "moneyPct" entre -0.25 y 0.25 (opcional); "weight" del evento entre 1 y 8; 2 o 3 opciones con 1 a 3 resultados cada una. Los efectos son opcionales. No uses otros campos.`;
 }
 
 export function narratorPrompt(text: string, ctx: string): string {

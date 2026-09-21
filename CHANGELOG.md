@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [IA: prueba real y prompt]
+
+- Probado de punta a punta con Ollama + `dolphin3` local. El prompt de eventos ahora exige segunda persona con voseo, tono seco y un único ejemplo de estilo (con aviso de no copiarlo), y pide montos chicos.
+
 ## [Primera vida guiada]
 
 - Tutorial rehecho, más visual y guiado: la primera vida arranca con la elección de género y de personaje (tres opciones al azar) y luego 5 globos que oscurecen la pantalla y resaltan cada parte de la app (`ui/coach.tsx`, `GuidedStartScreen`). Reemplaza al tutorial de 5 tarjetas. Las vidas siguientes no cambian.
