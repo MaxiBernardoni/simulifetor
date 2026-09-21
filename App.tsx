@@ -24,7 +24,8 @@ import { FamilyTreeScreen } from './src/ui/screens/FamilyTreeScreen';
 import { BackupScreen } from './src/ui/screens/BackupScreen';
 import { AIScreen } from './src/ui/screens/AIScreen';
 import { HelpScreen } from './src/ui/screens/HelpScreen';
-import { TutorialScreen } from './src/ui/screens/TutorialScreen';
+import { GuidedStartScreen } from './src/ui/screens/GuidedStartScreen';
+import { CoachOverlay } from './src/ui/coach';
 import { SwipeBack, swipe } from './src/ui/SwipeBack';
 import { useAI } from './src/ai/store';
 import { getScenario } from './src/content/scenarios';
@@ -84,7 +85,7 @@ function Main() {
       <SwipeBack onBack={back}>
         <View style={s.root}>
           <Header title={title} onBack={back} />
-          {creating.step === 'mode' && <ModeScreen />}
+          {creating.step === 'mode' && (seenTutorial ? <ModeScreen /> : <GuidedStartScreen />)}
           {creating.step === 'scenarios' && <ScenariosScreen />}
           {creating.step === 'create' && <CreateScreen />}
         </View>
@@ -92,8 +93,6 @@ function Main() {
     );
   }
   if (!life) return <StartScreen />;
-  // Primera vez: 5 tarjetas de introducción (con "Saltar").
-  if (!seenTutorial && life.alive && life.age <= 1) return <TutorialScreen />;
 
   // Con decisiones pendientes se muestra el modal por encima; si murió y no queda nada pendiente, resumen.
   if (!life.alive && life.pending.length === 0) {
@@ -140,6 +139,7 @@ function Main() {
       )}
       <PromptModal />
       <AchievementToast />
+      {tab === 'life' && <CoachOverlay />}
     </View>
   );
 }

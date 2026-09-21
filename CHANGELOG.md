@@ -2,6 +2,11 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Primera vida guiada]
+
+- Tutorial rehecho, más visual y guiado: la primera vida arranca con la elección de género y de personaje (tres opciones al azar) y luego 5 globos que oscurecen la pantalla y resaltan cada parte de la app (`ui/coach.tsx`, `GuidedStartScreen`). Reemplaza al tutorial de 5 tarjetas. Las vidas siguientes no cambian.
+- **Arreglo importante**: `tsc` se caía con "Maximum call stack size exceeded" desde el build web, porque leía el bundle de `dist/` (hay `allowJs`). `tsconfig.json` ahora excluye `dist`, `node_modules` y `.expo`. Ese commit anterior se subió con el typecheck roto.
+
 ## [Publicación web]
 
 - `npm run build:web` exporta el sitio estático (`dist/`), con `public/index.html` (metadatos para iPhone), manifiesto y ícono de inicio. Verificado servido como estático y sin errores de consola. `wrangler.jsonc` + `npm run deploy:web` para Cloudflare (Workers Static Assets, validado con `--dry-run`). Guía en `docs/13-instalacion.md` (Cloudflare Pages / Netlify / Vercel, instalar en el iPhone y advertencias).

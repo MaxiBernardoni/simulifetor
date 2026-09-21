@@ -13,7 +13,7 @@ import {
   Rocket, Scale, School, Scissors, ShieldCheck, ShieldPlus, ShoppingBag,
   Siren, Skull, Smartphone, Sparkles, Star, Stethoscope, Sunrise,
   Swords, Target, TreePalm, TrendingDown, TrendingUp, TriangleAlert, Trophy,
-  Upload, Users, VenetianMask, Wallet, X, Zap,
+  Upload, User, Users, VenetianMask, Wallet, X, Zap,
 } from 'lucide-react-native';
 import type { LucideIcon } from 'lucide-react-native';
 
@@ -31,7 +31,7 @@ const MAP: Record<string, LucideIcon> = {
   Rocket, Scale, School, Scissors, ShieldCheck, ShieldPlus, ShoppingBag,
   Siren, Skull, Smartphone, Sparkles, Star, Stethoscope, Sunrise,
   Swords, Target, TreePalm, TrendingDown, TrendingUp, TriangleAlert, Trophy,
-  Upload, Users, VenetianMask, Wallet, X, Zap,
+  Upload, User, Users, VenetianMask, Wallet, X, Zap,
 };
 
 export function Icon({ name, size = 20, color = '#fff' }: { name: string; size?: number; color?: string }) {

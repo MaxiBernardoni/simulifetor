@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { GLOSSARY, HELP, TIPS, TUTORIAL, tipFor } from './help';
-import { SCENE_KEYS } from './scenes';
+import { COACH_STEPS, GLOSSARY, HELP, TIPS, tipFor } from './help';
 import { createLife } from '../engine/life';
 
 describe('ayuda y tutorial', () => {
-  it('el tutorial tiene 5 tarjetas con escena válida', () => {
-    expect(TUTORIAL).toHaveLength(5);
-    for (const c of TUTORIAL) expect((SCENE_KEYS as readonly string[]).includes(c.scene), c.title).toBe(true);
+  it('la guía de la primera vida tiene 5 pasos con destinos únicos', () => {
+    expect(COACH_STEPS).toHaveLength(5);
+    expect(new Set(COACH_STEPS.map((s) => s.target)).size).toBe(5);
   });
   it('la ayuda cubre los temas pedidos y el glosario los términos', () => {
     const ids = HELP.map((h) => h.id);

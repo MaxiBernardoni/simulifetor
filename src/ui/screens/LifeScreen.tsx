@@ -1,5 +1,5 @@
 import { eraAt } from '../../content/eras';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Animated, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGame } from '../../store/gameStore';
@@ -10,6 +10,7 @@ import { styleForText, TONE_STYLE } from '../../content/icons';
 import { Avatar } from '../Avatar';
 import { Icon } from '../Icon';
 import { FadeIn, PressScale, Pulse, useBump, useHop } from '../anim';
+import { CoachTarget, useCoach } from '../coach';
 import { colors, space } from '../theme';
 
 const STATS: StatKey[] = ['happiness', 'health', 'smarts', 'looks'];
@@ -49,6 +50,12 @@ export function LifeScreen() {
   const insets = useSafeAreaInsets();
   const hop = useHop(life.age);
   const bump = useBump(life.money);
+  const seenTutorial = useGame((st) => st.seenTutorial);
+  const startCoach = useCoach((st) => st.start);
+  // Primera vida: arranca la guía con globos.
+  useEffect(() => {
+    if (!seenTutorial && life.age <= 1 && life.alive) startCoach();
+  }, [seenTutorial]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const groups = useMemo(() => {
     const out: Group[] = [];
@@ -67,7 +74,11 @@ export function LifeScreen() {
     <View style={s.wrap}>
       <Header
         wordmark
-        left={<CircleButton icon="Menu" onPress={() => setTab('more')} />}
+        left={
+          <CoachTarget id="menu">
+            <CircleButton icon="Menu" onPress={() => setTab('more')} />
+          </CoachTarget>
+        }
         right={
           <Pressable onPress={() => setTab('more')} style={s.stars} hitSlop={8}>
             <Icon name="Trophy" size={20} color={colors.headerText} />
@@ -76,7 +87,7 @@ export function LifeScreen() {
         }
       />
 
-      <View style={s.info}>
+      <CoachTarget id="info" style={s.info}>
         <Animated.View style={hop}>
           <Avatar look={life.look} size={52} animated />
         </Animated.View>
@@ -92,7 +103,7 @@ export function LifeScreen() {
           <Text style={[s.money, debt && { color: colors.bad }]}>{formatMoney(life.money)}</Text>
           <Text style={s.moneyLabel}>{debt ? 'Deuda' : 'En el banco'}</Text>
         </Animated.View>
-      </View>
+      </CoachTarget>
 
       <StatusBadges life={life} />
       <ScenarioBar life={life} />
@@ -131,27 +142,27 @@ export function LifeScreen() {
         />
       </View>
 
-      <View style={s.navBar}>
+      <CoachTarget id="nav" style={s.navBar}>
         <NavItem icon="BriefcaseBusiness" label="Ocupación" onPress={() => setTab('work')} />
         <NavItem icon="PiggyBank" label="Activos" onPress={() => setTab('assets')} />
-        <View style={s.ageSlot}>
+        <CoachTarget id="age" style={s.ageSlot}>
           <Pulse active={!blocked} amount={0.045} style={s.pulse}>
             <PressScale onPress={ageUp} disabled={blocked} to={0.88} style={[s.ageButton, { opacity: blocked ? 0.5 : 1 }]}>
               <Icon name="ChevronsRight" size={38} color="#fff" />
               <Text style={s.ageText}>Envejecer</Text>
             </PressScale>
           </Pulse>
-        </View>
+        </CoachTarget>
         <NavItem icon="HeartHandshake" label="Relaciones" onPress={() => setTab('people')} />
         <NavItem icon="LayoutGrid" label="Actividades" onPress={() => setTab('activities')} />
-      </View>
+      </CoachTarget>
 
-      <View style={[s.stats, { paddingBottom: Math.max(insets.bottom, 10) }]}>
+      <CoachTarget id="stats" style={[s.stats, { paddingBottom: Math.max(insets.bottom, 10) }]}>
         {STATS.map((k) => (
           <LifeStat key={k} stat={k} value={life.stats[k]} />
         ))}
         <DeltaChips deltas={life.lastDelta} />
-      </View>
+      </CoachTarget>
     </View>
   );
 }

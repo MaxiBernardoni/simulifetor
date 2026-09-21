@@ -37,7 +37,7 @@
 
 ## Tutorial y ayuda (T15)
 
-- **Tutorial de primer uso** (`ui/screens/TutorialScreen.tsx`, textos en `content/help.ts`): 5 tarjetas ilustradas con Siguiente / Atrás / Saltar. Aparece una sola vez, al empezar la primera vida (`meta.seenTutorial`, opcional: quien ya tenía partidas guardadas lo tiene como visto).
+- **Primera vida guiada**: al empezar la primera vida (`meta.seenTutorial` en falso) el flujo es `GuidedStartScreen` (1. elegís género con dos botones grandes, 2. elegís entre tres personajes al azar, con "Ver otros tres" y una salida a la creación manual) y después la **guía con globos** (`ui/coach.tsx`, pasos en `COACH_STEPS` de `content/help.ts`): la pantalla se oscurece, un aro coral resalta cada parte (info del personaje, botón Envejecer, stats, barra de navegación, menú) y un globo amarillo la explica, con Atrás / Siguiente / Saltar guía. Al terminar se marca como vista; las vidas siguientes usan el flujo normal. Quien ya tenía partidas guardadas no la ve.
 - **Cómo se juega** (Menú → Cómo se juega, `HelpScreen`): secciones plegables (stats y sus bandas, envejecer, actividades, trabajo, dinero, crimen, escenarios, ranuras, árbol, logros) y glosario.
 - **Consejos** en la pantalla de muerte (`tipFor`): sugiere algo que la vida no probó (casa financiada, universidad, inversión, hijos, escenarios…).
 

@@ -2,44 +2,20 @@ import type { Life } from '../engine/types';
 
 // Textos de ayuda: cortos, en voseo y con humor seco.
 
-export interface TutorialCard {
-  title: string;
-  text: string;
-  scene: string;
+export interface CoachStep {
+  /** Id del `CoachTarget` que se resalta en la pantalla de vida. */
+  target: string;
   icon: string;
+  text: string;
 }
 
-export const TUTORIAL: TutorialCard[] = [
-  {
-    title: 'Envejecer y decidir',
-    text: 'Tocá "Envejecer" y pasa un año. Cada tanto te aparece una decisión: elegí con cuidado. O no. Igual va a salir mal.',
-    scene: 'baby',
-    icon: 'Cake',
-  },
-  {
-    title: 'Tus stats',
-    text: 'Felicidad, salud, inteligencia y aspecto. Si la salud llega a cero, se acabó. La felicidad baja sola si no le das motivos.',
-    scene: 'hospital',
-    icon: 'HeartPulse',
-  },
-  {
-    title: 'Actividades y gente',
-    text: 'Cada actividad se hace una vez por año. Con tu familia, amigos y pareja podés hacer cosas: mejorar el vínculo o arruinarlo.',
-    scene: 'friends',
-    icon: 'Users',
-  },
-  {
-    title: 'Plata, trabajo y ley',
-    text: 'Buscá trabajo, ahorrá, pedí préstamos y comprá una casa. El crimen paga a veces, pero hay juicios, cárcel y antecedentes.',
-    scene: 'money_win',
-    icon: 'Coins',
-  },
-  {
-    title: 'La familia sigue',
-    text: 'Cuando morís, continuás con un pariente de sangre a hasta 2 generaciones. El árbol genealógico muestra a quién podés jugar.',
-    scene: 'family_home',
-    icon: 'Users',
-  },
+/** Guía de la primera vida (globos sobre la pantalla principal). */
+export const COACH_STEPS: CoachStep[] = [
+  { target: 'info', icon: 'Sparkles', text: '¡Empezó tu nueva vida! Acá ves quién sos, qué hacés y cuánta plata tenés en el banco.' },
+  { target: 'age', icon: 'ChevronsRight', text: 'Tocá Envejecer para pasar un año a la vez. Cada tanto vas a tener que decidir algo.' },
+  { target: 'stats', icon: 'HeartPulse', text: 'Felicidad, salud, inteligencia y aspecto. Si la salud llega a cero, se acabó el juego.' },
+  { target: 'nav', icon: 'LayoutGrid', text: 'Desde acá trabajás, manejás la plata, mirás a tu gente y hacés actividades (una vez por año cada una).' },
+  { target: 'menu', icon: 'Menu', text: 'En el menú tenés tus partidas, el árbol genealógico, la ayuda y los logros. Buena suerte.' },
 ];
 
 export interface HelpSection {
