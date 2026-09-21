@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { validateAiEvent, extractJson } from './validate';
 import { contentProblem, speaksToYou, thirdPersonProblem } from './filter';
-import { generateEvents, keepsFacts, narrate } from './service';
+import { generateEvents } from './service';
 import { createMock, sampleEventJson } from './providers/mock';
 import { createGemini } from './providers/gemini';
 import { createGroq } from './providers/groq';
@@ -169,60 +169,6 @@ describe('generación con proveedor simulado', () => {
     const r = await generateEvents(createMock([new AIError('filtered', 'x'), sampleEventJson(30)]), 'k', 2, 'ctx', known());
     expect(r.added).toHaveLength(1);
     expect(r.rejected).toHaveLength(1);
-  });
-
-  it('el narrador devuelve null si falla, tarda o el texto no pasa el filtro', async () => {
-    const original = 'Tu jefe te pide que trabajes el fin de semana sin pagarte nada.';
-    expect(await narrate(createMock([new AIError('timeout', 't')]), 'k', 'e1', original, 'ctx')).toBeNull();
-    expect(await narrate(createMock(['{"x":1}']), 'k', 'e2', original, 'ctx')).toBeNull();
-    expect(
-      await narrate(createMock(['Mirá este enlace http://malo.example que te va a gustar mucho']), 'k', 'e3', original, 'ctx'),
-    ).toBeNull();
-    expect(await narrate(createMock(['ok']), 'k', 'e4', original, 'ctx')).toBeNull();
-    const good = await narrate(
-      createMock(['Tu jefe te pide que trabajes el fin de semana entero sin pagarte nada.']),
-      'k',
-      'e5',
-      original,
-      'ctx',
-    );
-    expect(good).toContain('fin de semana');
-  });
-});
-
-describe('narrador: guarda de coherencia', () => {
-  const orig = 'Un chico más grande te molesta todos los días en el recreo.';
-
-  it('acepta cambios mínimos y rechaza reescrituras que pierden los hechos', () => {
-    expect(keepsFacts(orig, 'Un chico más grande te molesta todos los días en el recreo de la escuela.')).toBe(true);
-    expect(keepsFacts(orig, 'Un tío por el parque siempre de ti te da la lata.')).toBe(false);
-    expect(
-      keepsFacts('Tu madre te llama a las 3 de la mañana. Dice que es urgente.', 'El profe te dice que te quedes afuera de la escuela.'),
-    ).toBe(false);
-  });
-
-  it('si la reescritura inventa otra historia, el narrador devuelve null (se muestra el original)', async () => {
-    const r = await narrate(
-      createMock(['Tu padre recibe un ascenso inesperado y celebra con toda la familia esta noche.']),
-      'k',
-      'e9',
-      'Tu madre te llama a las 3 de la mañana. Dice que es urgente. No lo es.',
-      'ctx',
-    );
-    expect(r).toBeNull();
-  });
-
-  it('el narrador pide temperatura baja', async () => {
-    let seen: number | undefined;
-    const p = {
-      id: 'mock' as const,
-      generate: async (_p: string, _k: string, o?: { temperature?: number }) => {
-        seen = o?.temperature;
-        return 'Tu jefe te pide que trabajes el fin de semana sin pagarte nada, otra vez.';
-      },
-    };
-    await narrate(p, 'k', 'e10', 'Tu jefe te pide que trabajes el fin de semana sin pagarte nada.', 'ctx');
-    expect(seen).toBeLessThanOrEqual(0.4);
   });
 });
 

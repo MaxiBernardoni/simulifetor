@@ -11,7 +11,7 @@ export function applyConfigPatch(prev: AIConfig, patch: Partial<AIConfig>): AICo
 }
 
 /**
- * ¿Se puede mostrar la opción de responder escribiendo? Hace falta: IA activada, modo narrador encendido y una
+ * ¿Se puede mostrar la opción de responder escribiendo? Hace falta: IA activada, «responder escribiendo» encendido y una
  * conexión que ya se probó con éxito (con clave válida, salvo el modelo propio que no usa clave).
  */
 export function canAnswerByText(config: AIConfig, hasKey: boolean): boolean {

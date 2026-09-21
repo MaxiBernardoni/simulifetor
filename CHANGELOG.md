@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [IA: sin reescritura de textos]
+
+- Se eliminó el modo narrador que reescribía los textos de los eventos (causaba incoherencias). Quedan solo responder escribiendo y el retruque de la IA; el interruptor pasó a llamarse "Responder escribiendo". Se borraron sus tests (204 en total).
+
 ## [IA: segunda persona obligatoria]
 
 - Los eventos que genera la IA se rechazan si no le hablan al jugador (te/tu/voseo) o si tienen un nombre propio de sujeto en tercera persona ("Marcos está despierto…"); lo mismo para resultados y continuaciones. Al cargar, se descartan los eventos ya guardados que incumplan. El prompt prohíbe nombres propios. 2 tests nuevos (208).

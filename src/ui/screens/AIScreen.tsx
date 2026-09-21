@@ -216,10 +216,10 @@ export function AIScreen() {
 
       <View style={s.switchRow}>
         <View style={{ flex: 1 }}>
-          <Text style={s.label}>Modo narrador</Text>
+          <Text style={s.label}>Responder escribiendo</Text>
           <Text style={s.small}>
-            Reescribe el texto de los eventos con tu contexto (si tarda más de 3 segundos o no conserva los hechos, se muestra el original).
-            Además te deja responder las situaciones escribiendo: la IA decide qué pasa y cuántos puntos ganás o perdés.
+            Te deja responder las situaciones escribiendo: la IA decide qué pasa y cuántos puntos ganás o perdés, y puede retrucarte con una
+            situación nueva que continúa la anterior.
           </Text>
           <Text style={[s.small, { color: ai.config.verified ? colors.good : colors.warn, fontWeight: '700' }]}>
             {ai.config.verified ? 'Conexión verificada ✓' : 'Para activarlo, esperá a que la conexión se verifique (tick verde).'}

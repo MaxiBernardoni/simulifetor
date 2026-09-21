@@ -46,19 +46,6 @@ Respondé SOLO con un objeto JSON, sin texto extra, con esta forma exacta:
 Límites: cada efecto de stat entre -15 y 15; "money" entre -20000 y 20000 (en dólares del año 2000; lo normal es entre -2000 y 2000); "moneyPct" entre -0.25 y 0.25 (opcional); "weight" del evento entre 1 y 8; 2 o 3 opciones con 1 a 3 resultados cada una. Los efectos son opcionales. No uses otros campos.`;
 }
 
-export function narratorPrompt(text: string, ctx: string): string {
-  return `${CONTENT_RULES}
-
-Adaptá este texto de un evento de un juego al personaje (${ctx}) CAMBIANDO LO MÍNIMO.
-- Conservá todos los hechos, las personas (quién hace qué a quién), los lugares y el desenlace tal cual.
-- Solo podés cambiar algunas palabras por otras equivalentes o sumar un detalle corto del personaje.
-- Hablale al jugador en segunda persona con voseo. Máximo 2 oraciones.
-- Si no se te ocurre una mejora segura, devolvé el texto original idéntico.
-Respondé SOLO con el texto, sin comillas ni explicaciones.
-
-Texto: ${text}`;
-}
-
 /** Prompt para que la IA juzgue lo que el jugador escribió como respuesta a una situación. */
 export function freeTextPrompt(title: string, situation: string, answer: string, ctx: string, thread?: string, more = false): string {
   const safe = answer

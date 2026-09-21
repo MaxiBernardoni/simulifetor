@@ -7,7 +7,7 @@ import { createGemini } from './providers/gemini';
 import { createGroq } from './providers/groq';
 import { createOpenAICompat } from './providers/openai';
 import { createMock, sampleEventJson } from './providers/mock';
-import { generateEvents, narrate, resolveFreeText } from './service';
+import { generateEvents, resolveFreeText } from './service';
 import { summarizeLife } from './prompts';
 import { getApiKey, loadAIData, saveAIData, setApiKey } from './storage';
 import { inputProblem, norm, speaksToYou, thirdPersonProblem } from './filter';
@@ -41,7 +41,6 @@ interface AIState {
   verify: { state: 'idle' | 'checking' | 'ok' | 'error'; error: string | null };
   generate: (n: number, mock?: boolean) => Promise<void>;
   clearPool: () => Promise<void>;
-  narrateText: (eventId: string, text: string) => Promise<string | null>;
   /** Responde una situación escribiendo: la IA juzga y se aplica el resultado. Devuelve un mensaje de error o null si salió bien. */
   answerText: (answer: string) => Promise<string | null>;
 }
@@ -182,14 +181,6 @@ export const useAI = create<AIState>((set, get) => {
       await persist();
     },
 
-    narrateText: async (eventId, text) => {
-      const { config } = get();
-      if (!config.enabled || !config.narrator || !config.verified) return null;
-      const key = await keyFor(config);
-      if (key === null) return null;
-      return narrate(providerFor(config), key, eventId, text, ctxNow(), 3000);
-    },
-
     answerText: async (answer) => {
       const life = useGame.getState().life;
       const prompt = life?.pending[0];
@@ -199,7 +190,7 @@ export const useAI = create<AIState>((set, get) => {
       if (inputProblem(text, life.age)) return 'Esa respuesta no la puedo usar. Escribí otra cosa o elegí una opción.';
       const { config } = get();
       if (!canAnswerByText(config, get().hasKey))
-        return 'Probá la conexión en Menú → IA y activá el modo narrador para responder escribiendo.';
+        return 'Probá la conexión en Menú → IA y activá «Responder escribiendo» para responder escribiendo.';
       const key = await keyFor(config);
       if (key === null) return 'Falta la clave de la IA.';
       const res = await resolveFreeText(providerFor(config), key, {
