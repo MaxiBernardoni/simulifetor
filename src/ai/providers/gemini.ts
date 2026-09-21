@@ -6,12 +6,12 @@ import type { FetchLike } from '../http';
 // Las cuotas y los nombres de modelo cambian con el tiempo: si dejara de andar, cambiá MODEL.
 export const GEMINI_MODEL = 'gemini-2.0-flash';
 
-export function createGemini(fetchImpl?: FetchLike): AIProvider {
+export function createGemini(fetchImpl?: FetchLike, model?: string): AIProvider {
   return {
     id: 'gemini',
     async generate(prompt, apiKey, opts) {
       const data = (await postJson(
-        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${model?.trim() || GEMINI_MODEL}:generateContent`,
         { 'x-goog-api-key': apiKey },
         { contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: opts?.temperature ?? 1 } },
         { ...opts, fetchImpl },

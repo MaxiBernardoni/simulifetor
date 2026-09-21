@@ -26,10 +26,12 @@ export interface AIConfig {
   /** Solo para `compat`: dirección base de la API estilo OpenAI y nombre del modelo. */
   baseUrl: string;
   model: string;
+  /** Modelo elegido para Gemini/Groq (vacío = el de por defecto). */
+  cloudModel: string;
   narrator: boolean;
 }
 
-export const DEFAULT_AI_CONFIG: AIConfig = { enabled: false, provider: 'gemini', narrator: false, baseUrl: '', model: '' };
+export const DEFAULT_AI_CONFIG: AIConfig = { enabled: false, provider: 'gemini', narrator: false, baseUrl: '', model: '', cloudModel: '' };
 
 export interface AuditEntry {
   t: number;

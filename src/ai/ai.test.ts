@@ -327,6 +327,37 @@ describe('modelo propio compatible con OpenAI (sin censura, sin clave)', () => {
   });
 });
 
+describe('errores del proveedor con detalle y modelo configurable', () => {
+  const failing =
+    (status: number, body: string): FetchLike =>
+    async () => ({ ok: false, status, json: async () => ({}), text: async () => body });
+
+  it('un 404/400 muestra el motivo real del proveedor (antes salía "no se pudo conectar")', async () => {
+    const g = createGroq(
+      failing(404, JSON.stringify({ error: { message: 'The model `x` does not exist or you do not have access to it.' } })),
+      'x',
+    );
+    await expect(g.generate('p', 'k')).rejects.toMatchObject({ kind: 'bad-response', message: expect.stringContaining('does not exist') });
+  });
+
+  it('un 403 (modelo sin acceso) es un error de acceso con detalle, no de red', async () => {
+    const g = createGroq(failing(403, JSON.stringify({ error: { message: 'model requires a different plan' } })));
+    await expect(g.generate('p', 'k')).rejects.toMatchObject({ kind: 'auth', message: expect.stringContaining('different plan') });
+  });
+
+  it('el modelo elegido se manda en el pedido y, vacío, se usa el de por defecto', async () => {
+    const bodies: string[] = [];
+    const f: FetchLike = async (_u, init) => {
+      bodies.push(init.body);
+      return { ok: true, status: 200, json: async () => ({ choices: [{ message: { content: 'ok' } }] }), text: async () => '' };
+    };
+    await createGroq(f, 'openai/gpt-oss-20b').generate('p', 'k');
+    await createGroq(f, '  ').generate('p', 'k');
+    expect(JSON.parse(bodies[0]).model).toBe('openai/gpt-oss-20b');
+    expect(JSON.parse(bodies[1]).model).toBe('llama-3.1-8b-instant');
+  });
+});
+
 describe('integración con el motor', () => {
   it('sin eventos de IA el motor es idéntico (mismas semillas, mismas vidas)', () => {
     setAiEvents([]);

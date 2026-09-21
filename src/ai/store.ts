@@ -17,7 +17,11 @@ let pool: GameEvent[] = [];
 let sessionGenerated = 0;
 
 export const providerFor = (c: AIConfig): AIProvider =>
-  c.provider === 'groq' ? createGroq() : c.provider === 'compat' ? createOpenAICompat('compat', c.baseUrl, c.model) : createGemini();
+  c.provider === 'groq'
+    ? createGroq(undefined, c.cloudModel)
+    : c.provider === 'compat'
+      ? createOpenAICompat('compat', c.baseUrl, c.model)
+      : createGemini(undefined, c.cloudModel);
 
 /** Clave del proveedor activo. El modelo propio (`compat`) no la necesita: devuelve '' en vez de null. */
 const keyFor = async (c: AIConfig): Promise<string | null> => (await getApiKey()) ?? (c.provider === 'compat' ? '' : null);
@@ -101,16 +105,18 @@ export const useAI = create<AIState>((set, get) => {
         const out = await providerFor(get().config).generate('Respondé solamente con la palabra OK.', key, { timeoutMs: 8000 });
         set({ status: out.trim().length ? 'Conexión correcta.' : 'El proveedor respondió vacío.' });
       } catch (e) {
-        const kind = (e as { kind?: string }).kind;
+        const { kind, message } = e as { kind?: string; message?: string };
         set({
           status:
             kind === 'auth'
-              ? 'La clave fue rechazada.'
+              ? `La clave fue rechazada o no tiene acceso a ese modelo. ${message ?? ''}`.trim()
               : kind === 'quota'
-                ? 'Sin cuota por ahora (límite gratuito). Probá más tarde.'
+                ? `Sin cuota por ahora (límite gratuito). ${message ?? ''}`.trim()
                 : kind === 'timeout'
                   ? 'Tardó demasiado.'
-                  : 'No se pudo conectar.',
+                  : kind === 'bad-response'
+                    ? `La IA respondió con un error: ${message ?? 'desconocido'}`
+                    : 'No se pudo conectar (sin internet o el navegador bloqueó el pedido).',
         });
       } finally {
         set({ busy: false });

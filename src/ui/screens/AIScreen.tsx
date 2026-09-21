@@ -100,6 +100,30 @@ export function AIScreen() {
         </View>
       ) : null}
 
+      {!own ? (
+        <View style={{ marginTop: space.md, gap: 8 }}>
+          <TextInput
+            style={s.input}
+            value={ai.config.cloudModel}
+            onChangeText={(v) => void ai.setConfig({ cloudModel: v })}
+            placeholder={ai.config.provider === 'groq' ? 'Modelo (vacío = llama-3.1-8b-instant)' : 'Modelo (vacío = gemini-2.0-flash)'}
+            placeholderTextColor={colors.muted}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          {ai.config.provider === 'groq' ? (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {['llama-3.1-8b-instant', 'openai/gpt-oss-20b', 'openai/gpt-oss-120b', 'llama-3.3-70b-versatile'].map((m) => (
+                <Button key={m} label={m} variant="ghost" onPress={() => void ai.setConfig({ cloudModel: m })} />
+              ))}
+            </View>
+          ) : null}
+          <Text style={s.small}>
+            Si «Probar conexión» da error de modelo o de acceso, probá con otro de la lista (la cuenta gratuita no incluye todos).
+          </Text>
+        </View>
+      ) : null}
+
       {local ? null : (
         <>
           <SectionTitle icon="KeyRound" color="#E9A23B">

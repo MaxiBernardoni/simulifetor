@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [IA: errores claros y modelo elegible]
+
+- "Probar conexión" mostraba "No se pudo conectar" ante cualquier error que no fuera de clave o cuota (por ejemplo un modelo sin acceso en el plan gratuito de Groq). Ahora muestra el motivo real del proveedor. Gemini y Groq tienen campo de **modelo** (con atajos para Groq); el modelo por defecto de Groq pasó a `llama-3.1-8b-instant`. 3 tests.
+
 ## [Arreglo web] confirmaciones
 
 - En la versión web "Nueva vida" desde el Menú (y borrar todo, borrar partida, importar copia y los avisos del árbol) no hacían nada: `Alert.alert` no funciona en `react-native-web`. Nuevo `ui/dialog.ts` (`showAlert`): usa `Alert` en el celular y el cuadro del navegador en la web. Verificado en el navegador; 3 tests.

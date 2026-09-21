@@ -22,6 +22,24 @@ const RETRIES = 1;
 
 const defaultFetch: FetchLike = (url, init) => fetch(url, init) as unknown as Promise<FetchResponseLike>;
 
+/** Mensaje de error del proveedor (`{"error":{"message":"…"}}`), recortado; vacío si no se puede leer. */
+async function errorDetail(res: FetchResponseLike): Promise<string> {
+  try {
+    const raw = await res.text();
+    let msg = raw;
+    try {
+      const j = JSON.parse(raw) as { error?: { message?: string } | string; message?: string };
+      msg = (typeof j.error === 'string' ? j.error : j.error?.message) ?? j.message ?? raw;
+    } catch {
+      // no era JSON: se usa el texto tal cual
+    }
+    msg = msg.replace(/\s+/g, ' ').trim().slice(0, 160);
+    return msg ? ` — ${msg}` : '';
+  } catch {
+    return '';
+  }
+}
+
 /** POST JSON con timeout y un reintento ante fallas de red o 5xx. Traduce los errores a AIError. */
 export async function postJson(url: string, headers: Record<string, string>, body: unknown, opts: PostOpts = {}): Promise<unknown> {
   const { timeoutMs = 8000, fetchImpl = defaultFetch } = opts;
@@ -47,13 +65,14 @@ export async function postJson(url: string, headers: Record<string, string>, bod
           throw new AIError('bad-response', 'respuesta ilegible');
         }
       }
-      if (res.status === 401 || res.status === 403) throw new AIError('auth', 'clave rechazada');
-      if (res.status === 429) throw new AIError('quota', 'cuota agotada o demasiados pedidos');
+      const detail = await errorDetail(res);
+      if (res.status === 401 || res.status === 403) throw new AIError('auth', `clave rechazada o sin acceso${detail}`);
+      if (res.status === 429) throw new AIError('quota', `cuota agotada o demasiados pedidos${detail}`);
       if (res.status >= 500) {
         last = new AIError('network', `error del servidor (${res.status})`);
         continue;
       }
-      throw new AIError('bad-response', `error ${res.status}`);
+      throw new AIError('bad-response', `error ${res.status}${detail}`);
     } catch (e) {
       if (e instanceof AIError) {
         if (e.kind === 'network') {
