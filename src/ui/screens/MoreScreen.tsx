@@ -39,7 +39,13 @@ export function MoreScreen() {
         <Button label="IA (opcional)" icon="Bot" variant="ghost" onPress={() => setTab('ai')} />
         <Button label="Copia de seguridad" icon="Upload" variant="ghost" onPress={() => setTab('backup')} />
         <Button label="Borrar todos los datos" variant="danger" onPress={confirmWipe} />
-        {__DEV__ ? <Button label={gallery ? 'Ocultar galería de escenas' : 'Galería de escenas (dev)'} variant="ghost" onPress={() => setGallery((g) => !g)} /> : null}
+        {__DEV__ ? (
+          <Button
+            label={gallery ? 'Ocultar galería de escenas' : 'Galería de escenas (dev)'}
+            variant="ghost"
+            onPress={() => setGallery((g) => !g)}
+          />
+        ) : null}
       </View>
 
       {gallery ? (
@@ -53,16 +59,31 @@ export function MoreScreen() {
         </View>
       ) : null}
 
-      <SectionTitle icon="Target" color="#E76F51">Escenarios superados · {wins.length}</SectionTitle>
+      <SectionTitle icon="Target" color="#E76F51">
+        Escenarios superados · {wins.length}
+      </SectionTitle>
       <Text style={{ color: colors.muted, marginBottom: 4 }}>Los desafíos se eligen al crear una vida nueva.</Text>
 
-      <SectionTitle icon="Trophy" color="#E9A23B">Logros · {unlocked.length}/{ACHIEVEMENTS.length}</SectionTitle>
+      <SectionTitle icon="Trophy" color="#E9A23B">
+        Logros · {unlocked.length}/{ACHIEVEMENTS.length}
+      </SectionTitle>
       {ACHIEVEMENTS.map((a) => {
         const done = unlocked.includes(a.id);
-        return <Row key={a.id} icon={done ? a.icon : 'Lock'} tint={done ? '#E9A23B' : '#9AA0A6'} title={done ? a.title : '???'} subtitle={a.desc} disabled={!done} />;
+        return (
+          <Row
+            key={a.id}
+            icon={done ? a.icon : 'Lock'}
+            tint={done ? '#E9A23B' : '#9AA0A6'}
+            title={done ? a.title : '???'}
+            subtitle={a.desc}
+            disabled={!done}
+          />
+        );
       })}
 
-      <SectionTitle icon="Ghost" color="#5B6572">Vidas anteriores</SectionTitle>
+      <SectionTitle icon="Ghost" color="#5B6572">
+        Vidas anteriores
+      </SectionTitle>
       {history.length === 0 ? (
         <Text style={{ color: colors.muted }}>Todavía no moriste. Todo a su tiempo.</Text>
       ) : (

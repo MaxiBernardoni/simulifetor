@@ -68,7 +68,11 @@ export function SlotsScreen() {
                     </View>
                   ) : null}
                   <View style={s.actions}>
-                    {!isActive ? <View style={{ flex: 1 }}><Button label="Jugar" icon="Zap" onPress={() => switchSlot(i)} /></View> : null}
+                    {!isActive ? (
+                      <View style={{ flex: 1 }}>
+                        <Button label="Jugar" icon="Zap" onPress={() => switchSlot(i)} />
+                      </View>
+                    ) : null}
                     <View style={{ flex: 1 }}>
                       <Button label="Borrar" variant="danger" onPress={() => confirmDelete(i)} />
                     </View>
@@ -101,7 +105,15 @@ export function SlotsScreen() {
 const s = StyleSheet.create({
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
   slot: { color: colors.muted, fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 },
-  active: { color: '#fff', backgroundColor: colors.accent, fontSize: 11, fontWeight: '800', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999 },
+  active: {
+    color: '#fff',
+    backgroundColor: colors.accent,
+    fontSize: 11,
+    fontWeight: '800',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 999,
+  },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   name: { color: colors.text, fontSize: 18, fontWeight: '800' },
   sub: { color: colors.muted, fontSize: 13, marginTop: 1 },

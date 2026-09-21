@@ -102,8 +102,13 @@ function agePeople(life: Life, rng: Rng): void {
 
 export function labelOf(kind: string): string {
   const m: Record<string, string> = {
-    mother: 'madre', father: 'padre', sibling: 'hermano/a', friend: 'amigo/a',
-    partner: 'pareja', child: 'hijo/a', ex: 'ex',
+    mother: 'madre',
+    father: 'padre',
+    sibling: 'hermano/a',
+    friend: 'amigo/a',
+    partner: 'pareja',
+    child: 'hijo/a',
+    ex: 'ex',
   };
   return m[kind] ?? kind;
 }

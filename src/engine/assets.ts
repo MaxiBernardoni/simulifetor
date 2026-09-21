@@ -62,7 +62,13 @@ export function buyAsset(life: Life, catalogId: string, financed: boolean): void
     value: priceOf(life, item.price),
     boughtYear: life.year,
   });
-  addLog(life, `Compraste: ${item.name} por ${formatMoney(priceOf(life, item.price))}${financed ? ' (financiado)' : ''}.`, 'good', 'Compra', 'House');
+  addLog(
+    life,
+    `Compraste: ${item.name} por ${formatMoney(priceOf(life, item.price))}${financed ? ' (financiado)' : ''}.`,
+    'good',
+    'Compra',
+    'House',
+  );
 }
 
 export function sellAsset(life: Life, assetId: string): void {
@@ -106,15 +112,23 @@ export function withdrawInvestments(life: Life): void {
 export function updateAssets(life: Life, rng: Rng): void {
   const inflation = priceIndex(life.year) / priceIndex(life.year - 1);
   for (const a of life.assets) {
-    a.value = Math.round(a.kind === 'house' ? a.value * (1 + (rng.int(-4, 9) / 100)) * inflation : a.value * 0.9 * inflation);
+    a.value = Math.round(a.kind === 'house' ? a.value * (1 + rng.int(-4, 9) / 100) * inflation : a.value * 0.9 * inflation);
     a.value = clampMin(a.value, 500);
   }
   if (life.invested > 0) {
-    const r = rng.weighted([-0.25, -0.05, 0.06, 0.14, 0.4], (x) => (x === -0.25 ? 10 : x === -0.05 ? 25 : x === 0.06 ? 35 : x === 0.14 ? 25 : 5)) ?? 0;
+    const r =
+      rng.weighted([-0.25, -0.05, 0.06, 0.14, 0.4], (x) => (x === -0.25 ? 10 : x === -0.05 ? 25 : x === 0.06 ? 35 : x === 0.14 ? 25 : 5)) ??
+      0;
     const delta = Math.round(life.invested * r);
     life.invested = Math.round((life.invested + delta) * inflation);
     if (Math.abs(r) >= 0.14) {
-      addLog(life, r > 0 ? `Tus inversiones subieron ${formatMoney(delta)}.` : `Tus inversiones cayeron ${formatMoney(-delta)}.`, r > 0 ? 'good' : 'bad', 'Inversiones', 'TrendingUp');
+      addLog(
+        life,
+        r > 0 ? `Tus inversiones subieron ${formatMoney(delta)}.` : `Tus inversiones cayeron ${formatMoney(-delta)}.`,
+        r > 0 ? 'good' : 'bad',
+        'Inversiones',
+        'TrendingUp',
+      );
     }
   }
   if (life.loan > 0) {

@@ -31,7 +31,13 @@ export function StartScreen() {
   return (
     <View style={s.wrap}>
       {FLOATING.map((f, i) => (
-        <Bob key={f.icon} amp={6} period={2200 + i * 380} delay={i * 200} style={{ position: 'absolute', top: f.top, left: f.left, opacity: 0.32 }}>
+        <Bob
+          key={f.icon}
+          amp={6}
+          period={2200 + i * 380}
+          delay={i * 200}
+          style={{ position: 'absolute', top: f.top, left: f.left, opacity: 0.32 }}
+        >
           <View style={{ transform: [{ rotate: f.rot }] }}>
             <Icon name={f.icon} size={f.size} color="#FFF0C7" />
           </View>
@@ -71,12 +77,24 @@ export function StartScreen() {
 const s = StyleSheet.create({
   wrap: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space.xl, gap: 10, backgroundColor: colors.header },
   title: {
-    color: colors.headerText, fontSize: 56, fontWeight: '900',
-    textShadowColor: '#08403F', textShadowOffset: { width: 3, height: 3 }, textShadowRadius: 0,
+    color: colors.headerText,
+    fontSize: 56,
+    fontWeight: '900',
+    textShadowColor: '#08403F',
+    textShadowOffset: { width: 3, height: 3 },
+    textShadowRadius: 0,
   },
   sub: { color: '#fff', fontSize: 16, textAlign: 'center', fontWeight: '600' },
   path: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', marginTop: space.xl },
-  pathIcon: { width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center', borderWidth: 3, borderColor: 'rgba(255,255,255,0.85)' },
+  pathIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: 'rgba(255,255,255,0.85)',
+  },
   pathLabel: { color: '#FFF0C7', fontSize: 11, fontWeight: '700' },
   pathLine: { width: 14, height: 3, backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: 2, marginTop: 22 },
 });

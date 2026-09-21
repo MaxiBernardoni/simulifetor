@@ -15,20 +15,15 @@ import { SCENARIOS } from '../content/scenarios';
 import { SCENE_KEYS, sceneForActivity, sceneForEvent, sceneForPersonAction } from '../content/scenes';
 import { applyEffects, newEffectCtx } from './effects';
 import { rngOf } from './rng';
-import { resolveChoice , fireEvent } from './events';
+import { resolveChoice, fireEvent } from './events';
 import { buyAsset, canBuy, loanCapacity, netWorth, takeLoan } from './assets';
 import type { Effect, GameEvent, Outcome } from './types';
 
 import { getEvent } from './registry';
 
-const outcomesOf = (ev: GameEvent): Outcome[] => [
-  ...(ev.choices?.flatMap((c) => c.outcomes) ?? []),
-];
+const outcomesOf = (ev: GameEvent): Outcome[] => [...(ev.choices?.flatMap((c) => c.outcomes) ?? [])];
 
-const allEffects = (ev: GameEvent): Effect[] => [
-  ...(ev.effects ?? []),
-  ...outcomesOf(ev).flatMap((o) => o.effects ?? []),
-];
+const allEffects = (ev: GameEvent): Effect[] => [...(ev.effects ?? []), ...outcomesOf(ev).flatMap((o) => o.effects ?? [])];
 
 describe('contenido', () => {
   it('ids de eventos únicos', () => {
@@ -82,7 +77,12 @@ describe('motor', () => {
   });
 
   it('createLife respeta nombre, género y aspecto elegidos', () => {
-    const l = createLife(5, { name: '  Maxi ', surname: 'Bernardoni', gender: 'F', look: { skin: 4, eyes: 2, hairStyle: 5, hairColor: 7 } });
+    const l = createLife(5, {
+      name: '  Maxi ',
+      surname: 'Bernardoni',
+      gender: 'F',
+      look: { skin: 4, eyes: 2, hairStyle: 5, hairColor: 7 },
+    });
     expect(l.name).toBe('Maxi');
     expect(l.surname).toBe('Bernardoni');
     expect(l.gender).toBe('F');
@@ -186,7 +186,17 @@ describe('fase 2', () => {
     l.year = 2000; // precios base
     l.age = 30;
     l.money = 20000;
-    l.job = { careerId: 'office', title: 'Analista', sector: 'oficina', level: 1, salary: 40000, performance: 60, yearsAtLevel: 0, yearsTotal: 3, boss: 'X Y' };
+    l.job = {
+      careerId: 'office',
+      title: 'Analista',
+      sector: 'oficina',
+      level: 1,
+      salary: 40000,
+      performance: 60,
+      yearsAtLevel: 0,
+      yearsTotal: 3,
+      boss: 'X Y',
+    };
     expect(canBuy(l, 'apt', false)).not.toBeNull();
     expect(canBuy(l, 'apt', true)).toBeNull();
     buyAsset(l, 'apt', true);
@@ -211,7 +221,7 @@ describe('fase 2', () => {
       l.age = 25;
       l.money = 20000;
       l.pending = [];
-      applyEffects(l, [{ arrest: { crime: 'robo', years: [2, 4] }, }], newEffectCtx(), rngOf(l));
+      applyEffects(l, [{ arrest: { crime: 'robo', years: [2, 4] } }], newEffectCtx(), rngOf(l));
       const ev = allEventsFor(l);
       if (ev) {
         resolveChoice(l, 3);

@@ -7,7 +7,21 @@ import { Icon } from '../Icon';
 import { FadeIn } from '../anim';
 import { colors, radius, space } from '../theme';
 
-function BigCard({ icon, color, title, desc, onPress, badge }: { icon: string; color: string; title: string; desc: string; onPress: () => void; badge?: string }) {
+function BigCard({
+  icon,
+  color,
+  title,
+  desc,
+  onPress,
+  badge,
+}: {
+  icon: string;
+  color: string;
+  title: string;
+  desc: string;
+  onPress: () => void;
+  badge?: string;
+}) {
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [s.card, { opacity: pressed ? 0.85 : 1 }]}>
       <IconTile name={icon} color={color} size={56} solid />
@@ -28,10 +42,23 @@ export function ModeScreen() {
   return (
     <ScrollView contentContainerStyle={{ padding: space.lg, gap: 12 }}>
       <FadeIn>
-        <BigCard icon="Baby" color={colors.accent} title="Vida libre" desc="Empezás de cero y hacés lo que quieras. Al morir, podés seguir con un hijo." onPress={() => setCreating({ step: 'create' })} />
+        <BigCard
+          icon="Baby"
+          color={colors.accent}
+          title="Vida libre"
+          desc="Empezás de cero y hacés lo que quieras. Al morir, podés seguir con un hijo."
+          onPress={() => setCreating({ step: 'create' })}
+        />
       </FadeIn>
       <FadeIn delay={120}>
-        <BigCard icon="Target" color="#E76F51" title="Escenarios" desc="Desafíos con un objetivo y un tiempo límite." badge={`${wins}/${SCENARIOS.length} superados`} onPress={() => setCreating({ step: 'scenarios' })} />
+        <BigCard
+          icon="Target"
+          color="#E76F51"
+          title="Escenarios"
+          desc="Desafíos con un objetivo y un tiempo límite."
+          badge={`${wins}/${SCENARIOS.length} superados`}
+          onPress={() => setCreating({ step: 'scenarios' })}
+        />
       </FadeIn>
     </ScrollView>
   );
@@ -53,7 +80,10 @@ export function ScenariosScreen() {
     <ScrollView contentContainerStyle={{ padding: space.lg, gap: 10, paddingBottom: 40 }}>
       {SCENARIOS.map((sc, i) => (
         <FadeIn key={sc.id} delay={i * 60}>
-          <Pressable onPress={() => setCreating({ step: 'create', scenarioId: sc.id })} style={({ pressed }) => [s.card, { alignItems: 'flex-start', opacity: pressed ? 0.85 : 1 }]}>
+          <Pressable
+            onPress={() => setCreating({ step: 'create', scenarioId: sc.id })}
+            style={({ pressed }) => [s.card, { alignItems: 'flex-start', opacity: pressed ? 0.85 : 1 }]}
+          >
             <IconTile name={sc.icon} color={sc.color} size={50} solid />
             <View style={{ flex: 1, gap: 3 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -80,12 +110,31 @@ export function ScenariosScreen() {
 }
 
 const s = StyleSheet.create({
-  card: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: colors.surface, borderRadius: radius.md, padding: 14, borderWidth: 1, borderColor: colors.border },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   title: { color: colors.text, fontSize: 17, fontWeight: '800' },
   desc: { color: colors.muted, fontSize: 13, lineHeight: 18 },
   badge: { color: colors.accent, fontSize: 12, fontWeight: '700', marginTop: 4 },
   goalRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginTop: 4 },
   goal: { flex: 1, fontSize: 13, fontWeight: '700' },
-  done: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', backgroundColor: colors.good, borderRadius: 999, paddingHorizontal: 9, paddingVertical: 3, marginTop: 6 },
+  done: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    alignSelf: 'flex-start',
+    backgroundColor: colors.good,
+    borderRadius: 999,
+    paddingHorizontal: 9,
+    paddingVertical: 3,
+    marginTop: 6,
+  },
   doneText: { color: '#fff', fontSize: 11, fontWeight: '800' },
 });

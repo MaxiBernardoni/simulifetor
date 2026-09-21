@@ -48,13 +48,17 @@ export function BackupScreen() {
         Guardá una copia de todas tus partidas, dinastías y logros. Sirve para pasarlas a otro celular o para no perderlas.
       </Text>
 
-      <SectionTitle icon="Upload" color="#2A9D6F">Exportar</SectionTitle>
+      <SectionTitle icon="Upload" color="#2A9D6F">
+        Exportar
+      </SectionTitle>
       <Card>
         <Text style={{ color: colors.muted, marginBottom: 10 }}>Genera un texto con todo tu progreso. Guardalo donde quieras.</Text>
         <Button label="Copiar / compartir copia" icon="Upload" onPress={doExport} />
       </Card>
 
-      <SectionTitle icon="Download" color="#3A86B4">Importar</SectionTitle>
+      <SectionTitle icon="Download" color="#3A86B4">
+        Importar
+      </SectionTitle>
       <Card>
         <Text style={{ color: colors.muted, marginBottom: 10 }}>Pegá acá el texto de una copia anterior.</Text>
         <TextInput
@@ -82,6 +86,17 @@ export function BackupScreen() {
 }
 
 const s = StyleSheet.create({
-  input: { minHeight: 110, maxHeight: 200, backgroundColor: colors.bg, borderColor: colors.border, borderWidth: 1, borderRadius: radius.md, padding: 12, color: colors.text, fontSize: 13, textAlignVertical: 'top' },
+  input: {
+    minHeight: 110,
+    maxHeight: 200,
+    backgroundColor: colors.bg,
+    borderColor: colors.border,
+    borderWidth: 1,
+    borderRadius: radius.md,
+    padding: 12,
+    color: colors.text,
+    fontSize: 13,
+    textAlignVertical: 'top',
+  },
   msg: { marginTop: space.lg, padding: 12, borderRadius: radius.md },
 });

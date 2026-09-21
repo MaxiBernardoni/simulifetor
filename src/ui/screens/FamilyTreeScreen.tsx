@@ -33,7 +33,19 @@ const RING_STYLE: Record<Status, { color: string; width: number; dashed?: boolea
   dead: { color: '#9AA0A6', width: 2 },
 };
 
-function NodeView({ node, w, curId, linked, onPress }: { node: TreeNode; w: World; curId: string; linked?: boolean; onPress: (id: string) => void }) {
+function NodeView({
+  node,
+  w,
+  curId,
+  linked,
+  onPress,
+}: {
+  node: TreeNode;
+  w: World;
+  curId: string;
+  linked?: boolean;
+  onPress: (id: string) => void;
+}) {
   const st = statusOf(w, curId, node);
   const ring = RING_STYLE[st];
   const rel = relationLabel(w, curId, node.id);
@@ -43,7 +55,12 @@ function NodeView({ node, w, curId, linked, onPress }: { node: TreeNode; w: Worl
         <View
           style={[
             s.ring,
-            { borderColor: ring.color, borderWidth: ring.width, borderStyle: ring.dashed ? 'dashed' : 'solid', opacity: st === 'dead' ? 0.55 : st === 'locked' ? 0.85 : 1 },
+            {
+              borderColor: ring.color,
+              borderWidth: ring.width,
+              borderStyle: ring.dashed ? 'dashed' : 'solid',
+              opacity: st === 'dead' ? 0.55 : st === 'locked' ? 0.85 : 1,
+            },
           ]}
         >
           <View style={s.avatar}>
@@ -82,15 +99,42 @@ function NodeView({ node, w, curId, linked, onPress }: { node: TreeNode; w: Worl
   );
 }
 
-function Unit({ u, w, curId, isChild, onPress }: { u: ForestUnit; w: World; curId: string; isChild: boolean; onPress: (id: string) => void }) {
+function Unit({
+  u,
+  w,
+  curId,
+  isChild,
+  onPress,
+}: {
+  u: ForestUnit;
+  w: World;
+  curId: string;
+  isChild: boolean;
+  onPress: (id: string) => void;
+}) {
   const hasKids = u.children.length > 0;
   const couple = !!u.partner;
   return (
     <View style={{ alignItems: 'center' }}>
       <View style={{ flexDirection: 'row', alignItems: 'flex-start', width: couple ? NW * 2 : NW }}>
-        {couple ? <View style={{ position: 'absolute', top: RING / 2, left: NW / 2, right: NW / 2, height: LW, backgroundColor: LINE }} /> : null}
-        {couple && isChild ? <View style={{ position: 'absolute', top: 0, left: NW - LW / 2, height: RING / 2, width: LW, backgroundColor: LINE }} /> : null}
-        {hasKids ? <View style={{ position: 'absolute', top: couple ? RING / 2 : NODE_H, bottom: 0, left: couple ? NW - LW / 2 : NW / 2 - LW / 2, width: LW, backgroundColor: LINE }} /> : null}
+        {couple ? (
+          <View style={{ position: 'absolute', top: RING / 2, left: NW / 2, right: NW / 2, height: LW, backgroundColor: LINE }} />
+        ) : null}
+        {couple && isChild ? (
+          <View style={{ position: 'absolute', top: 0, left: NW - LW / 2, height: RING / 2, width: LW, backgroundColor: LINE }} />
+        ) : null}
+        {hasKids ? (
+          <View
+            style={{
+              position: 'absolute',
+              top: couple ? RING / 2 : NODE_H,
+              bottom: 0,
+              left: couple ? NW - LW / 2 : NW / 2 - LW / 2,
+              width: LW,
+              backgroundColor: LINE,
+            }}
+          />
+        ) : null}
         <NodeView node={u.head} w={w} curId={curId} onPress={onPress} />
         {u.partner ? <NodeView node={u.partner} w={w} curId={curId} linked={u.partnerLinked} onPress={onPress} /> : null}
       </View>
@@ -104,8 +148,12 @@ function Unit({ u, w, curId, isChild, onPress }: { u: ForestUnit; w: World; curI
               const last = i === u.children.length - 1;
               return (
                 <View key={c.head.id} style={{ alignItems: 'center', paddingHorizontal: 4 }}>
-                  {!first ? <View style={{ position: 'absolute', top: 0, left: 0, width: '50%', height: LW, backgroundColor: LINE }} /> : null}
-                  {!last ? <View style={{ position: 'absolute', top: 0, left: '50%', width: '50%', height: LW, backgroundColor: LINE }} /> : null}
+                  {!first ? (
+                    <View style={{ position: 'absolute', top: 0, left: 0, width: '50%', height: LW, backgroundColor: LINE }} />
+                  ) : null}
+                  {!last ? (
+                    <View style={{ position: 'absolute', top: 0, left: '50%', width: '50%', height: LW, backgroundColor: LINE }} />
+                  ) : null}
                   <View style={{ width: LW, height: 16, backgroundColor: LINE }} />
                   <Unit u={c} w={w} curId={curId} isChild onPress={onPress} />
                 </View>
@@ -145,7 +193,19 @@ function NodeSheet({ id, wd, onClose }: { id: string | null; wd: WorldData; onCl
       <Pressable style={s.backdrop} onPress={onClose}>
         <Pressable style={s.sheet} onPress={() => undefined}>
           <View style={{ flexDirection: 'row', gap: 14, alignItems: 'center' }}>
-            <View style={[s.ring, { width: 78, height: 78, borderRadius: 39, borderColor: RING_STYLE[st].color, borderWidth: 3, borderStyle: RING_STYLE[st].dashed ? 'dashed' : 'solid' }]}>
+            <View
+              style={[
+                s.ring,
+                {
+                  width: 78,
+                  height: 78,
+                  borderRadius: 39,
+                  borderColor: RING_STYLE[st].color,
+                  borderWidth: 3,
+                  borderStyle: RING_STYLE[st].dashed ? 'dashed' : 'solid',
+                },
+              ]}
+            >
               <View style={{ width: 68, height: 68, borderRadius: 34, overflow: 'hidden' }}>
                 <Avatar look={n.look} size={68} />
               </View>
@@ -156,17 +216,26 @@ function NodeSheet({ id, wd, onClose }: { id: string | null; wd: WorldData; onCl
               </Text>
               <Text style={[s.sRel, { color: tone }]}>{rel}</Text>
               <Text style={s.sSub}>
-                {n.alive ? `${n.age} años · nació en ${n.birthYear}` : `${n.birthYear} – ${n.deathYear} · murió de ${n.cause ?? 'causas naturales'}`}
+                {n.alive
+                  ? `${n.age} años · nació en ${n.birthYear}`
+                  : `${n.birthYear} – ${n.deathYear} · murió de ${n.cause ?? 'causas naturales'}`}
               </Text>
             </View>
           </View>
 
           <View style={s.facts}>
-            <Fact icon="BriefcaseBusiness" label={n.job ?? (n.alive ? (n.age < 18 ? 'Estudiante' : n.age >= 65 ? 'Jubilado/a' : 'Trabaja') : '—')} />
+            <Fact
+              icon="BriefcaseBusiness"
+              label={n.job ?? (n.alive ? (n.age < 18 ? 'Estudiante' : n.age >= 65 ? 'Jubilado/a' : 'Trabaja') : '—')}
+            />
             <Fact icon="Coins" label={n.netWorth !== undefined ? formatMoney(n.netWorth) : CLASS_LABEL[n.wealthClass]} />
             {partner ? <Fact icon="Heart" label={`${n.married ? 'Casado/a con' : 'Pareja:'} ${partner.name}`} /> : null}
             {kids > 0 ? <Fact icon="Baby" label={`${kids} ${kids === 1 ? 'hijo/a' : 'hijos/as'}`} /> : null}
-            {full ? <Fact icon="Zap" label="Vive su propia vida (simulación completa)" /> : n.alive && n.blood ? <Fact icon="Hourglass" label="Vida simplificada hasta que la juegues" /> : null}
+            {full ? (
+              <Fact icon="Zap" label="Vive su propia vida (simulación completa)" />
+            ) : n.alive && n.blood ? (
+              <Fact icon="Hourglass" label="Vida simplificada hasta que la juegues" />
+            ) : null}
           </View>
 
           <View style={[s.note, { borderColor: tone + '66', backgroundColor: tone + '14' }]}>
@@ -184,7 +253,11 @@ function NodeSheet({ id, wd, onClose }: { id: string | null; wd: WorldData; onCl
             {st === 'ok' ? (
               <Button label={`Vivir la vida de ${n.name}`} icon="Zap" variant="coral" onPress={go} disabled={scenarioLocked} />
             ) : null}
-            {st === 'ok' && scenarioLocked ? <Text style={{ color: colors.muted, fontSize: 12, textAlign: 'center' }}>No podés cambiar mientras hay un escenario en curso.</Text> : null}
+            {st === 'ok' && scenarioLocked ? (
+              <Text style={{ color: colors.muted, fontSize: 12, textAlign: 'center' }}>
+                No podés cambiar mientras hay un escenario en curso.
+              </Text>
+            ) : null}
             <Button label="Cerrar" variant="ghost" onPress={onClose} />
           </View>
         </Pressable>
@@ -220,12 +293,14 @@ export function FamilyTreeScreen() {
         <View style={{ paddingHorizontal: space.lg }}>
           <Text style={s.title}>Familia {w.surname}</Text>
           <Text style={s.sub}>
-            {total} personas · {alive} vivas · {bots} {bots === 1 ? 'personaje con vida propia' : 'personajes con vida propia'} · año {w.year}
+            {total} personas · {alive} vivas · {bots} {bots === 1 ? 'personaje con vida propia' : 'personajes con vida propia'} · año{' '}
+            {w.year}
           </Text>
           <View style={s.rule}>
             <Icon name="Scale" size={18} color="#B77A12" />
             <Text style={{ flex: 1, color: colors.text, fontSize: 13, lineHeight: 18 }}>
-              Solo podés vivir la vida de parientes de <Text style={{ fontWeight: '800' }}>sangre a hasta 2 generaciones</Text> de distancia (padres, abuelos, hermanos, hijos, nietos, tíos, sobrinos y primos). Los demás aparecen en el árbol pero están bloqueados.
+              Solo podés vivir la vida de parientes de <Text style={{ fontWeight: '800' }}>sangre a hasta 2 generaciones</Text> de distancia
+              (padres, abuelos, hermanos, hijos, nietos, tíos, sobrinos y primos). Los demás aparecen en el árbol pero están bloqueados.
             </Text>
           </View>
           <View style={s.legend}>
@@ -275,7 +350,9 @@ function Branch({ children }: { children: React.ReactNode }) {
 function Legend({ color, label, dashed }: { color: string; label: string; dashed?: boolean }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-      <View style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 2.5, borderColor: color, borderStyle: dashed ? 'dashed' : 'solid' }} />
+      <View
+        style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 2.5, borderColor: color, borderStyle: dashed ? 'dashed' : 'solid' }}
+      />
       <Text style={{ color: colors.muted, fontSize: 12 }}>{label}</Text>
     </View>
   );
@@ -284,18 +361,43 @@ function Legend({ color, label, dashed }: { color: string; label: string; dashed
 const s = StyleSheet.create({
   title: { color: colors.nameBlue, fontSize: 24, fontWeight: '900' },
   sub: { color: colors.muted, fontSize: 13, marginTop: 2 },
-  rule: { flexDirection: 'row', gap: 10, backgroundColor: '#FFF3D6', borderRadius: radius.md, padding: 12, marginTop: space.md, alignItems: 'flex-start' },
+  rule: {
+    flexDirection: 'row',
+    gap: 10,
+    backgroundColor: '#FFF3D6',
+    borderRadius: radius.md,
+    padding: 12,
+    marginTop: space.md,
+    alignItems: 'flex-start',
+  },
   legend: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: space.md },
   node: { width: NW, alignItems: 'center' },
   ring: { width: RING, height: RING, borderRadius: RING / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' },
   avatar: { width: AV, height: AV, borderRadius: AV / 2, overflow: 'hidden' },
-  badge: { position: 'absolute', right: -2, bottom: -2, width: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#fff' },
+  badge: {
+    position: 'absolute',
+    right: -2,
+    bottom: -2,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
   name: { color: colors.text, fontWeight: '800', fontSize: 13, marginTop: 5 },
   rel: { color: colors.nameBlue, fontSize: 11, fontWeight: '700' },
   age: { color: colors.muted, fontSize: 10 },
   hint: { color: colors.muted, fontSize: 10, marginTop: 4, textAlign: 'center' },
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
-  sheet: { backgroundColor: colors.bg, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: space.lg, paddingBottom: 30 },
+  sheet: {
+    backgroundColor: colors.bg,
+    borderTopLeftRadius: radius.lg,
+    borderTopRightRadius: radius.lg,
+    padding: space.lg,
+    paddingBottom: 30,
+  },
   sTitle: { color: colors.text, fontSize: 20, fontWeight: '800' },
   sRel: { fontSize: 14, fontWeight: '800', marginTop: 1 },
   sSub: { color: colors.muted, fontSize: 12, marginTop: 2 },

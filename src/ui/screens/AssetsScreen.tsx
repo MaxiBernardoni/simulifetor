@@ -22,7 +22,17 @@ function ButtonRow({ children }: { children: React.ReactNode }) {
   return <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 10 }}>{children}</View>;
 }
 
-function Small({ label, onPress, disabled, variant }: { label: string; onPress: () => void; disabled?: boolean; variant?: 'primary' | 'ghost' | 'danger' }) {
+function Small({
+  label,
+  onPress,
+  disabled,
+  variant,
+}: {
+  label: string;
+  onPress: () => void;
+  disabled?: boolean;
+  variant?: 'primary' | 'ghost' | 'danger';
+}) {
   return (
     <View style={{ minWidth: 92 }}>
       <Button label={label} onPress={onPress} disabled={disabled} variant={variant ?? 'ghost'} />
@@ -65,19 +75,29 @@ export function AssetsScreen() {
     <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: 40 }}>
       <Card style={{ marginTop: space.md }}>
         <Text style={{ color: colors.muted, fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>{debt ? 'Deuda' : 'Dinero'}</Text>
-        <Text style={{ color: debt ? colors.bad : colors.money, fontSize: 34, fontWeight: '800', marginTop: 4 }}>{formatMoney(life.money)}</Text>
-        {debt ? <Text style={{ color: colors.muted, marginTop: 4 }}>{`Las deudas crecen 8% por año. Pasados los ${formatMoney(priceOf(life, 40000))} de deuda, quebrás.`}</Text> : null}
+        <Text style={{ color: debt ? colors.bad : colors.money, fontSize: 34, fontWeight: '800', marginTop: 4 }}>
+          {formatMoney(life.money)}
+        </Text>
+        {debt ? (
+          <Text
+            style={{ color: colors.muted, marginTop: 4 }}
+          >{`Las deudas crecen 8% por año. Pasados los ${formatMoney(priceOf(life, 40000))} de deuda, quebrás.`}</Text>
+        ) : null}
         <Line label="Patrimonio neto" value={formatMoney(netWorth(life))} />
       </Card>
 
-      <SectionTitle icon="Banknote" color="#2A9D6F">Ingresos</SectionTitle>
+      <SectionTitle icon="Banknote" color="#2A9D6F">
+        Ingresos
+      </SectionTitle>
       <Card>
         <Line label="Sueldo bruto" value={life.job ? formatMoney(life.job.salary) : '—'} />
         <Line label="Jubilación" value={life.pension ? formatMoney(life.pension) : '—'} />
         <Line label="Impuestos" value="20%" />
       </Card>
 
-      <SectionTitle icon="Gem" color="#E9A23B">Mis bienes · {formatMoney(assetValue(life))}</SectionTitle>
+      <SectionTitle icon="Gem" color="#E9A23B">
+        Mis bienes · {formatMoney(assetValue(life))}
+      </SectionTitle>
       {life.assets.length === 0 ? (
         <Text style={{ color: colors.muted }}>No tenés propiedades ni autos. Pagás alquiler ($7.000 por año).</Text>
       ) : (
@@ -95,37 +115,58 @@ export function AssetsScreen() {
         ))
       )}
 
-      <SectionTitle icon="House" color="#0E7C7B">Vivienda</SectionTitle>
+      <SectionTitle icon="House" color="#0E7C7B">
+        Vivienda
+      </SectionTitle>
       {shop(houses)}
-      <SectionTitle icon="Car" color="#E76F51">Autos</SectionTitle>
+      <SectionTitle icon="Car" color="#E76F51">
+        Autos
+      </SectionTitle>
       {shop(cars)}
 
-      <SectionTitle icon="Landmark" color="#3A86B4">Banco</SectionTitle>
+      <SectionTitle icon="Landmark" color="#3A86B4">
+        Banco
+      </SectionTitle>
       <Card>
         <Line label="Préstamo actual" value={formatMoney(life.loan)} color={life.loan > 0 ? colors.warn : undefined} />
         <Line label="Podés pedir hasta" value={formatMoney(capacity)} />
         <Text style={{ color: colors.muted, fontSize: 12 }}>Interés 6% anual. Se paga automáticamente el 10% por año.</Text>
         <ButtonRow>
-          {LOAN_STEPS.map((step) => { const n = priceOf(life, step); return (
-            <Small key={step} label={`+${formatMoney(n)}`} disabled={blocked || n > capacity} onPress={() => g.loan(n)} />
-          ); })}
+          {LOAN_STEPS.map((step) => {
+            const n = priceOf(life, step);
+            return <Small key={step} label={`+${formatMoney(n)}`} disabled={blocked || n > capacity} onPress={() => g.loan(n)} />;
+          })}
         </ButtonRow>
         {life.loan > 0 ? (
           <ButtonRow>
-            <Small label={`Pagar ${formatMoney(priceOf(life, 5000))}`} disabled={blocked || life.money < 1} onPress={() => g.repay(priceOf(life, 5000))} />
+            <Small
+              label={`Pagar ${formatMoney(priceOf(life, 5000))}`}
+              disabled={blocked || life.money < 1}
+              onPress={() => g.repay(priceOf(life, 5000))}
+            />
             <Small label="Pagar todo" disabled={blocked || life.money < 1} onPress={() => g.repay(life.loan)} />
           </ButtonRow>
         ) : null}
       </Card>
 
-      <SectionTitle icon="TrendingUp" color="#9B5DE5">Inversiones</SectionTitle>
+      <SectionTitle icon="TrendingUp" color="#9B5DE5">
+        Inversiones
+      </SectionTitle>
       <Card>
         <Line label="Invertido" value={formatMoney(life.invested)} />
         <Text style={{ color: colors.muted, fontSize: 12 }}>Rinde entre -25% y +40% por año. Sin garantías.</Text>
         <ButtonRow>
-          {INVEST_STEPS.map((step) => { const n = priceOf(life, step); return (
-            <Small key={step} label={`Invertir ${formatMoney(n)}`} disabled={blocked || life.age < 18 || life.money < n} onPress={() => g.invest(n)} />
-          ); })}
+          {INVEST_STEPS.map((step) => {
+            const n = priceOf(life, step);
+            return (
+              <Small
+                key={step}
+                label={`Invertir ${formatMoney(n)}`}
+                disabled={blocked || life.age < 18 || life.money < n}
+                onPress={() => g.invest(n)}
+              />
+            );
+          })}
         </ButtonRow>
         {life.invested > 0 ? (
           <ButtonRow>
@@ -134,10 +175,16 @@ export function AssetsScreen() {
         ) : null}
       </Card>
 
-      <SectionTitle icon="IdCard" color="#7A7466">Perfil</SectionTitle>
+      <SectionTitle icon="IdCard" color="#7A7466">
+        Perfil
+      </SectionTitle>
       <Card>
         <Line label="Origen familiar" value={CLASS[life.wealthClass]} />
-        <Line label="Antecedentes penales" value={life.flags.criminal_record ? 'Sí' : 'No'} color={life.flags.criminal_record ? colors.bad : undefined} />
+        <Line
+          label="Antecedentes penales"
+          value={life.flags.criminal_record ? 'Sí' : 'No'}
+          color={life.flags.criminal_record ? colors.bad : undefined}
+        />
         <Line label="Enfermedad crónica" value={life.flags.chronic ? 'Sí' : 'No'} color={life.flags.chronic ? colors.warn : undefined} />
         <Line label="Adicción" value={life.flags.substance ? 'Sí' : 'No'} color={life.flags.substance ? colors.warn : undefined} />
         <Line label="Quiebra" value={life.flags.bankrupt ? 'Sí' : 'No'} color={life.flags.bankrupt ? colors.bad : undefined} />

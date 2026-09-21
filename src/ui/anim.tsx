@@ -11,13 +11,21 @@ interface Base {
 }
 
 /** Aparece desplazándose suavemente desde abajo. */
-export function FadeIn({ children, style, delay = 0, duration = 380, from = 14 }: Base & { delay?: number; duration?: number; from?: number }) {
+export function FadeIn({
+  children,
+  style,
+  delay = 0,
+  duration = 380,
+  from = 14,
+}: Base & { delay?: number; duration?: number; from?: number }) {
   const v = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.timing(v, { toValue: 1, duration, delay, easing: Easing.out(Easing.cubic), useNativeDriver: NATIVE }).start();
   }, [v, delay, duration]);
   return (
-    <Animated.View style={[style, { opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [from, 0] }) }] }]}>
+    <Animated.View
+      style={[style, { opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [from, 0] }) }] }]}
+    >
       {children}
     </Animated.View>
   );
@@ -27,9 +35,16 @@ export function FadeIn({ children, style, delay = 0, duration = 380, from = 14 }
 export function Pop({ children, style, delay = 0, from = 0.3 }: Base & { delay?: number; from?: number }) {
   const v = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    Animated.sequence([Animated.delay(delay), Animated.spring(v, { toValue: 1, friction: 5, tension: 120, useNativeDriver: NATIVE })]).start();
+    Animated.sequence([
+      Animated.delay(delay),
+      Animated.spring(v, { toValue: 1, friction: 5, tension: 120, useNativeDriver: NATIVE }),
+    ]).start();
   }, [v, delay]);
-  return <Animated.View style={[style, { opacity: v, transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [from, 1] }) }] }]}>{children}</Animated.View>;
+  return (
+    <Animated.View style={[style, { opacity: v, transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [from, 1] }) }] }]}>
+      {children}
+    </Animated.View>
+  );
 }
 
 /** Sube y baja suavemente, en bucle. */
@@ -45,7 +60,11 @@ export function Bob({ children, style, amp = 3, period = 1900, delay = 0 }: Base
     loop.start();
     return () => loop.stop();
   }, [v, period, delay]);
-  return <Animated.View style={[style, { transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [amp, -amp] }) }] }]}>{children}</Animated.View>;
+  return (
+    <Animated.View style={[style, { transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [amp, -amp] }) }] }]}>
+      {children}
+    </Animated.View>
+  );
 }
 
 /** Se desplaza de lado a lado (nubes). */
@@ -61,11 +80,21 @@ export function Drift({ children, style, amp = 14, period = 7000 }: Base & { amp
     loop.start();
     return () => loop.stop();
   }, [v, period]);
-  return <Animated.View style={[style, { transform: [{ translateX: v.interpolate({ inputRange: [0, 1], outputRange: [-amp, amp] }) }] }]}>{children}</Animated.View>;
+  return (
+    <Animated.View style={[style, { transform: [{ translateX: v.interpolate({ inputRange: [0, 1], outputRange: [-amp, amp] }) }] }]}>
+      {children}
+    </Animated.View>
+  );
 }
 
 /** Pulso suave (escala) para llamar la atención. */
-export function Pulse({ children, style, active = true, amount = 0.05, period = 1400 }: Base & { active?: boolean; amount?: number; period?: number }) {
+export function Pulse({
+  children,
+  style,
+  active = true,
+  amount = 0.05,
+  period = 1400,
+}: Base & { active?: boolean; amount?: number; period?: number }) {
   const v = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (!active) {
@@ -81,7 +110,11 @@ export function Pulse({ children, style, active = true, amount = 0.05, period = 
     loop.start();
     return () => loop.stop();
   }, [v, active, period]);
-  return <Animated.View style={[style, { transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [1, 1 + amount] }) }] }]}>{children}</Animated.View>;
+  return (
+    <Animated.View style={[style, { transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [1, 1 + amount] }) }] }]}>
+      {children}
+    </Animated.View>
+  );
 }
 
 /** Sacudida horizontal (malas noticias). */
@@ -98,7 +131,14 @@ export function Shake({ children, style, active = false }: Base & { active?: boo
 }
 
 /** Botón que se achica al presionarlo. */
-export function PressScale({ children, onPress, disabled, style, outerStyle, to = 0.9 }: Base & { onPress: () => void; disabled?: boolean; to?: number; outerStyle?: StyleProp<ViewStyle> }) {
+export function PressScale({
+  children,
+  onPress,
+  disabled,
+  style,
+  outerStyle,
+  to = 0.9,
+}: Base & { onPress: () => void; disabled?: boolean; to?: number; outerStyle?: StyleProp<ViewStyle> }) {
   const v = useRef(new Animated.Value(1)).current;
   const animate = (toValue: number) => Animated.spring(v, { toValue, friction: 6, tension: 220, useNativeDriver: NATIVE }).start();
   return (

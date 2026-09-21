@@ -36,9 +36,28 @@ export function SectionTitle({ children, icon, color }: { children: React.ReactN
 }
 
 /** Ficha cuadrada con ícono y color de fondo suave. */
-export function IconTile({ name, color = colors.accent, size = 40, solid }: { name: string; color?: string; size?: number; solid?: boolean }) {
+export function IconTile({
+  name,
+  color = colors.accent,
+  size = 40,
+  solid,
+}: {
+  name: string;
+  color?: string;
+  size?: number;
+  solid?: boolean;
+}) {
   return (
-    <View style={{ width: size, height: size, borderRadius: size * 0.3, backgroundColor: solid ? color : color + '22', alignItems: 'center', justifyContent: 'center' }}>
+    <View
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size * 0.3,
+        backgroundColor: solid ? color : color + '22',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <Icon name={name} size={Math.round(size * 0.52)} color={solid ? '#fff' : color} />
     </View>
   );
@@ -57,7 +76,8 @@ export function Button({
   variant?: 'primary' | 'ghost' | 'danger' | 'coral';
   icon?: string;
 }) {
-  const bg = variant === 'primary' ? colors.accent : variant === 'danger' ? colors.bad : variant === 'coral' ? colors.ageButton : colors.surface2;
+  const bg =
+    variant === 'primary' ? colors.accent : variant === 'danger' ? colors.bad : variant === 'coral' ? colors.ageButton : colors.surface2;
   return (
     <Pressable
       onPress={onPress}
@@ -136,7 +156,11 @@ export function Row({
   avatar?: React.ReactNode;
 }) {
   return (
-    <Pressable onPress={onPress} disabled={disabled || !onPress} style={({ pressed }) => [s.row, { opacity: disabled ? 0.45 : pressed ? 0.75 : 1 }]}>
+    <Pressable
+      onPress={onPress}
+      disabled={disabled || !onPress}
+      style={({ pressed }) => [s.row, { opacity: disabled ? 0.45 : pressed ? 0.75 : 1 }]}
+    >
       {avatar ?? (icon ? <IconTile name={icon} color={tint ?? colors.accent} size={42} /> : null)}
       <View style={{ flex: 1 }}>
         <Text style={s.rowTitle}>{title}</Text>
@@ -151,8 +175,24 @@ const s = StyleSheet.create({
   card: { backgroundColor: colors.surface, borderRadius: radius.md, padding: space.lg, borderWidth: 1, borderColor: colors.border },
   sectionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: space.lg, marginBottom: space.sm },
   sectionIcon: { width: 26, height: 26, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  sectionTitle: { color: colors.muted, fontSize: 12, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', marginTop: space.lg, marginBottom: space.sm },
-  btn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, paddingHorizontal: 18, borderRadius: radius.md },
+  sectionTitle: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginTop: space.lg,
+    marginBottom: space.sm,
+  },
+  btn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    borderRadius: radius.md,
+  },
   btnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   barBg: { backgroundColor: colors.track, borderRadius: 8, overflow: 'hidden' },
   statRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginVertical: 4 },
@@ -161,7 +201,17 @@ const s = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 4, borderWidth: 1, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3 },
   chipText: { fontSize: 12, fontWeight: '700' },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.surface, padding: 12, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, marginBottom: 8 },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: colors.surface,
+    padding: 12,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: 8,
+  },
   rowIcon: { width: 38, height: 38, borderRadius: 10, backgroundColor: colors.surface2, alignItems: 'center', justifyContent: 'center' },
   rowTitle: { color: colors.text, fontSize: 15, fontWeight: '600' },
   rowSub: { color: colors.muted, fontSize: 12, marginTop: 2 },
@@ -225,7 +275,12 @@ export function LifeStat({ stat, value }: { stat: StatKey; value: number }) {
       <View style={{ flex: 1 }}>
         <Text style={ls.label}>{m.label}</Text>
         <View style={ls.track}>
-          <Animated.View style={[ls.fill, { width: w.interpolate({ inputRange: [0, 100], outputRange: ['3%', '100%'], extrapolate: 'clamp' }), backgroundColor: color }]} />
+          <Animated.View
+            style={[
+              ls.fill,
+              { width: w.interpolate({ inputRange: [0, 100], outputRange: ['3%', '100%'], extrapolate: 'clamp' }), backgroundColor: color },
+            ]}
+          />
         </View>
       </View>
       <Text style={ls.pct}>{value}</Text>
@@ -236,11 +291,25 @@ export function LifeStat({ stat, value }: { stat: StatKey; value: number }) {
 const h = StyleSheet.create({
   bar: { backgroundColor: colors.header, paddingHorizontal: 14, paddingBottom: 10, flexDirection: 'row', alignItems: 'center' },
   side: { width: 76, justifyContent: 'center' },
-  circle: { width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' },
+  circle: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   title: { flex: 1, textAlign: 'center', color: '#fff', fontSize: 20, fontWeight: '800' },
   wordmark: {
-    flex: 1, textAlign: 'center', color: colors.headerText, fontSize: 30, fontWeight: '900', letterSpacing: 0.5,
-    textShadowColor: '#08403F', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 0,
+    flex: 1,
+    textAlign: 'center',
+    color: colors.headerText,
+    fontSize: 30,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+    textShadowColor: '#08403F',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 0,
   },
 });
 
@@ -304,7 +373,16 @@ export function StatusBadges({ life }: { life: Life }) {
 }
 
 const sb = StyleSheet.create({
-  row: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.infoBar, borderBottomWidth: 1, borderBottomColor: colors.border },
+  row: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: colors.infoBar,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 },
   text: { fontSize: 12, fontWeight: '700' },
 });
@@ -318,13 +396,26 @@ export function IconPattern() {
     for (let c2 = 0; c2 < 5; c2++) {
       const name = PATTERN[(r * 5 + c2 * 3) % PATTERN.length];
       items.push(
-        <View key={`${r}-${c2}`} style={{ position: 'absolute', top: r * 96 + (c2 % 2) * 40, left: c2 * 78 + (r % 2) * 30, transform: [{ rotate: `${((r * 7 + c2 * 13) % 5) * 10 - 20}deg` }], opacity: 0.06 }}>
+        <View
+          key={`${r}-${c2}`}
+          style={{
+            position: 'absolute',
+            top: r * 96 + (c2 % 2) * 40,
+            left: c2 * 78 + (r % 2) * 30,
+            transform: [{ rotate: `${((r * 7 + c2 * 13) % 5) * 10 - 20}deg` }],
+            opacity: 0.06,
+          }}
+        >
           <Icon name={name} size={34} color={colors.nameBlue} />
         </View>,
       );
     }
   }
-  return <View pointerEvents="none" style={StyleSheet.absoluteFill}>{items}</View>;
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      {items}
+    </View>
+  );
 }
 
 /** Objetivo del escenario en curso, con su progreso. */
@@ -339,16 +430,33 @@ export function ScenarioBar({ life }: { life: Life }) {
       <View style={{ flex: 1 }}>
         <Text style={[scn.title, { color }]} numberOfLines={1}>
           {def.title}
-          {sc.status === 'won' ? ' · superado' : sc.status === 'lost' ? ' · fallado' : def.deadlineAge ? ` · hasta los ${def.deadlineAge}` : ''}
+          {sc.status === 'won'
+            ? ' · superado'
+            : sc.status === 'lost'
+              ? ' · fallado'
+              : def.deadlineAge
+                ? ` · hasta los ${def.deadlineAge}`
+                : ''}
         </Text>
-        <Text style={scn.sub} numberOfLines={2}>{def.progress(life)}</Text>
+        <Text style={scn.sub} numberOfLines={2}>
+          {def.progress(life)}
+        </Text>
       </View>
     </View>
   );
 }
 
 const scn = StyleSheet.create({
-  bar: { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 12, marginTop: 8, padding: 8, borderRadius: 12, borderWidth: 1 },
+  bar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginHorizontal: 12,
+    marginTop: 8,
+    padding: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
   title: { fontSize: 13, fontWeight: '800' },
   sub: { color: colors.muted, fontSize: 12, marginTop: 1 },
 });

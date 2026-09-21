@@ -19,7 +19,6 @@ export interface Status {
   reason?: string;
 }
 
-
 // ───────── Actividades ─────────
 export function activityStatus(life: Life, a: Activity): Status {
   const rng = rngOf(life);
@@ -36,7 +35,15 @@ export function activityStatus(life: Life, a: Activity): Status {
 function finish(life: Life, title: string, text: string, ctx: EffectCtx, icon?: string, scene?: string, targetId?: string): void {
   addLog(life, text, toneOf(ctx.deltas), title, icon);
   for (const l of ctx.logs) addLog(life, l, 'neutral');
-  life.pending.unshift({ kind: 'result', title, text, deltas: ctx.deltas, icon, scene: scene ? refineScene(scene, ctx.deltas) : undefined, targetId });
+  life.pending.unshift({
+    kind: 'result',
+    title,
+    text,
+    deltas: ctx.deltas,
+    icon,
+    scene: scene ? refineScene(scene, ctx.deltas) : undefined,
+    targetId,
+  });
   for (const id of ctx.triggers) {
     const ev = getEvent(id);
     if (ev && life.alive) fireEvent(life, ev);

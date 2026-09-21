@@ -3,7 +3,16 @@ import { rngFromState } from './rng';
 import { ageUp } from './ageUp';
 import { dismissPrompt, resolveChoice, choiceAvailable } from './events';
 import { allActivities, allPersonActions, getEvent } from './registry';
-import { activityStatus, canEnrollUniversity, enrollUniversity, personActionStatus, runActivity, runPersonAction, searchJobs, takeJob } from './actions';
+import {
+  activityStatus,
+  canEnrollUniversity,
+  enrollUniversity,
+  personActionStatus,
+  runActivity,
+  runPersonAction,
+  searchJobs,
+  takeJob,
+} from './actions';
 import { buyAsset, canBuy, investMoney, loanCapacity, sellAsset, takeLoan, withdrawInvestments } from './assets';
 import { CATALOG } from '../content/assets';
 

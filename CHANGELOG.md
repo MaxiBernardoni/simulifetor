@@ -2,6 +2,13 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Calidad de código] — T14 (parcial)
+
+- ESLint (`eslint.config.js`, config de Expo; 0 errores, 0 advertencias) y Prettier (`.prettierrc.json`, ancho 140; `src/content/**` sin formatear). Scripts: `lint`, `format`, `format:check`, `check:all`.
+- `scripts/gen-icons.mjs` (`npm run icons`) regenera `Icon.tsx` y falla si falta un ícono; test que verifica que todo ícono referenciado exista. `dev:web` / `stop:web` levantan y detienen solo el servidor propio (por PID).
+- Código muerto eliminado (imports y variables sin uso).
+- Pendiente: dividir los archivos grandes y JSDoc.
+
 ## [IA opcional] — T06
 
 - **Capa de IA** (`src/ai/`), desactivada por defecto y sin efecto en el motor si está apagada. Proveedores gratuitos con clave propia: Google Gemini y Groq (`fetch`, timeout 8 s, 1 reintento; errores de cuota y clave informados sin romper nada).

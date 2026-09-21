@@ -68,7 +68,9 @@ describe('eras', () => {
 
   it('las carreras respetan since/until', () => {
     const l = createLife(9);
-    l.age = 30; l.edu.level = 3; l.stats.smarts = 90;
+    l.age = 30;
+    l.edu.level = 3;
+    l.stats.smarts = 90;
     const tele = CAREERS.find((x) => x.id === 'telegraphist')!;
     const inf = CAREERS.find((x) => x.id === 'influencer')!;
     l.year = 1970;
@@ -105,10 +107,17 @@ describe('eras', () => {
   });
 
   it('los salarios nuevos respetan la inflación (mismo trabajo, más plata nominal después)', () => {
-    const a = createLife(21); a.year = 1960; a.age = 25;
-    const b = createLife(21); b.year = 2020; b.age = 25;
+    const a = createLife(21);
+    a.year = 1960;
+    a.age = 25;
+    const b = createLife(21);
+    b.year = 2020;
+    b.age = 25;
     const cash = CAREERS.find((x) => x.id === 'cashier')!;
-    for (const l of [a, b]) { l.offers = ['cashier']; l.jailYears = 0; }
+    for (const l of [a, b]) {
+      l.offers = ['cashier'];
+      l.jailYears = 0;
+    }
     expect(cash.levels[0].salary * priceIndex(2020)).toBeGreaterThan(cash.levels[0].salary * priceIndex(1960));
   });
 
@@ -118,8 +127,12 @@ describe('eras', () => {
       expect(Number.isFinite(realNetWorth(l))).toBe(true);
     }
     const l = createLife(40);
-    l.year = 1950; l.birthYear = 1950;
-    for (let i = 0; i < 30; i++) { l.pending = []; ageUp(l); }
+    l.year = 1950;
+    l.birthYear = 1950;
+    for (let i = 0; i < 30; i++) {
+      l.pending = [];
+      ageUp(l);
+    }
     expect(l.year).toBe(1980);
   });
 });

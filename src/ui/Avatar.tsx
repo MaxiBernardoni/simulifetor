@@ -34,7 +34,14 @@ function hair(style: number, c: string, l: string, d: string) {
         front: (
           <G>
             <Path d="M28 42 Q26 17 50 16 Q74 17 72 42 Q68 30 58 28 Q50 33 40 28 Q32 30 28 42Z" fill={c} />
-            <Path d="M40 28 Q44 22 50 24 M52 24 Q58 20 62 26" stroke={d} strokeWidth={1.2} fill="none" strokeLinecap="round" opacity={0.5} />
+            <Path
+              d="M40 28 Q44 22 50 24 M52 24 Q58 20 62 26"
+              stroke={d}
+              strokeWidth={1.2}
+              fill="none"
+              strokeLinecap="round"
+              opacity={0.5}
+            />
             {topShine}
           </G>
         ),
@@ -74,7 +81,10 @@ function hair(style: number, c: string, l: string, d: string) {
         ),
       };
     case 3: // Pelado (H)
-      return { back: null, front: <Path d="M38 24 Q50 18 62 24" stroke="#fff" strokeWidth={2.2} strokeLinecap="round" fill="none" opacity={0.28} /> };
+      return {
+        back: null,
+        front: <Path d="M38 24 Q50 18 62 24" stroke="#fff" strokeWidth={2.2} strokeLinecap="round" fill="none" opacity={0.28} />,
+      };
     case 4: // Cresta (H)
       return {
         back: null,
@@ -175,7 +185,10 @@ function hair(style: number, c: string, l: string, d: string) {
         back: null,
         front: (
           <G>
-            <Path d="M28 44 Q26 28 34 20 Q40 16 50 16 Q60 16 66 20 Q74 28 72 44 Q69 32 66 27 Q58 22 50 22 Q42 22 34 27 Q31 32 28 44Z" fill={c} />
+            <Path
+              d="M28 44 Q26 28 34 20 Q40 16 50 16 Q60 16 66 20 Q74 28 72 44 Q69 32 66 27 Q58 22 50 22 Q42 22 34 27 Q31 32 28 44Z"
+              fill={c}
+            />
             <Path d="M32 26 Q31 34 32 40 M68 26 Q69 34 68 40" stroke={d} strokeWidth={1.1} fill="none" opacity={0.4} />
           </G>
         ),
@@ -305,26 +318,44 @@ export function AvatarArt({ look, mood = 'happy', shirt, gray, mask, blink }: { 
   const lip = female ? '#B8404D' : '#7A2E2E';
 
   const browPath =
-    mood === 'angry' ? 'M35 38 L46 42.5 M54 42.5 L65 38' : mood === 'sad' ? 'M36 41.5 Q41 39 46.5 37.5 M53.5 37.5 Q59 39 64 41.5' : mood === 'shock' ? 'M37 36.5 Q41.5 34 46 36.5 M54 36.5 Q58.5 34 63 36.5' : female ? 'M36.5 38.5 Q41 35.8 46 38.2 M54 38.2 Q59 35.8 63.5 38.5' : 'M36.5 39 Q41 36.5 46 38.8 M54 38.8 Q59 36.5 63.5 39';
+    mood === 'angry'
+      ? 'M35 38 L46 42.5 M54 42.5 L65 38'
+      : mood === 'sad'
+        ? 'M36 41.5 Q41 39 46.5 37.5 M53.5 37.5 Q59 39 64 41.5'
+        : mood === 'shock'
+          ? 'M37 36.5 Q41.5 34 46 36.5 M54 36.5 Q58.5 34 63 36.5'
+          : female
+            ? 'M36.5 38.5 Q41 35.8 46 38.2 M54 38.2 Q59 35.8 63.5 38.5'
+            : 'M36.5 39 Q41 36.5 46 38.8 M54 38.8 Q59 36.5 63.5 39';
 
   const mouth =
-    mood === 'happy' ? <Path d="M43 56 Q50 64.5 57 56 Q50 59.5 43 56Z" fill="#8A2F3A" stroke="#8A2F3A" strokeWidth={1.2} strokeLinejoin="round" />
-    : mood === 'sad' ? <Path d="M44.5 61 Q50 56 55.5 61" stroke={lip} strokeWidth={2} fill="none" strokeLinecap="round" />
-    : mood === 'angry' ? <Path d="M44.5 60 Q50 57 55.5 60" stroke={lip} strokeWidth={2.2} fill="none" strokeLinecap="round" />
-    : mood === 'shock' ? <Ellipse cx={50} cy={59} rx={3} ry={4} fill="#6b2430" />
-    : <Path d="M45 58.5 Q50 61 55 58.5" stroke={lip} strokeWidth={2} fill="none" strokeLinecap="round" />;
+    mood === 'happy' ? (
+      <Path d="M43 56 Q50 64.5 57 56 Q50 59.5 43 56Z" fill="#8A2F3A" stroke="#8A2F3A" strokeWidth={1.2} strokeLinejoin="round" />
+    ) : mood === 'sad' ? (
+      <Path d="M44.5 61 Q50 56 55.5 61" stroke={lip} strokeWidth={2} fill="none" strokeLinecap="round" />
+    ) : mood === 'angry' ? (
+      <Path d="M44.5 60 Q50 57 55.5 60" stroke={lip} strokeWidth={2.2} fill="none" strokeLinecap="round" />
+    ) : mood === 'shock' ? (
+      <Ellipse cx={50} cy={59} rx={3} ry={4} fill="#6b2430" />
+    ) : (
+      <Path d="M45 58.5 Q50 61 55 58.5" stroke={lip} strokeWidth={2} fill="none" strokeLinecap="round" />
+    );
 
   const eyes = [41, 59].map((x, i) => {
     const outer = i === 0 ? -1 : 1;
     if (blink) {
-      return <Path key={x} d={`M${x - 3.6} 46.8 Q${x} 49.2 ${x + 3.6} 46.8`} stroke={lash} strokeWidth={1.8} fill="none" strokeLinecap="round" />;
+      return (
+        <Path key={x} d={`M${x - 3.6} 46.8 Q${x} 49.2 ${x + 3.6} 46.8`} stroke={lash} strokeWidth={1.8} fill="none" strokeLinecap="round" />
+      );
     }
     return (
       <G key={x}>
         <Ellipse cx={x} cy={47} rx={mood === 'shock' ? 3.2 : 2.7} ry={mood === 'shock' ? 4.2 : 3.4} fill={shade(eye, -0.55)} />
         <Ellipse cx={x} cy={47.6} rx={1.9} ry={2.4} fill={eye} opacity={0.75} />
         <Circle cx={x - 0.9} cy={45.8} r={1} fill="#fff" />
-        {female ? <Path d={`M${x + outer * 2.6} 44.8 L${x + outer * 4.6} 43.4`} stroke={lash} strokeWidth={1.3} strokeLinecap="round" /> : null}
+        {female ? (
+          <Path d={`M${x + outer * 2.6} 44.8 L${x + outer * 4.6} 43.4`} stroke={lash} strokeWidth={1.3} strokeLinecap="round" />
+        ) : null}
       </G>
     );
   });
@@ -381,15 +412,18 @@ function useBlink(on: boolean): boolean {
     let alive = true;
     let t: ReturnType<typeof setTimeout>;
     const loop = () => {
-      t = setTimeout(() => {
-        if (!alive) return;
-        setClosed(true);
-        t = setTimeout(() => {
+      t = setTimeout(
+        () => {
           if (!alive) return;
-          setClosed(false);
-          loop();
-        }, 130);
-      }, 2200 + Math.random() * 2800);
+          setClosed(true);
+          t = setTimeout(() => {
+            if (!alive) return;
+            setClosed(false);
+            loop();
+          }, 130);
+        },
+        2200 + Math.random() * 2800,
+      );
     };
     loop();
     return () => {

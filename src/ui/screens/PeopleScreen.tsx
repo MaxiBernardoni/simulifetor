@@ -17,7 +17,13 @@ const GROUPS: { title: string; kinds: PersonKind[]; icon: string; color: string 
 ];
 
 const LABEL: Record<PersonKind, string> = {
-  mother: 'Madre', father: 'Padre', sibling: 'Hermano/a', friend: 'Amigo/a', partner: 'Pareja', child: 'Hijo/a', ex: 'Ex',
+  mother: 'Madre',
+  father: 'Padre',
+  sibling: 'Hermano/a',
+  friend: 'Amigo/a',
+  partner: 'Pareja',
+  child: 'Hijo/a',
+  ex: 'Ex',
 };
 
 export function PeopleScreen() {
@@ -37,7 +43,9 @@ export function PeopleScreen() {
           if (!list.length) return null;
           return (
             <React.Fragment key={g.title}>
-              <SectionTitle icon={g.icon} color={g.color}>{g.title}</SectionTitle>
+              <SectionTitle icon={g.icon} color={g.color}>
+                {g.title}
+              </SectionTitle>
               {list.map((p) => (
                 <Row
                   key={p.id}
@@ -49,7 +57,11 @@ export function PeopleScreen() {
                   right={
                     p.alive ? (
                       <View style={{ width: 54 }}>
-                        <Bar value={p.closeness} color={p.closeness > 60 ? colors.good : p.closeness > 30 ? colors.warn : colors.bad} height={6} />
+                        <Bar
+                          value={p.closeness}
+                          color={p.closeness > 60 ? colors.good : p.closeness > 30 ? colors.warn : colors.bad}
+                          height={6}
+                        />
                       </View>
                     ) : undefined
                   }
@@ -75,7 +87,11 @@ export function PeopleScreen() {
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}>
                       <Icon name="Heart" size={14} color={colors.bad} />
                       <View style={{ flex: 1 }}>
-                        <Bar value={person.closeness} color={person.closeness > 60 ? colors.good : person.closeness > 30 ? colors.warn : colors.bad} height={8} />
+                        <Bar
+                          value={person.closeness}
+                          color={person.closeness > 60 ? colors.good : person.closeness > 30 ? colors.warn : colors.bad}
+                          height={8}
+                        />
                       </View>
                       <Text style={{ color: colors.text, fontWeight: '800' }}>{person.closeness}</Text>
                     </View>
@@ -114,7 +130,14 @@ export function PeopleScreen() {
 
 const s = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
-  sheet: { backgroundColor: colors.bg, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: space.lg, borderWidth: 1, borderColor: colors.border },
+  sheet: {
+    backgroundColor: colors.bg,
+    borderTopLeftRadius: radius.lg,
+    borderTopRightRadius: radius.lg,
+    padding: space.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   title: { color: colors.text, fontSize: 20, fontWeight: '800' },
   sub: { color: colors.muted, marginTop: 2 },
   close: { flexDirection: 'row', gap: 6, alignItems: 'center', justifyContent: 'center', paddingTop: 14 },

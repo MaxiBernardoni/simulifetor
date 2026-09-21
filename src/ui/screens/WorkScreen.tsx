@@ -22,8 +22,9 @@ export function WorkScreen() {
 
   return (
     <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: 40 }}>
-
-      <SectionTitle icon="GraduationCap" color="#3A86B4">Educación</SectionTitle>
+      <SectionTitle icon="GraduationCap" color="#3A86B4">
+        Educación
+      </SectionTitle>
       <Card>
         <Text style={{ color: colors.text, fontSize: 16, fontWeight: '700' }}>{EDU[life.edu.level]}</Text>
         {life.edu.enrolled ? (
@@ -47,7 +48,9 @@ export function WorkScreen() {
         </View>
       </Card>
 
-      <SectionTitle icon="BriefcaseBusiness" color="#0E7C7B">Trabajo</SectionTitle>
+      <SectionTitle icon="BriefcaseBusiness" color="#0E7C7B">
+        Trabajo
+      </SectionTitle>
       {life.job ? (
         <Card>
           <Text style={{ color: colors.text, fontSize: 18, fontWeight: '800' }}>{life.job.title}</Text>
@@ -55,10 +58,21 @@ export function WorkScreen() {
             {formatMoney(life.job.salary)} por año · Jefe/a: {life.job.boss.split(' ')[0]}
           </Text>
           <Text style={{ color: colors.muted, marginTop: 10, marginBottom: 4 }}>Rendimiento: {life.job.performance}</Text>
-          <Bar value={life.job.performance} color={life.job.performance > 60 ? colors.good : life.job.performance > 30 ? colors.warn : colors.bad} />
+          <Bar
+            value={life.job.performance}
+            color={life.job.performance > 60 ? colors.good : life.job.performance > 30 ? colors.warn : colors.bad}
+          />
           <View style={{ marginTop: 12 }}>
             {jobActs.map(({ a, st }) => (
-              <Row key={a.id} icon={a.icon} tint="#0E7C7B" title={a.label} subtitle={st.reason ?? scaleText(a.desc, life.year)} disabled={blocked || !!st.reason} onPress={() => g.activity(a.id)} />
+              <Row
+                key={a.id}
+                icon={a.icon}
+                tint="#0E7C7B"
+                title={a.label}
+                subtitle={st.reason ?? scaleText(a.desc, life.year)}
+                disabled={blocked || !!st.reason}
+                onPress={() => g.activity(a.id)}
+              />
             ))}
             <Button label="Renunciar" variant="danger" onPress={g.quitJob} disabled={blocked} />
           </View>
@@ -71,9 +85,18 @@ export function WorkScreen() {
       ) : (
         <Card>
           <Text style={{ color: colors.muted, marginBottom: 12 }}>
-            {life.jailYears > 0 ? 'No podés trabajar estando preso.' : life.age < 14 ? 'Todavía sos muy chico/a para trabajar.' : 'Estás sin trabajo.'}
+            {life.jailYears > 0
+              ? 'No podés trabajar estando preso.'
+              : life.age < 14
+                ? 'Todavía sos muy chico/a para trabajar.'
+                : 'Estás sin trabajo.'}
           </Text>
-          <Button label="Buscar trabajo" icon="Briefcase" onPress={g.searchJobs} disabled={blocked || life.jailYears > 0 || life.age < 14 || life.usedThisYear.includes('search_job')} />
+          <Button
+            label="Buscar trabajo"
+            icon="Briefcase"
+            onPress={g.searchJobs}
+            disabled={blocked || life.jailYears > 0 || life.age < 14 || life.usedThisYear.includes('search_job')}
+          />
           {life.usedThisYear.includes('search_job') && life.offers.length === 0 ? (
             <Text style={{ color: colors.muted, marginTop: 10 }}>Ya buscaste este año. Sin resultados.</Text>
           ) : null}
@@ -82,7 +105,9 @@ export function WorkScreen() {
 
       {life.offers.length > 0 ? (
         <>
-          <SectionTitle icon="Handshake" color="#2A9D6F">Ofertas disponibles</SectionTitle>
+          <SectionTitle icon="Handshake" color="#2A9D6F">
+            Ofertas disponibles
+          </SectionTitle>
           {life.offers.map((id) => {
             const c = getCareer(id);
             if (!c) return null;

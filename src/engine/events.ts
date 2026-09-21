@@ -103,7 +103,15 @@ export function resolveChoice(life: Life, index: number): void {
   const icon = styleForTags(ev.tags).icon;
   addLog(life, text, toneOf(ctx.deltas), title, icon);
   flushCtx(life, ctx);
-  life.pending.unshift({ kind: 'result', title, text, deltas: ctx.deltas, icon, scene: refineScene(sceneForEvent(ev.id, ev.tags), ctx.deltas), targetId: target?.id });
+  life.pending.unshift({
+    kind: 'result',
+    title,
+    text,
+    deltas: ctx.deltas,
+    icon,
+    scene: refineScene(sceneForEvent(ev.id, ev.tags), ctx.deltas),
+    targetId: target?.id,
+  });
   runTriggers(life, ctx);
 }
 

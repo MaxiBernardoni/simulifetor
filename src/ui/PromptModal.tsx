@@ -66,17 +66,17 @@ export function PromptModal() {
               ) : null}
             </ScrollView>
             <View style={s.actions}>
-              {prompt.kind === 'choice' && ev?.choices
-                ? ev.choices.map((c, i) => (
-                    <FadeIn key={i} delay={200 + i * 90} from={10}>
-                      <Button label={c.label} variant="primary" disabled={!choiceAvailable(life, c, target)} onPress={() => choose(i)} />
-                    </FadeIn>
-                  ))
-                : (
-                  <FadeIn delay={250} from={10}>
-                    <Button label="Continuar" onPress={() => (prompt.kind === "choice" ? choose(0) : dismiss())} />
+              {prompt.kind === 'choice' && ev?.choices ? (
+                ev.choices.map((c, i) => (
+                  <FadeIn key={i} delay={200 + i * 90} from={10}>
+                    <Button label={c.label} variant="primary" disabled={!choiceAvailable(life, c, target)} onPress={() => choose(i)} />
                   </FadeIn>
-                )}
+                ))
+              ) : (
+                <FadeIn delay={250} from={10}>
+                  <Button label="Continuar" onPress={() => (prompt.kind === 'choice' ? choose(0) : dismiss())} />
+                </FadeIn>
+              )}
             </View>
           </View>
         </Pop>

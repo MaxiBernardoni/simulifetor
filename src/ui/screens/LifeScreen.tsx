@@ -98,37 +98,37 @@ export function LifeScreen() {
       <ScenarioBar life={life} />
 
       <View style={s.feedWrap}>
-      <IconPattern />
-      <FlatList
-        style={s.feed}
-        contentContainerStyle={{ padding: space.lg, paddingBottom: 30 }}
-        data={groups}
-        keyExtractor={(g) => String(g.age)}
-        renderItem={({ item }) => (
-          <FadeIn style={{ marginBottom: 16 }}>
-            <View style={s.ageRow}>
-              <Text style={s.ageHead}>
-                {item.age} {item.age === 1 ? 'año' : 'años'}
-              </Text>
-              <Text style={s.ageYear}>{item.year}</Text>
-              <View style={s.ageLine} />
-            </View>
-            {item.entries.map((e, i) => {
-              const st = e.icon ? { icon: e.icon, color: TONE_STYLE[e.tone].color } : styleForText(e.text, e.tone);
-              const color = e.tone === 'good' ? colors.good : e.tone === 'bad' ? colors.bad : st.color;
-              return (
-                <View key={i} style={s.entryRow}>
-                  <IconTile name={st.icon} color={color} size={34} />
-                  <Text style={s.entry}>
-                    {e.title ? <Text style={s.entryTitle}>{e.title}: </Text> : null}
-                    {e.text}
-                  </Text>
-                </View>
-              );
-            })}
-          </FadeIn>
-        )}
-      />
+        <IconPattern />
+        <FlatList
+          style={s.feed}
+          contentContainerStyle={{ padding: space.lg, paddingBottom: 30 }}
+          data={groups}
+          keyExtractor={(g) => String(g.age)}
+          renderItem={({ item }) => (
+            <FadeIn style={{ marginBottom: 16 }}>
+              <View style={s.ageRow}>
+                <Text style={s.ageHead}>
+                  {item.age} {item.age === 1 ? 'año' : 'años'}
+                </Text>
+                <Text style={s.ageYear}>{item.year}</Text>
+                <View style={s.ageLine} />
+              </View>
+              {item.entries.map((e, i) => {
+                const st = e.icon ? { icon: e.icon, color: TONE_STYLE[e.tone].color } : styleForText(e.text, e.tone);
+                const color = e.tone === 'good' ? colors.good : e.tone === 'bad' ? colors.bad : st.color;
+                return (
+                  <View key={i} style={s.entryRow}>
+                    <IconTile name={st.icon} color={color} size={34} />
+                    <Text style={s.entry}>
+                      {e.title ? <Text style={s.entryTitle}>{e.title}: </Text> : null}
+                      {e.text}
+                    </Text>
+                  </View>
+                );
+              })}
+            </FadeIn>
+          )}
+        />
       </View>
 
       <View style={s.navBar}>
@@ -158,9 +158,25 @@ export function LifeScreen() {
 
 const s = StyleSheet.create({
   wrap: { flex: 1, backgroundColor: colors.bg },
-  stars: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(255,255,255,0.18)', borderRadius: 12, paddingHorizontal: 10, height: 40 },
+  stars: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    height: 40,
+  },
   starCount: { color: '#fff', fontWeight: '900', fontSize: 18 },
-  info: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.infoBar, paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.border },
+  info: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.infoBar,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
   name: { color: colors.nameBlue, fontSize: 20, fontWeight: '800' },
   job: { color: colors.muted, fontSize: 15, marginTop: 1 },
   moneyPill: { alignItems: 'flex-end', backgroundColor: '#E1F2E9', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 },
@@ -175,15 +191,33 @@ const s = StyleSheet.create({
   ageLine: { flex: 1, height: 1, backgroundColor: colors.border },
   entry: { flex: 1, color: '#4A5158', fontSize: 16, lineHeight: 23, paddingTop: 1 },
   entryTitle: { color: '#3B4250', fontWeight: '700' },
-  navBar: { flexDirection: 'row', backgroundColor: colors.nav, alignItems: 'flex-end', paddingTop: 12, paddingBottom: 10, borderTopLeftRadius: 22, borderTopRightRadius: 22 },
+  navBar: {
+    flexDirection: 'row',
+    backgroundColor: colors.nav,
+    alignItems: 'flex-end',
+    paddingTop: 12,
+    paddingBottom: 10,
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
+  },
   navItem: { flex: 1, alignItems: 'center', gap: 4 },
   navLabel: { color: '#DCE9E8', fontSize: 12, fontWeight: '600' },
   ageSlot: { flex: 1.15, alignItems: 'center' },
   pulse: { marginTop: -34, marginBottom: -2 },
   ageButton: {
-    width: 92, height: 92, borderRadius: 30, backgroundColor: colors.ageButton, borderWidth: 5, borderColor: colors.bg,
-    alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6,
+    width: 92,
+    height: 92,
+    borderRadius: 30,
+    backgroundColor: colors.ageButton,
+    borderWidth: 5,
+    borderColor: colors.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 6,
   },
   ageText: { color: '#fff', fontWeight: '800', fontSize: 15, marginTop: -2 },
   stats: { backgroundColor: colors.bg, paddingHorizontal: 12, paddingTop: 10 },

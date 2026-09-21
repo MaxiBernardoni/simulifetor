@@ -10,7 +10,16 @@ import { materializeLife } from './materialize';
 const look = { skin: 1, eyes: 0, hairStyle: 0, hairColor: 1 };
 function node(w: World, patch: Partial<TreeNode> & { id: string }): TreeNode {
   const n: TreeNode = {
-    name: patch.id, surname: 'Test', gender: 'M', look, birthYear: 1950, alive: true, age: 40, blood: true, wealthClass: 2, ...patch,
+    name: patch.id,
+    surname: 'Test',
+    gender: 'M',
+    look,
+    birthYear: 1950,
+    alive: true,
+    age: 40,
+    blood: true,
+    wealthClass: 2,
+    ...patch,
   };
   w.nodes[n.id] = n;
   return n;
@@ -113,7 +122,8 @@ describe('mundo familiar', () => {
         for (const ref of [n.fatherId, n.motherId, n.partnerId]) if (ref) expect(w.nodes[ref], `${n.id}->${ref}`).toBeTruthy();
       }
       // Los familiares directos de la vida quedan enlazados al árbol.
-      for (const p of life.people.filter((x) => x.kind === 'mother' || x.kind === 'father' || x.kind === 'sibling')) expect(p.nodeId).toBeTruthy();
+      for (const p of life.people.filter((x) => x.kind === 'mother' || x.kind === 'father' || x.kind === 'sibling'))
+        expect(p.nodeId).toBeTruthy();
     }
   });
 

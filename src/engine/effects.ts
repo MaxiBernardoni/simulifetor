@@ -187,8 +187,6 @@ export function applyEffects(life: Life, effects: Effect[] | undefined, ctx: Eff
 }
 
 export function toneOf(deltas: Delta[]): Tone {
-  const score = deltas
-    .filter((d) => d.key !== 'money')
-    .reduce((s, d) => s + d.amount, 0);
+  const score = deltas.filter((d) => d.key !== 'money').reduce((s, d) => s + d.amount, 0);
   return score > 0 ? 'good' : score < 0 ? 'bad' : 'neutral';
 }

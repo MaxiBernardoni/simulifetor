@@ -26,7 +26,18 @@ export function DeathScreen() {
         .filter((n) => canSwitchTo(wd.world, wd.world.currentId, n.id).ok)
         .map((n) => {
           const c = commonAncestor(wd.world, wd.world.currentId, n.id)!;
-          const rank = c.da === 0 && c.db === 1 ? 0 : c.da === 0 && c.db === 2 ? 1 : c.da === 1 && c.db === 1 ? 2 : c.db === 0 ? 3 : c.da === 1 && c.db === 2 ? 4 : 5;
+          const rank =
+            c.da === 0 && c.db === 1
+              ? 0
+              : c.da === 0 && c.db === 2
+                ? 1
+                : c.da === 1 && c.db === 1
+                  ? 2
+                  : c.db === 0
+                    ? 3
+                    : c.da === 1 && c.db === 2
+                      ? 4
+                      : 5;
           return { n, rank };
         })
         .sort((a, b) => a.rank - b.rank || a.n.birthYear - b.n.birthYear)
@@ -79,16 +90,24 @@ export function DeathScreen() {
           </View>
         </View>
         <Line icon="Coins" color="#2A9D6F" label="Patrimonio final" value={formatMoney(life.money)} />
-        <Line icon="BriefcaseBusiness" color="#0E7C7B" label="Última ocupación" value={life.job?.title ?? (life.flags.retired ? 'Jubilado/a' : 'Sin trabajo')} />
+        <Line
+          icon="BriefcaseBusiness"
+          color="#0E7C7B"
+          label="Última ocupación"
+          value={life.job?.title ?? (life.flags.retired ? 'Jubilado/a' : 'Sin trabajo')}
+        />
         <Line icon="Baby" color="#F4A261" label="Hijos" value={String(children.length)} />
         <Line icon="Scale" color="#7A5C2E" label="Antecedentes" value={life.flags.criminal_record ? 'Sí' : 'Ninguno'} />
       </Card>
 
       {heirs.length > 0 && wd ? (
         <>
-          <SectionTitle icon="Crown" color="#B77A12">Continuar la historia</SectionTitle>
+          <SectionTitle icon="Crown" color="#B77A12">
+            Continuar la historia
+          </SectionTitle>
           <Text style={{ color: colors.muted, marginBottom: 8, lineHeight: 19 }}>
-            Elegí a qué familiar vas a ser ahora. Los hijos heredan la mayor parte del patrimonio ({formatMoney(estateOf(life))}); el resto de los parientes, una parte chica. Solo aparecen los de sangre hasta 2 generaciones.
+            Elegí a qué familiar vas a ser ahora. Los hijos heredan la mayor parte del patrimonio ({formatMoney(estateOf(life))}); el resto
+            de los parientes, una parte chica. Solo aparecen los de sangre hasta 2 generaciones.
           </Text>
           {heirs.map(({ n }, i) => (
             <FadeIn key={n.id} delay={300 + i * 90}>
@@ -122,7 +141,9 @@ export function DeathScreen() {
 
       {last.length ? (
         <Card style={{ marginTop: space.lg }}>
-          <Text style={{ color: colors.muted, fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Últimos años</Text>
+          <Text style={{ color: colors.muted, fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>
+            Últimos años
+          </Text>
           {last.map((e, i) => (
             <Text key={i} style={{ color: colors.text, marginVertical: 3, lineHeight: 20 }}>
               <Text style={{ color: colors.muted }}>{e.age} · </Text>
@@ -157,11 +178,37 @@ const s = StyleSheet.create({
   sub: { color: colors.muted, fontSize: 14, textAlign: 'center' },
   cause: { color: colors.bad, fontSize: 16, fontWeight: '700', marginTop: 6 },
   scenario: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: radius.md, padding: 12, marginTop: space.lg },
-  legacy: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#FFF3D6', borderRadius: 12, padding: 12, marginBottom: 6 },
-  heir: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.surface, borderRadius: radius.md, padding: 12, borderWidth: 2, borderColor: '#E9A23B', marginBottom: 10 },
+  legacy: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: '#FFF3D6',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 6,
+  },
+  heir: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    padding: 12,
+    borderWidth: 2,
+    borderColor: '#E9A23B',
+    marginBottom: 10,
+  },
   heirName: { color: colors.text, fontSize: 16, fontWeight: '800' },
   heirSub: { color: colors.muted, fontSize: 12, marginTop: 1 },
   heirAv: { width: 50, height: 50, borderRadius: 25, overflow: 'hidden' },
-  heirCta: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.ageButton, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 9 },
+  heirCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: colors.ageButton,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
   heirCtaText: { color: '#fff', fontWeight: '800', fontSize: 13 },
 });

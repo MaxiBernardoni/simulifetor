@@ -1,5 +1,5 @@
 import type { Gender, Life, Look, Person } from './types';
-import { rngFromState , rngOf } from './rng';
+import { rngFromState, rngOf } from './rng';
 import type { Rng } from './rng';
 import { FEMALE_NAMES, MALE_NAMES, SURNAMES } from '../content/names';
 import { baseMortality, personDied } from './ageUp';
@@ -73,7 +73,20 @@ function addNode(w: World, n: Omit<TreeNode, 'id'>): TreeNode {
 }
 
 const jobLabel = (l: Life): string =>
-  !l.alive ? 'Fallecido/a' : l.jailYears > 0 ? 'Preso/a' : l.job?.title ?? (l.flags.retired ? 'Jubilado/a' : l.edu.enrolled ? 'Estudiante' : l.age < 5 ? 'Niño/a' : l.age < 18 ? 'Estudiante' : 'Sin trabajo');
+  !l.alive
+    ? 'Fallecido/a'
+    : l.jailYears > 0
+      ? 'Preso/a'
+      : (l.job?.title ??
+        (l.flags.retired
+          ? 'Jubilado/a'
+          : l.edu.enrolled
+            ? 'Estudiante'
+            : l.age < 5
+              ? 'Niño/a'
+              : l.age < 18
+                ? 'Estudiante'
+                : 'Sin trabajo'));
 
 /** Probabilidad aproximada de seguir vivo a cierta edad (para generar ancestros). */
 const survives = (age: number) => (age < 50 ? 0.99 : age < 70 ? 0.93 : age < 80 ? 0.72 : age < 90 ? 0.38 : 0.1);
@@ -151,8 +164,15 @@ function genAncestors(w: World, child: TreeNode, rng: Rng): void {
   const mk = (birth: number, gender: Gender, surname: string, parents?: [TreeNode, TreeNode]): TreeNode => {
     const age = w.year - birth;
     const node = addNode(w, {
-      name: rng.pick(gender === 'M' ? MALE_NAMES : FEMALE_NAMES), surname, gender,
-      look: randomLook(rng, gender, child.look), birthYear: birth, alive: true, age, blood: true, wealthClass: child.wealthClass,
+      name: rng.pick(gender === 'M' ? MALE_NAMES : FEMALE_NAMES),
+      surname,
+      gender,
+      look: randomLook(rng, gender, child.look),
+      birthYear: birth,
+      alive: true,
+      age,
+      blood: true,
+      wealthClass: child.wealthClass,
     });
     if (parents) setParents(node, parents[0], parents[1]);
     if (age >= 55 && !rng.chance(survives(age))) setDeath(w, node, rng);
@@ -176,8 +196,15 @@ function genAncestors(w: World, child: TreeNode, rng: Rng): void {
     if (uAge >= 24 && rng.chance(0.65)) {
       const pg: Gender = gender === 'M' ? 'F' : 'M';
       const partner = addNode(w, {
-        name: rng.pick(pg === 'M' ? MALE_NAMES : FEMALE_NAMES), surname: rng.pick(SURNAMES), gender: pg,
-        look: randomLook(rng, pg), birthYear: birth + rng.int(-6, 6), alive: true, age: 0, blood: false, wealthClass: child.wealthClass,
+        name: rng.pick(pg === 'M' ? MALE_NAMES : FEMALE_NAMES),
+        surname: rng.pick(SURNAMES),
+        gender: pg,
+        look: randomLook(rng, pg),
+        birthYear: birth + rng.int(-6, 6),
+        alive: true,
+        age: 0,
+        blood: false,
+        wealthClass: child.wealthClass,
       });
       partner.age = w.year - partner.birthYear;
       if (partner.age >= 55 && !rng.chance(survives(partner.age))) setDeath(w, partner, rng);
@@ -190,8 +217,15 @@ function genAncestors(w: World, child: TreeNode, rng: Rng): void {
         const father = uncle.gender === 'M' ? uncle : partner;
         const mother = uncle.gender === 'M' ? partner : uncle;
         const cousin = addNode(w, {
-          name: rng.pick(kg === 'M' ? MALE_NAMES : FEMALE_NAMES), surname: father.surname, gender: kg,
-          look: inheritLook(uncle.look, kg, rng), birthYear: kb, alive: true, age: w.year - kb, blood: true, wealthClass: child.wealthClass,
+          name: rng.pick(kg === 'M' ? MALE_NAMES : FEMALE_NAMES),
+          surname: father.surname,
+          gender: kg,
+          look: inheritLook(uncle.look, kg, rng),
+          birthYear: kb,
+          alive: true,
+          age: w.year - kb,
+          blood: true,
+          wealthClass: child.wealthClass,
         });
         setParents(cousin, father, mother);
       }
@@ -201,11 +235,28 @@ function genAncestors(w: World, child: TreeNode, rng: Rng): void {
 
 /** Crea el árbol genealógico de una vida: su familia directa y una familia extendida generada. */
 export function createWorld(life: Life): WorldData {
-  const w: World = { familyId: life.lineageId, surname: life.surname, year: life.year, currentId: '', seq: 0, rng: (life.rng ^ 0x9e3779b9) | 0, nodes: {} };
+  const w: World = {
+    familyId: life.lineageId,
+    surname: life.surname,
+    year: life.year,
+    currentId: '',
+    seq: 0,
+    rng: (life.rng ^ 0x9e3779b9) | 0,
+    nodes: {},
+  };
   const rng = wrng(w);
   const me = addNode(w, {
-    name: life.name, surname: life.surname, gender: life.gender, look: life.look, birthYear: life.birthYear,
-    alive: life.alive, age: life.age, blood: true, wealthClass: life.wealthClass, full: true, job: jobLabel(life),
+    name: life.name,
+    surname: life.surname,
+    gender: life.gender,
+    look: life.look,
+    birthYear: life.birthYear,
+    alive: life.alive,
+    age: life.age,
+    blood: true,
+    wealthClass: life.wealthClass,
+    full: true,
+    job: jobLabel(life),
   });
   life.nodeId = me.id;
   w.currentId = me.id;
@@ -232,7 +283,13 @@ export function createWorld(life: Life): WorldData {
   for (const p of life.people) {
     if (p.nodeId || p.kind !== 'child') continue;
     const n = personNode(w, p, life, true);
-    setParents(n, me, life.people.find((x) => x.kind === 'partner' && x.nodeId) ? w.nodes[life.people.find((x) => x.kind === 'partner')!.nodeId!] : undefined);
+    setParents(
+      n,
+      me,
+      life.people.find((x) => x.kind === 'partner' && x.nodeId)
+        ? w.nodes[life.people.find((x) => x.kind === 'partner')!.nodeId!]
+        : undefined,
+    );
   }
   if (mN) genAncestors(w, mN, rng);
   if (fN) genAncestors(w, fN, rng);
@@ -251,8 +308,15 @@ function newPartner(w: World, n: TreeNode, rng: Rng): void {
   const pg: Gender = rng.chance(0.92) ? (n.gender === 'M' ? 'F' : 'M') : n.gender;
   const age = Math.max(18, n.age + rng.int(-5, 5));
   const p = addNode(w, {
-    name: rng.pick(pg === 'M' ? MALE_NAMES : FEMALE_NAMES), surname: rng.pick(SURNAMES), gender: pg, look: randomLook(rng, pg),
-    birthYear: w.year - age, alive: true, age, blood: false, wealthClass: n.wealthClass,
+    name: rng.pick(pg === 'M' ? MALE_NAMES : FEMALE_NAMES),
+    surname: rng.pick(SURNAMES),
+    gender: pg,
+    look: randomLook(rng, pg),
+    birthYear: w.year - age,
+    alive: true,
+    age,
+    blood: false,
+    wealthClass: n.wealthClass,
   });
   link(n, p, rng.chance(0.8));
 }
@@ -261,8 +325,15 @@ function bearChild(w: World, mother: TreeNode, father: TreeNode, rng: Rng): void
   const g: Gender = rng.chance(0.5) ? 'M' : 'F';
   const from = father.blood ? father : mother;
   const c = addNode(w, {
-    name: rng.pick(g === 'M' ? MALE_NAMES : FEMALE_NAMES), surname: father.surname, gender: g, look: inheritLook(from.look, g, rng),
-    birthYear: w.year, alive: true, age: 0, blood: mother.blood || father.blood, wealthClass: mother.wealthClass,
+    name: rng.pick(g === 'M' ? MALE_NAMES : FEMALE_NAMES),
+    surname: father.surname,
+    gender: g,
+    look: inheritLook(from.look, g, rng),
+    birthYear: w.year,
+    alive: true,
+    age: 0,
+    blood: mother.blood || father.blood,
+    wealthClass: mother.wealthClass,
   });
   setParents(c, mother, father);
 }
@@ -315,7 +386,10 @@ export function syncLifeToWorld(w: World, life: Life): void {
   const me = w.nodes[life.nodeId];
   if (!me) return;
   updateNodeFromLife(me, life);
-  const parents = life.people.filter((p) => (p.kind === 'mother' || p.kind === 'father') && p.nodeId).map((p) => w.nodes[p.nodeId!]).filter(Boolean);
+  const parents = life.people
+    .filter((p) => (p.kind === 'mother' || p.kind === 'father') && p.nodeId)
+    .map((p) => w.nodes[p.nodeId!])
+    .filter(Boolean);
   for (const p of life.people) {
     if (p.nodeId) {
       const n = w.nodes[p.nodeId];
@@ -370,7 +444,13 @@ function botYear(w: World, wd: WorldData, id: string, died: Life[]): void {
   const life = wd.lives[id];
   const node = w.nodes[id];
   if (!life || !node) return;
-  autoPlay(life, { seed: (life.rng ^ (life.age * 7919)) | 0, untilAge: life.age + 1, activityChance: 0.4, crimeChance: 0.03, familyBias: true });
+  autoPlay(life, {
+    seed: (life.rng ^ (life.age * 7919)) | 0,
+    untilAge: life.age + 1,
+    activityChance: 0.4,
+    crimeChance: 0.03,
+    familyBias: true,
+  });
   syncLifeToWorld(w, life);
   if (!life.alive) {
     died.push(life);

@@ -55,189 +55,476 @@ const OTHER_SHIRT = '#E76F51';
 export const SCENES: Record<SceneKey, SceneDef> = {
   family_home: {
     bg: DAY,
-    sky: () => (<><A.Sun x={276} y={34} s={0.9} /><A.Cloud x={70} y={30} /><A.Cloud x={205} y={22} s={1.1} /></>),
-    back: () => (<><A.Hills /><A.House x={126} y={66} s={1.25} /><A.Tree x={280} y={92} s={1.1} /></>),
-    cast: [{ who: 'me', x: 20, y: 72, s: 0.9 }, { who: 'other', x: 212, y: 76, s: 0.85, flip: true, shirt: OTHER_SHIRT }],
+    sky: () => (
+      <>
+        <A.Sun x={276} y={34} s={0.9} />
+        <A.Cloud x={70} y={30} />
+        <A.Cloud x={205} y={22} s={1.1} />
+      </>
+    ),
+    back: () => (
+      <>
+        <A.Hills />
+        <A.House x={126} y={66} s={1.25} />
+        <A.Tree x={280} y={92} s={1.1} />
+      </>
+    ),
+    cast: [
+      { who: 'me', x: 20, y: 72, s: 0.9 },
+      { who: 'other', x: 212, y: 76, s: 0.85, flip: true, shirt: OTHER_SHIRT },
+    ],
   },
   school: {
     bg: DAY,
-    sky: () => (<><A.Sun x={40} y={34} s={0.8} /><A.Cloud x={250} y={26} /></>),
-    back: () => (<><A.Hills /><A.School x={150} y={58} s={1.2} /></>),
+    sky: () => (
+      <>
+        <A.Sun x={40} y={34} s={0.8} />
+        <A.Cloud x={250} y={26} />
+      </>
+    ),
+    back: () => (
+      <>
+        <A.Hills />
+        <A.School x={150} y={58} s={1.2} />
+      </>
+    ),
     cast: [{ who: 'me', x: 12, y: 74, s: 0.9 }],
   },
   office: {
     bg: COOL,
-    back: () => (<><A.Office x={16} y={30} s={0.9} c="#7C93AD" /><A.Desk x={170} y={92} s={1.25} /><A.Ground y={146} c="#9FB7CA" /></>),
-    cast: [{ who: 'me', x: 118, y: 74, s: 0.85 }, { who: 'other', x: 236, y: 78, s: 0.8, flip: true, shirt: '#3B4252' }],
+    back: () => (
+      <>
+        <A.Office x={16} y={30} s={0.9} c="#7C93AD" />
+        <A.Desk x={170} y={92} s={1.25} />
+        <A.Ground y={146} c="#9FB7CA" />
+      </>
+    ),
+    cast: [
+      { who: 'me', x: 118, y: 74, s: 0.85 },
+      { who: 'other', x: 236, y: 78, s: 0.8, flip: true, shirt: '#3B4252' },
+    ],
   },
   construction: {
     bg: DAY,
-    sky: () => (<><A.Sun x={40} y={34} s={0.8} /><A.Cloud x={240} y={28} /></>),
-    back: () => (<><A.Ground y={132} c="#C9B48A" /><A.Scaffold x={150} y={34} s={1.05} /></>),
+    sky: () => (
+      <>
+        <A.Sun x={40} y={34} s={0.8} />
+        <A.Cloud x={240} y={28} />
+      </>
+    ),
+    back: () => (
+      <>
+        <A.Ground y={132} c="#C9B48A" />
+        <A.Scaffold x={150} y={34} s={1.05} />
+      </>
+    ),
     cast: [{ who: 'me', x: 20, y: 72, s: 0.9, hat: 'hardhat', shirt: '#F2B233' }],
   },
   money_win: {
     bg: GOLD,
-    back: () => (<><A.MoneyBag x={250} y={104} s={1.3} /><A.CoinStack x={40} y={148} s={1.2} /><A.CoinStack x={286} y={150} s={0.9} /></>),
+    back: () => (
+      <>
+        <A.MoneyBag x={250} y={104} s={1.3} />
+        <A.CoinStack x={40} y={148} s={1.2} />
+        <A.CoinStack x={286} y={150} s={0.9} />
+      </>
+    ),
     cast: [{ who: 'me', x: 110, y: 70, s: 0.95, mood: 'happy' }],
     fx: 'coins',
   },
   money_loss: {
     bg: SAD,
-    back: () => (<><A.Chart x={170} y={22} s={1.25} up={false} /></>),
+    back: () => (
+      <>
+        <A.Chart x={170} y={22} s={1.25} up={false} />
+      </>
+    ),
     cast: [{ who: 'me', x: 26, y: 72, s: 0.95, mood: 'sad' }],
     fx: 'rain',
   },
   love: {
     bg: PINK,
-    back: () => (<A.Heart x={160} y={54} s={2.6} c="#FF8FB1" />),
-    cast: [{ who: 'me', x: 46, y: 74, s: 0.9, mood: 'happy' }, { who: 'other', x: 176, y: 74, s: 0.9, flip: true, shirt: OTHER_SHIRT }],
+    back: () => <A.Heart x={160} y={54} s={2.6} c="#FF8FB1" />,
+    cast: [
+      { who: 'me', x: 46, y: 74, s: 0.9, mood: 'happy' },
+      { who: 'other', x: 176, y: 74, s: 0.9, flip: true, shirt: OTHER_SHIRT },
+    ],
     fx: 'hearts',
   },
   breakup: {
     bg: RAIN,
-    back: () => (<A.BrokenHeart x={160} y={48} s={1.9} />),
-    cast: [{ who: 'me', x: 6, y: 78, s: 0.85, mood: 'sad' }, { who: 'other', x: 226, y: 78, s: 0.85, flip: true, mood: 'sad', shirt: OTHER_SHIRT }],
+    back: () => <A.BrokenHeart x={160} y={48} s={1.9} />,
+    cast: [
+      { who: 'me', x: 6, y: 78, s: 0.85, mood: 'sad' },
+      { who: 'other', x: 226, y: 78, s: 0.85, flip: true, mood: 'sad', shirt: OTHER_SHIRT },
+    ],
     fx: 'rain',
   },
   wedding: {
     bg: SUNSET,
-    back: () => (<><A.Hills c1="#D9A46E" c2="#C98D58" /><A.Arch x={112} y={34} s={1} /><A.Ring x={160} y={140} s={1.4} /></>),
-    cast: [{ who: 'me', x: 62, y: 76, s: 0.85, mood: 'happy' }, { who: 'other', x: 168, y: 76, s: 0.85, flip: true, mood: 'happy', shirt: '#F4EEE2' }],
+    back: () => (
+      <>
+        <A.Hills c1="#D9A46E" c2="#C98D58" />
+        <A.Arch x={112} y={34} s={1} />
+        <A.Ring x={160} y={140} s={1.4} />
+      </>
+    ),
+    cast: [
+      { who: 'me', x: 62, y: 76, s: 0.85, mood: 'happy' },
+      { who: 'other', x: 168, y: 76, s: 0.85, flip: true, mood: 'happy', shirt: '#F4EEE2' },
+    ],
     fx: 'confetti',
   },
   baby: {
     bg: ['#FFE9F0', '#FFD3DF'],
-    back: () => (<><A.Balloons x={50} y={40} s={1.1} /><A.Balloons x={272} y={44} s={1.1} /><A.Heart x={160} y={34} s={0.9} c="#FF8FB1" /></>),
+    back: () => (
+      <>
+        <A.Balloons x={50} y={40} s={1.1} />
+        <A.Balloons x={272} y={44} s={1.1} />
+        <A.Heart x={160} y={34} s={0.9} c="#FF8FB1" />
+      </>
+    ),
     cast: [{ who: 'me', x: 118, y: 94, s: 0.72, mood: 'happy' }],
     fx: 'hearts',
   },
   party: {
     bg: NIGHT,
-    back: () => (<><A.StringLights /><A.DiscoBall x={160} y={56} s={1.2} /><A.Stars items={[[30, 60], [290, 70], [60, 100, 1.4], [260, 110, 1.4]]} /></>),
-    cast: [{ who: 'me', x: 26, y: 76, s: 0.9, mood: 'happy', hat: 'party' }, { who: 'other', x: 200, y: 76, s: 0.9, flip: true, mood: 'happy', shirt: OTHER_SHIRT }],
+    back: () => (
+      <>
+        <A.StringLights />
+        <A.DiscoBall x={160} y={56} s={1.2} />
+        <A.Stars
+          items={[
+            [30, 60],
+            [290, 70],
+            [60, 100, 1.4],
+            [260, 110, 1.4],
+          ]}
+        />
+      </>
+    ),
+    cast: [
+      { who: 'me', x: 26, y: 76, s: 0.9, mood: 'happy', hat: 'party' },
+      { who: 'other', x: 200, y: 76, s: 0.9, flip: true, mood: 'happy', shirt: OTHER_SHIRT },
+    ],
     fx: 'confetti',
   },
   hospital: {
     bg: COOL,
-    back: () => (<><A.Hospital x={198} y={44} s={1.2} /><A.Heartbeat x={16} y={36} s={1.2} /><A.Ground y={146} c="#9FB7CA" /></>),
+    back: () => (
+      <>
+        <A.Hospital x={198} y={44} s={1.2} />
+        <A.Heartbeat x={16} y={36} s={1.2} />
+        <A.Ground y={146} c="#9FB7CA" />
+      </>
+    ),
     cast: [{ who: 'me', x: 60, y: 78, s: 0.85, mood: 'neutral' }],
   },
   street_crime: {
     bg: DARK,
-    back: () => (<><A.Skyline c="#171B26" lit="#FFD86B" /><A.Lamp x={44} y={46} s={1.2} /><A.Lamp x={276} y={50} s={1.1} /></>),
+    back: () => (
+      <>
+        <A.Skyline c="#171B26" lit="#FFD86B" />
+        <A.Lamp x={44} y={46} s={1.2} />
+        <A.Lamp x={276} y={50} s={1.1} />
+      </>
+    ),
     cast: [{ who: 'me', x: 110, y: 72, s: 0.95, mood: 'neutral', mask: true, shirt: '#2B2F3A' }],
   },
   court: {
     bg: WARM,
-    back: () => (<><A.Columns x={90} y={22} s={0.95} /><A.Justice x={280} y={44} s={1.1} /><A.Gavel x={40} y={110} s={1} /></>),
+    back: () => (
+      <>
+        <A.Columns x={90} y={22} s={0.95} />
+        <A.Justice x={280} y={44} s={1.1} />
+        <A.Gavel x={40} y={110} s={1} />
+      </>
+    ),
     cast: [{ who: 'me', x: 118, y: 80, s: 0.85, mood: 'sad', shirt: '#3B4252' }],
   },
   prison: {
     bg: DARK,
-    back: () => (<><A.Ground y={140} c="#2A2F3A" /></>),
+    back: () => (
+      <>
+        <A.Ground y={140} c="#2A2F3A" />
+      </>
+    ),
     cast: [{ who: 'me', x: 110, y: 74, s: 0.95, mood: 'sad', shirt: '#E9A23B' }],
     front: () => <A.Bars c="#12151C" />,
   },
   historical: {
     bg: ['#EADFBF', '#CDB784'],
-    back: () => (<><A.Flag x={40} y={40} s={1.2} c="#B7523C" /><A.Newspaper x={120} y={26} s={1.35} /><A.Flag x={270} y={40} s={1.2} c="#3A86B4" /></>),
+    back: () => (
+      <>
+        <A.Flag x={40} y={40} s={1.2} c="#B7523C" />
+        <A.Newspaper x={120} y={26} s={1.35} />
+        <A.Flag x={270} y={40} s={1.2} c="#3A86B4" />
+      </>
+    ),
   },
   old_age: {
     bg: SUNSET,
-    sky: () => (<><A.Sun x={58} y={50} s={1} /><A.Cloud x={230} y={28} c="#FFF1E0" /></>),
-    back: () => (<><A.Hills c1="#9ACB86" c2="#7FB574" /><A.Tree x={276} y={76} s={1.4} /><A.Bench x={130} y={112} s={1.2} /></>),
+    sky: () => (
+      <>
+        <A.Sun x={58} y={50} s={1} />
+        <A.Cloud x={230} y={28} c="#FFF1E0" />
+      </>
+    ),
+    back: () => (
+      <>
+        <A.Hills c1="#9ACB86" c2="#7FB574" />
+        <A.Tree x={276} y={76} s={1.4} />
+        <A.Bench x={130} y={112} s={1.2} />
+      </>
+    ),
     cast: [{ who: 'me', x: 112, y: 62, s: 0.95, gray: true, mood: 'happy' }],
   },
   playground: {
     bg: DAY,
-    sky: () => (<><A.Sun x={280} y={34} s={0.9} /><A.Cloud x={70} y={26} /></>),
-    back: () => (<><A.Hills /><A.Swing x={232} y={56} s={1.15} /><A.Ball x={60} y={134} s={1} /></>),
+    sky: () => (
+      <>
+        <A.Sun x={280} y={34} s={0.9} />
+        <A.Cloud x={70} y={26} />
+      </>
+    ),
+    back: () => (
+      <>
+        <A.Hills />
+        <A.Swing x={232} y={56} s={1.15} />
+        <A.Ball x={60} y={134} s={1} />
+      </>
+    ),
     cast: [{ who: 'me', x: 110, y: 78, s: 0.82, mood: 'happy' }],
   },
   tech: {
     bg: ['#CFE3FF', '#9DBFF0'],
-    back: () => (<><A.Phone x={228} y={24} s={1.4} /><A.Stars items={[[40, 30], [90, 60, 1.4], [190, 40]]} /></>),
+    back: () => (
+      <>
+        <A.Phone x={228} y={24} s={1.4} />
+        <A.Stars
+          items={[
+            [40, 30],
+            [90, 60, 1.4],
+            [190, 40],
+          ]}
+        />
+      </>
+    ),
     cast: [{ who: 'me', x: 36, y: 76, s: 0.9, mood: 'shock' }],
     fx: 'sparkles',
   },
   travel: {
     bg: ['#7FD0F5', '#D6F1FB'],
-    sky: () => (<><A.Sun x={276} y={36} s={0.9} /><A.Cloud x={54} y={34} /><A.Plane x={150} y={38} s={1} /></>),
-    back: () => (<><A.Ground y={136} c="#F2D9A0" /><A.Palm x={262} y={84} s={1.2} /></>),
+    sky: () => (
+      <>
+        <A.Sun x={276} y={36} s={0.9} />
+        <A.Cloud x={54} y={34} />
+        <A.Plane x={150} y={38} s={1} />
+      </>
+    ),
+    back: () => (
+      <>
+        <A.Ground y={136} c="#F2D9A0" />
+        <A.Palm x={262} y={84} s={1.2} />
+      </>
+    ),
     cast: [{ who: 'me', x: 92, y: 80, s: 0.85, mood: 'happy' }],
   },
   mystery: {
     bg: ['#2A1B4A', '#5B3F8A'],
-    back: () => (<><A.Stars items={[[30, 30], [80, 70, 1.4], [150, 24], [290, 30], [270, 120, 1.4]]} /><A.Envelope x={244} y={80} s={1.4} /><A.Question x={190} y={72} s={0.9} /></>),
+    back: () => (
+      <>
+        <A.Stars
+          items={[
+            [30, 30],
+            [80, 70, 1.4],
+            [150, 24],
+            [290, 30],
+            [270, 120, 1.4],
+          ]}
+        />
+        <A.Envelope x={244} y={80} s={1.4} />
+        <A.Question x={190} y={72} s={0.9} />
+      </>
+    ),
     cast: [{ who: 'me', x: 20, y: 76, s: 0.9, mood: 'shock' }],
     fx: 'sparkles',
   },
   graveyard: {
     bg: NIGHT,
-    back: () => (<><A.Moon x={262} y={36} s={1.1} /><A.Stars items={[[30, 30], [90, 50, 1.4], [170, 26], [220, 62, 1.4]]} /><A.Ground y={128} c="#232C40" /><A.Tombstone x={70} y={100} s={1.2} /><A.Tombstone x={160} y={106} s={1} /><A.Tombstone x={250} y={100} s={1.2} /></>),
+    back: () => (
+      <>
+        <A.Moon x={262} y={36} s={1.1} />
+        <A.Stars
+          items={[
+            [30, 30],
+            [90, 50, 1.4],
+            [170, 26],
+            [220, 62, 1.4],
+          ]}
+        />
+        <A.Ground y={128} c="#232C40" />
+        <A.Tombstone x={70} y={100} s={1.2} />
+        <A.Tombstone x={160} y={106} s={1} />
+        <A.Tombstone x={250} y={100} s={1.2} />
+      </>
+    ),
     fx: 'ghost',
   },
   car: {
     bg: SUNSET,
-    sky: () => (<><A.Sun x={266} y={50} s={1} /><A.Cloud x={70} y={28} c="#FFF1E0" /></>),
-    back: () => (<><A.Hills c1="#B4C97A" c2="#98B366" /><A.Road y={118} /><A.Car x={110} y={92} s={1.5} /></>),
+    sky: () => (
+      <>
+        <A.Sun x={266} y={50} s={1} />
+        <A.Cloud x={70} y={28} c="#FFF1E0" />
+      </>
+    ),
+    back: () => (
+      <>
+        <A.Hills c1="#B4C97A" c2="#98B366" />
+        <A.Road y={118} />
+        <A.Car x={110} y={92} s={1.5} />
+      </>
+    ),
   },
   bank: {
     bg: ['#DCE6F2', '#B7C7DD'],
-    back: () => (<><A.Columns x={104} y={20} s={0.95} c="#F1F4F8" /><A.CoinStack x={40} y={140} s={1.2} /><A.CoinStack x={290} y={142} s={1} /></>),
+    back: () => (
+      <>
+        <A.Columns x={104} y={20} s={0.95} c="#F1F4F8" />
+        <A.CoinStack x={40} y={140} s={1.2} />
+        <A.CoinStack x={290} y={142} s={1} />
+      </>
+    ),
     cast: [{ who: 'me', x: 2, y: 84, s: 0.8, mood: 'neutral', shirt: '#3B4252' }],
   },
   graduation: {
     bg: GOLD,
-    back: () => (<><A.Diploma x={54} y={130} s={1.3} /><A.Spark x={44} y={40} s={0.9} /><A.Spark x={286} y={54} s={1.1} /></>),
+    back: () => (
+      <>
+        <A.Diploma x={54} y={130} s={1.3} />
+        <A.Spark x={44} y={40} s={0.9} />
+        <A.Spark x={286} y={54} s={1.1} />
+      </>
+    ),
     cast: [{ who: 'me', x: 110, y: 70, s: 0.95, mood: 'happy', hat: 'grad', shirt: '#2B3440' }],
     fx: 'confetti',
   },
   gym: {
     bg: ['#3A4453', '#252B36'],
-    back: () => (<><A.Ground y={140} c="#1C212B" /><A.Dumbbell x={46} y={126} s={1.3} /><A.Dumbbell x={276} y={122} s={1.5} /></>),
+    back: () => (
+      <>
+        <A.Ground y={140} c="#1C212B" />
+        <A.Dumbbell x={46} y={126} s={1.3} />
+        <A.Dumbbell x={276} y={122} s={1.5} />
+      </>
+    ),
     cast: [{ who: 'me', x: 110, y: 72, s: 0.95, mood: 'angry', shirt: '#E76F51' }],
   },
   casino: {
     bg: ['#0F4D3A', '#1C7A58'],
-    back: () => (<><A.Dice x={52} y={56} s={1.4} /><A.Cards x={268} y={60} s={1.3} /><A.CoinStack x={226} y={148} s={1.1} /><A.Stars items={[[110, 24], [210, 30]]} /></>),
+    back: () => (
+      <>
+        <A.Dice x={52} y={56} s={1.4} />
+        <A.Cards x={268} y={60} s={1.3} />
+        <A.CoinStack x={226} y={148} s={1.1} />
+        <A.Stars
+          items={[
+            [110, 24],
+            [210, 30],
+          ]}
+        />
+      </>
+    ),
     cast: [{ who: 'me', x: 110, y: 74, s: 0.9, mood: 'shock' }],
     fx: 'sparkles',
   },
   therapy: {
     bg: ['#EADFF5', '#D3C4EA'],
-    back: () => (<><A.Ground y={144} c="#C6B4DD" /><A.Sofa x={188} y={92} s={1.2} /><A.Plant x={40} y={90} s={1.2} /></>),
+    back: () => (
+      <>
+        <A.Ground y={144} c="#C6B4DD" />
+        <A.Sofa x={188} y={92} s={1.2} />
+        <A.Plant x={40} y={90} s={1.2} />
+      </>
+    ),
     cast: [{ who: 'me', x: 96, y: 78, s: 0.85, mood: 'neutral' }],
     fx: 'hearts',
   },
   friends: {
     bg: DAY,
-    sky: () => (<><A.Sun x={40} y={34} s={0.8} /><A.Cloud x={250} y={26} /></>),
-    back: () => (<><A.Hills /><A.Tree x={286} y={92} s={1.1} /></>),
-    cast: [{ who: 'me', x: 34, y: 74, s: 0.9, mood: 'happy' }, { who: 'other', x: 168, y: 74, s: 0.9, flip: true, mood: 'happy', shirt: OTHER_SHIRT }],
+    sky: () => (
+      <>
+        <A.Sun x={40} y={34} s={0.8} />
+        <A.Cloud x={250} y={26} />
+      </>
+    ),
+    back: () => (
+      <>
+        <A.Hills />
+        <A.Tree x={286} y={92} s={1.1} />
+      </>
+    ),
+    cast: [
+      { who: 'me', x: 34, y: 74, s: 0.9, mood: 'happy' },
+      { who: 'other', x: 168, y: 74, s: 0.9, flip: true, mood: 'happy', shirt: OTHER_SHIRT },
+    ],
   },
   fight: {
     bg: ['#7B2D3A', '#C24D4D'],
-    back: () => (<><A.Spark x={160} y={56} s={2} c="#FFD75E" /><A.Spark x={130} y={90} s={0.8} c="#FFF1B0" /><A.Spark x={196} y={94} s={0.8} c="#FFF1B0" /></>),
-    cast: [{ who: 'me', x: 14, y: 76, s: 0.88, mood: 'angry' }, { who: 'other', x: 216, y: 76, s: 0.88, flip: true, mood: 'angry', shirt: OTHER_SHIRT }],
+    back: () => (
+      <>
+        <A.Spark x={160} y={56} s={2} c="#FFD75E" />
+        <A.Spark x={130} y={90} s={0.8} c="#FFF1B0" />
+        <A.Spark x={196} y={94} s={0.8} c="#FFF1B0" />
+      </>
+    ),
+    cast: [
+      { who: 'me', x: 14, y: 76, s: 0.88, mood: 'angry' },
+      { who: 'other', x: 216, y: 76, s: 0.88, flip: true, mood: 'angry', shirt: OTHER_SHIRT },
+    ],
     fx: 'sparks',
   },
   pet: {
     bg: DAY,
-    sky: () => (<><A.Sun x={280} y={34} s={0.9} /><A.Cloud x={70} y={28} /></>),
-    back: () => (<><A.Hills /><A.Paw x={46} y={58} s={1.3} /><A.Paw x={90} y={40} s={0.9} /><A.Paw x={270} y={70} s={1.2} /><A.Ball x={250} y={136} s={1} /></>),
+    sky: () => (
+      <>
+        <A.Sun x={280} y={34} s={0.9} />
+        <A.Cloud x={70} y={28} />
+      </>
+    ),
+    back: () => (
+      <>
+        <A.Hills />
+        <A.Paw x={46} y={58} s={1.3} />
+        <A.Paw x={90} y={40} s={0.9} />
+        <A.Paw x={270} y={70} s={1.2} />
+        <A.Ball x={250} y={136} s={1} />
+      </>
+    ),
     cast: [{ who: 'me', x: 110, y: 76, s: 0.88, mood: 'happy' }],
     fx: 'hearts',
   },
   study: {
     bg: WARM,
-    back: () => (<><A.Ground y={144} c="#E6B98B" /><A.Books x={262} y={140} s={1.3} /><A.Lamp x={44} y={58} s={1.1} /></>),
+    back: () => (
+      <>
+        <A.Ground y={144} c="#E6B98B" />
+        <A.Books x={262} y={140} s={1.3} />
+        <A.Lamp x={44} y={58} s={1.1} />
+      </>
+    ),
     cast: [{ who: 'me', x: 106, y: 76, s: 0.9, mood: 'neutral' }],
   },
   random: {
     bg: ['#FFF3D6', '#FFD79A'],
-    back: () => (<><A.Spark x={44} y={44} s={1.1} /><A.Spark x={282} y={40} s={0.9} c="#FFB020" /><A.Spark x={248} y={112} s={0.7} /></>),
+    back: () => (
+      <>
+        <A.Spark x={44} y={44} s={1.1} />
+        <A.Spark x={282} y={40} s={0.9} c="#FFB020" />
+        <A.Spark x={248} y={112} s={0.7} />
+      </>
+    ),
     cast: [{ who: 'me', x: 110, y: 72, s: 0.95, mood: 'happy' }],
     fx: 'sparkles',
   },
@@ -283,7 +570,12 @@ function Particle({ fx, i, h }: { fx: Fx; i: number; h: number }) {
     const loop = Animated.loop(
       Animated.sequence([
         Animated.delay((i * 317) % 1400),
-        Animated.timing(v, { toValue: 1, duration: dur, easing: fx === 'sparkles' || fx === 'sparks' ? Easing.inOut(Easing.sin) : Easing.linear, useNativeDriver: NATIVE }),
+        Animated.timing(v, {
+          toValue: 1,
+          duration: dur,
+          easing: fx === 'sparkles' || fx === 'sparks' ? Easing.inOut(Easing.sin) : Easing.linear,
+          useNativeDriver: NATIVE,
+        }),
         Animated.timing(v, { toValue: 0, duration: 0, useNativeDriver: NATIVE }),
       ]),
     );
@@ -294,14 +586,17 @@ function Particle({ fx, i, h }: { fx: Fx; i: number; h: number }) {
   const rises = fx === 'hearts' || fx === 'ghost';
   const twinkles = fx === 'sparkles' || fx === 'sparks';
   const translateY = twinkles ? 0 : v.interpolate({ inputRange: [0, 1], outputRange: rises ? [h + 10, -30] : [-30, h + 10] });
-  const opacity = twinkles ? v.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 1, 0] }) : v.interpolate({ inputRange: [0, 0.1, 0.85, 1], outputRange: [0, 1, 1, 0] });
+  const opacity = twinkles
+    ? v.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 1, 0] })
+    : v.interpolate({ inputRange: [0, 0.1, 0.85, 1], outputRange: [0, 1, 1, 0] });
   const scale = twinkles ? v.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0.4, 1.1, 0.4] }) : 1;
   const rotate = fx === 'confetti' ? v.interpolate({ inputRange: [0, 1], outputRange: ['0deg', `${360 + i * 40}deg`] }) : '0deg';
   const top = twinkles ? ((i * 29 + 8) % 70) + 6 : 0;
   const sway = fx === 'hearts' || fx === 'ghost' ? v.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 10, -6] }) : 0;
 
   let body: React.ReactNode;
-  if (fx === 'confetti') body = <View style={{ width: 7, height: 12, backgroundColor: CONFETTI[i % CONFETTI.length], borderRadius: 1.5 }} />;
+  if (fx === 'confetti')
+    body = <View style={{ width: 7, height: 12, backgroundColor: CONFETTI[i % CONFETTI.length], borderRadius: 1.5 }} />;
   else if (fx === 'rain') body = <View style={{ width: 2, height: 16, backgroundColor: 'rgba(230,240,255,0.7)', borderRadius: 1 }} />;
   else if (fx === 'coins') body = <Icon name="Coins" size={20} color="#E9A23B" />;
   else if (fx === 'hearts') body = <Icon name="Heart" size={14 + (i % 3) * 5} color={i % 2 ? '#E0517A' : '#FF8FB1'} />;
@@ -312,7 +607,13 @@ function Particle({ fx, i, h }: { fx: Fx; i: number; h: number }) {
   return (
     <Animated.View
       pointerEvents="none"
-      style={{ position: 'absolute', left: `${Math.round(left * 100)}%`, top, opacity, transform: [{ translateY }, { translateX: sway }, { scale }, { rotate }] }}
+      style={{
+        position: 'absolute',
+        left: `${Math.round(left * 100)}%`,
+        top,
+        opacity,
+        transform: [{ translateY }, { translateX: sway }, { scale }, { rotate }],
+      }}
     >
       {body}
     </Animated.View>
@@ -363,7 +664,13 @@ export function Scene({
         const tf = c.flip ? `translate(${c.x + 100 * c.s} ${c.y}) scale(${-c.s} ${c.s})` : `translate(${c.x} ${c.y}) scale(${c.s})`;
         return (
           <G key={i} transform={tf}>
-            <AvatarArt look={look} mood={c.mood ?? 'happy'} shirt={c.shirt} gray={c.gray || (c.who === 'other' && p!.age >= 65)} mask={c.mask} />
+            <AvatarArt
+              look={look}
+              mood={c.mood ?? 'happy'}
+              shirt={c.shirt}
+              gray={c.gray || (c.who === 'other' && p!.age >= 65)}
+              mask={c.mask}
+            />
             {c.hat ? <HatArt hat={c.hat} /> : null}
           </G>
         );
@@ -395,7 +702,13 @@ export function Scene({
         </View>
       ) : null}
       <View style={StyleSheet.absoluteFill}>
-        {animated ? <Bob amp={2.5} style={StyleSheet.absoluteFill}>{chars}</Bob> : chars}
+        {animated ? (
+          <Bob amp={2.5} style={StyleSheet.absoluteFill}>
+            {chars}
+          </Bob>
+        ) : (
+          chars
+        )}
       </View>
       {def.front ? (
         <Svg {...svgProps} style={StyleSheet.absoluteFill}>

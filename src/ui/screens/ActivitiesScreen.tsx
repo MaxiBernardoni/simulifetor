@@ -34,7 +34,9 @@ export function ActivitiesScreen() {
         if (!items.length) return null;
         return (
           <React.Fragment key={cat.id}>
-            <SectionTitle icon={CATEGORY_STYLE[cat.id].icon} color={CATEGORY_STYLE[cat.id].color}>{cat.label}</SectionTitle>
+            <SectionTitle icon={CATEGORY_STYLE[cat.id].icon} color={CATEGORY_STYLE[cat.id].color}>
+              {cat.label}
+            </SectionTitle>
             {items.map(({ a, st }) => (
               <Row
                 key={a.id}

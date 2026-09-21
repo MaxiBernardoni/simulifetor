@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { HAIRS, hairForGender, hairGenderOf, hairStylesFor, kidHairStyles } from '../content/look';
-import { createLife , migrateLife } from './life';
+import { createLife, migrateLife } from './life';
 import { deriveLook } from './looks';
 import type { Person } from './types';
 
@@ -33,7 +33,13 @@ describe('peinados por género', () => {
     const l = createLife(8, { gender: 'F' });
     l.look.hairStyle = 3; // pelado en una mujer (partida vieja)
     expect(hairGenderOf(migrateLife(l).look.hairStyle)).toBe('F');
-    const p = { id: 'x', kind: 'friend', gender: 'M', age: 30, look: { skin: 1, eyes: 0, hairStyle: 1, hairColor: 0 } } as unknown as Person;
+    const p = {
+      id: 'x',
+      kind: 'friend',
+      gender: 'M',
+      age: 30,
+      look: { skin: 1, eyes: 0, hairStyle: 1, hairColor: 0 },
+    } as unknown as Person;
     expect(hairGenderOf(deriveLook(p, l.look).hairStyle)).toBe('M');
   });
 });

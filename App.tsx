@@ -63,7 +63,11 @@ function Main() {
     const scen = creating.scenarioId ? getScenario(creating.scenarioId) : undefined;
     const title = creating.step === 'scenarios' ? 'Escenarios' : creating.step === 'create' && scen ? scen.title : 'Nueva vida';
     const back =
-      creating.step === 'mode' ? cancelCreate : creating.step === 'scenarios' ? () => setCreating({ step: 'mode' }) : () => setCreating({ step: creating.scenarioId ? 'scenarios' : 'mode' });
+      creating.step === 'mode'
+        ? cancelCreate
+        : creating.step === 'scenarios'
+          ? () => setCreating({ step: 'mode' })
+          : () => setCreating({ step: creating.scenarioId ? 'scenarios' : 'mode' });
     return (
       <View style={s.root}>
         <Header title={title} onBack={back} />

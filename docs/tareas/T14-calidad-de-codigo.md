@@ -3,7 +3,7 @@
 - **Prioridad / esfuerzo:** alta (base para el resto) · M
 - **Depende de:** —
 - **Autonomía:** ✅ segura (sin cambios de comportamiento)
-- **Estado:** todo
+- **Estado:** review (hechos: ESLint, Prettier, scripts, código muerto, `check:all`; **pendiente**: dividir `Scene.tsx`, `world.ts`, `components.tsx` en archivos < 300 líneas, JSDoc en `engine/*`, `npm audit`)
 
 ## Objetivo
 Dejar el proyecto listo para que muchas tareas seguidas (y varias corridas nocturnas) no lo ensucien: linter y formateador configurados, scripts reproducibles en vez de comandos sueltos, y los archivos más grandes divididos para que sean fáciles de leer y de tocar sin conflictos.

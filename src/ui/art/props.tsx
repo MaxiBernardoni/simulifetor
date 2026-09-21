@@ -34,7 +34,12 @@ export const Stars = ({ items }: { items: [number, number, number?][] }) => (
     {items.map(([x, y, r = 1.8], i) => (
       <G key={i}>
         <Circle cx={x} cy={y} r={r} fill="#FFF7D6" />
-        <Path d={`M${x - r * 2.4} ${y} H${x + r * 2.4} M${x} ${y - r * 2.4} V${y + r * 2.4}`} stroke="#FFF7D6" strokeWidth={0.7} opacity={0.7} />
+        <Path
+          d={`M${x - r * 2.4} ${y} H${x + r * 2.4} M${x} ${y - r * 2.4} V${y + r * 2.4}`}
+          stroke="#FFF7D6"
+          strokeWidth={0.7}
+          opacity={0.7}
+        />
       </G>
     ))}
   </G>
@@ -55,7 +60,9 @@ export const Hills = ({ c1 = '#8CCB7A', c2 = '#6DB56A' }: { c1?: string; c2?: st
   </G>
 );
 
-export const Ground = ({ y = 138, c = '#7BC47F' }: { y?: number; c?: string }) => <Rect x={0} y={y} width={320} height={160 - y} fill={c} />;
+export const Ground = ({ y = 138, c = '#7BC47F' }: { y?: number; c?: string }) => (
+  <Rect x={0} y={y} width={320} height={160 - y} fill={c} />
+);
 
 export const House = ({ x, y, s }: P) => (
   <T x={x} y={y} s={s}>
@@ -94,7 +101,17 @@ export const Office = ({ x, y, s, c = '#5E7A99' }: P) => (
   <T x={x} y={y} s={s}>
     <Rect x={0} y={0} width={64} height={110} fill={c} />
     {[0, 1, 2, 3, 4].map((r) =>
-      [0, 1, 2].map((k) => <Rect key={`${r}${k}`} x={8 + k * 19} y={9 + r * 20} width={12} height={12} rx={1.5} fill={(r * 3 + k) % 4 === 0 ? '#FFE28A' : '#BFD8EE'} />),
+      [0, 1, 2].map((k) => (
+        <Rect
+          key={`${r}${k}`}
+          x={8 + k * 19}
+          y={9 + r * 20}
+          width={12}
+          height={12}
+          rx={1.5}
+          fill={(r * 3 + k) % 4 === 0 ? '#FFE28A' : '#BFD8EE'}
+        />
+      )),
     )}
   </T>
 );
@@ -130,13 +147,26 @@ export const Scaffold = ({ x, y, s }: P) => (
 export const Skyline = ({ c = '#1E2A47', lit = '#FFD86B' }: { c?: string; lit?: string }) => (
   <G>
     {[
-      [0, 70, 34], [30, 50, 30], [58, 84, 26], [82, 60, 36], [116, 92, 28], [142, 66, 32],
-      [170, 88, 30], [198, 54, 34], [230, 76, 30], [258, 96, 28], [284, 62, 36],
+      [0, 70, 34],
+      [30, 50, 30],
+      [58, 84, 26],
+      [82, 60, 36],
+      [116, 92, 28],
+      [142, 66, 32],
+      [170, 88, 30],
+      [198, 54, 34],
+      [230, 76, 30],
+      [258, 96, 28],
+      [284, 62, 36],
     ].map(([x, h, w], i) => (
       <G key={i}>
         <Rect x={x} y={160 - h} width={w} height={h} fill={c} />
         {[0, 1, 2, 3].map((r) =>
-          [0, 1].map((k) => ((i + r + k) % 3 === 0 ? <Rect key={`${r}${k}`} x={x + 6 + k * 12} y={160 - h + 8 + r * 14} width={6} height={7} fill={lit} /> : null)),
+          [0, 1].map((k) =>
+            (i + r + k) % 3 === 0 ? (
+              <Rect key={`${r}${k}`} x={x + 6 + k * 12} y={160 - h + 8 + r * 14} width={6} height={7} fill={lit} />
+            ) : null,
+          ),
         )}
       </G>
     ))}
@@ -219,7 +249,9 @@ export const BrokenHeart = ({ x, y, s }: P) => (
 export const Balloons = ({ x, y, s }: P) => (
   <T x={x} y={y} s={s}>
     {[
-      [-14, 0, '#E5484D'], [0, -8, '#F2B233'], [14, 0, '#3A86B4'],
+      [-14, 0, '#E5484D'],
+      [0, -8, '#F2B233'],
+      [14, 0, '#3A86B4'],
     ].map(([bx, by, c], i) => (
       <G key={i}>
         <Line x1={bx as number} y1={(by as number) + 14} x2={0} y2={46} stroke="#888" strokeWidth={1} />
@@ -246,7 +278,9 @@ export const MoneyBag = ({ x, y, s }: P) => (
   <T x={x} y={y} s={s}>
     <Path d="M-14 -22 Q0 -14 14 -22 L8 -30 H-8Z" fill="#7C5B2C" />
     <Path d="M-8 -20 C-32 0 -30 34 0 34 C30 34 32 0 8 -20 Q0 -14 -8 -20Z" fill="#8E6B36" />
-    <SvgText x={0} y={20} fontSize={30} fontWeight="bold" fill="#F7D36B" textAnchor="middle">$</SvgText>
+    <SvgText x={0} y={20} fontSize={30} fontWeight="bold" fill="#F7D36B" textAnchor="middle">
+      $
+    </SvgText>
   </T>
 );
 
@@ -319,7 +353,13 @@ export const Dumbbell = ({ x, y, s }: P) => (
 export const Dice = ({ x, y, s }: P) => (
   <T x={x} y={y} s={s}>
     <Rect x={-16} y={-16} width={32} height={32} rx={6} fill="#fff" />
-    {[[-7, -7], [7, -7], [0, 0], [-7, 7], [7, 7]].map(([dx, dy], i) => (
+    {[
+      [-7, -7],
+      [7, -7],
+      [0, 0],
+      [-7, 7],
+      [7, 7],
+    ].map(([dx, dy], i) => (
       <Circle key={i} cx={dx} cy={dy} r={3} fill="#E5484D" />
     ))}
   </T>
@@ -329,11 +369,15 @@ export const Cards = ({ x, y, s }: P) => (
   <T x={x} y={y} s={s}>
     <G transform="rotate(-14)">
       <Rect x={-16} y={-24} width={30} height={44} rx={4} fill="#fff" />
-      <SvgText x={-1} y={0} fontSize={22} fill="#E5484D" textAnchor="middle">♥</SvgText>
+      <SvgText x={-1} y={0} fontSize={22} fill="#E5484D" textAnchor="middle">
+        ♥
+      </SvgText>
     </G>
     <G transform="rotate(12) translate(12 0)">
       <Rect x={-16} y={-24} width={30} height={44} rx={4} fill="#fff" />
-      <SvgText x={-1} y={0} fontSize={22} fill="#232936" textAnchor="middle">♠</SvgText>
+      <SvgText x={-1} y={0} fontSize={22} fill="#232936" textAnchor="middle">
+        ♠
+      </SvgText>
     </G>
   </T>
 );
@@ -358,7 +402,11 @@ export const Plant = ({ x, y, s }: P) => (
 
 export const Books = ({ x, y, s }: P) => (
   <T x={x} y={y} s={s}>
-    {[['#E5484D', 46], ['#3A86B4', 40], ['#F2B233', 50]].map(([c, w], i) => (
+    {[
+      ['#E5484D', 46],
+      ['#3A86B4', 40],
+      ['#F2B233', 50],
+    ].map(([c, w], i) => (
       <Rect key={i} x={-((w as number) / 2) + (i % 2) * 4} y={-i * 10} width={w as number} height={9} rx={2} fill={c as string} />
     ))}
   </T>
@@ -423,7 +471,12 @@ export const Ball = ({ x, y, s }: P) => (
 export const Paw = ({ x, y, s, c = '#B57A4B' }: P) => (
   <T x={x} y={y} s={s}>
     <Ellipse cx={0} cy={6} rx={9} ry={7} fill={c} />
-    {[[-10, -5], [-3.5, -11], [3.5, -11], [10, -5]].map(([dx, dy], i) => (
+    {[
+      [-10, -5],
+      [-3.5, -11],
+      [3.5, -11],
+      [10, -5],
+    ].map(([dx, dy], i) => (
       <Ellipse key={i} cx={dx} cy={dy} rx={3.6} ry={4.6} fill={c} />
     ))}
   </T>
@@ -439,7 +492,9 @@ export const Envelope = ({ x, y, s }: P) => (
 
 export const Question = ({ x, y, s, c = '#F2B233' }: P) => (
   <T x={x} y={y} s={s}>
-    <SvgText x={0} y={0} fontSize={64} fontWeight="bold" fill={c} textAnchor="middle">?</SvgText>
+    <SvgText x={0} y={0} fontSize={64} fontWeight="bold" fill={c} textAnchor="middle">
+      ?
+    </SvgText>
   </T>
 );
 
@@ -520,7 +575,14 @@ export const Hospital = ({ x, y, s }: P) => (
 
 export const Heartbeat = ({ x, y, s }: P) => (
   <T x={x} y={y} s={s}>
-    <Polyline points="0,20 30,20 40,4 52,38 62,12 70,20 120,20" fill="none" stroke="#E5484D" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" />
+    <Polyline
+      points="0,20 30,20 40,4 52,38 62,12 70,20 120,20"
+      fill="none"
+      stroke="#E5484D"
+      strokeWidth={3.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </T>
 );
 
@@ -534,7 +596,13 @@ export const Ring = ({ x, y, s }: P) => (
 export const Arch = ({ x, y, s }: P) => (
   <T x={x} y={y} s={s}>
     <Path d="M0 100 V30 Q0 -14 50 -14 Q100 -14 100 30 V100" stroke="#F4EEE2" strokeWidth={9} fill="none" strokeLinecap="round" />
-    {[[6, 6], [24, -6], [50, -12], [76, -6], [94, 6]].map(([fx, fy], i) => (
+    {[
+      [6, 6],
+      [24, -6],
+      [50, -12],
+      [76, -6],
+      [94, 6],
+    ].map(([fx, fy], i) => (
       <Circle key={i} cx={fx} cy={fy} r={5.5} fill={['#E0517A', '#F4A261', '#E0517A', '#F4A261', '#E0517A'][i]} />
     ))}
   </T>

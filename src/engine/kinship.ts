@@ -36,7 +36,11 @@ export function commonAncestor(w: World, a: string, b: string): CommonAncestor |
   for (const [id, da] of A) {
     const db = B.get(id);
     if (db === undefined) continue;
-    if (!best || Math.max(da, db) < Math.max(best.da, best.db) || (Math.max(da, db) === Math.max(best.da, best.db) && da + db < best.da + best.db)) {
+    if (
+      !best ||
+      Math.max(da, db) < Math.max(best.da, best.db) ||
+      (Math.max(da, db) === Math.max(best.da, best.db) && da + db < best.da + best.db)
+    ) {
       best = { id, da, db };
     }
   }
@@ -86,25 +90,40 @@ export function relationLabel(w: World, fromId: string, toId: string): string {
     const na = w.nodes[a];
     const nb = w.nodes[b];
     switch (key) {
-      case '0,1': return pick(g, 'Hijo', 'Hija');
-      case '0,2': return pick(g, 'Nieto', 'Nieta');
-      case '0,3': return pick(g, 'Bisnieto', 'Bisnieta');
-      case '1,0': return pick(g, 'Padre', 'Madre');
-      case '2,0': return pick(g, 'Abuelo', 'Abuela');
-      case '3,0': return pick(g, 'Bisabuelo', 'Bisabuela');
+      case '0,1':
+        return pick(g, 'Hijo', 'Hija');
+      case '0,2':
+        return pick(g, 'Nieto', 'Nieta');
+      case '0,3':
+        return pick(g, 'Bisnieto', 'Bisnieta');
+      case '1,0':
+        return pick(g, 'Padre', 'Madre');
+      case '2,0':
+        return pick(g, 'Abuelo', 'Abuela');
+      case '3,0':
+        return pick(g, 'Bisabuelo', 'Bisabuela');
       case '1,1': {
         const both = na.fatherId && na.fatherId === nb.fatherId && na.motherId && na.motherId === nb.motherId;
         return both ? pick(g, 'Hermano', 'Hermana') : pick(g, 'Medio hermano', 'Media hermana');
       }
-      case '1,2': return pick(g, 'Sobrino', 'Sobrina');
-      case '2,1': return pick(g, 'Tío', 'Tía');
-      case '2,2': return pick(g, 'Primo', 'Prima');
-      case '1,3': return pick(g, 'Sobrino nieto', 'Sobrina nieta');
-      case '3,1': return pick(g, 'Tío abuelo', 'Tía abuela');
-      case '2,3': return pick(g, 'Sobrino segundo', 'Sobrina segunda');
-      case '3,2': return pick(g, 'Tío segundo', 'Tía segunda');
-      case '3,3': return pick(g, 'Primo segundo', 'Prima segunda');
-      default: return pick(g, 'Pariente lejano', 'Pariente lejana');
+      case '1,2':
+        return pick(g, 'Sobrino', 'Sobrina');
+      case '2,1':
+        return pick(g, 'Tío', 'Tía');
+      case '2,2':
+        return pick(g, 'Primo', 'Prima');
+      case '1,3':
+        return pick(g, 'Sobrino nieto', 'Sobrina nieta');
+      case '3,1':
+        return pick(g, 'Tío abuelo', 'Tía abuela');
+      case '2,3':
+        return pick(g, 'Sobrino segundo', 'Sobrina segunda');
+      case '3,2':
+        return pick(g, 'Tío segundo', 'Tía segunda');
+      case '3,3':
+        return pick(g, 'Primo segundo', 'Prima segunda');
+      default:
+        return pick(g, 'Pariente lejano', 'Pariente lejana');
     }
   };
 

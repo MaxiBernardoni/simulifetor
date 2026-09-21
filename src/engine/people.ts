@@ -29,12 +29,7 @@ export function makePerson(
 }
 
 // Crea una persona nueva para la vida según su tipo y edad relativa.
-export function spawnPerson(
-  life: Life,
-  rng: Rng,
-  kind: PersonKind,
-  age?: 'baby' | 'peer' | 'young',
-): Person {
+export function spawnPerson(life: Life, rng: Rng, kind: PersonKind, age?: 'baby' | 'peer' | 'young'): Person {
   let a: number;
   if (age === 'baby') a = 0;
   else if (age === 'young') a = Math.max(0, life.age - rng.int(2, 8));

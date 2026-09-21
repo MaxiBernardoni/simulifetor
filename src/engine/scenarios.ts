@@ -39,15 +39,33 @@ export function checkScenario(life: Life): 'won' | 'lost' | null {
     sc.status = 'won';
     sc.wonAge = life.age;
     addLog(life, `¡Escenario superado! ${def.goal}`, 'good', def.title, 'Trophy');
-    life.pending.push({ kind: 'result', title: '¡Escenario superado!', text: `Cumpliste el objetivo de "${def.title}". Podés seguir jugando esta vida.`, deltas: [], icon: 'Trophy', scene: 'graduation' });
+    life.pending.push({
+      kind: 'result',
+      title: '¡Escenario superado!',
+      text: `Cumpliste el objetivo de "${def.title}". Podés seguir jugando esta vida.`,
+      deltas: [],
+      icon: 'Trophy',
+      scene: 'graduation',
+    });
     return 'won';
   }
   const late = def.deadlineAge !== undefined && life.age > def.deadlineAge;
   if (!life.alive || late || def.lost?.(life)) {
     sc.status = 'lost';
-    const why = !life.alive ? 'Moriste antes de cumplir el objetivo.' : late ? `Pasó el tiempo límite (${def.deadlineAge} años).` : 'Ya no se puede cumplir el objetivo.';
+    const why = !life.alive
+      ? 'Moriste antes de cumplir el objetivo.'
+      : late
+        ? `Pasó el tiempo límite (${def.deadlineAge} años).`
+        : 'Ya no se puede cumplir el objetivo.';
     addLog(life, `Escenario fallido. ${why}`, 'bad', def.title, 'Flag');
-    life.pending.push({ kind: 'result', title: 'Escenario fallido', text: `${why} Podés seguir jugando esta vida, pero el objetivo ya no cuenta.`, deltas: [], icon: 'Flag', scene: 'money_loss' });
+    life.pending.push({
+      kind: 'result',
+      title: 'Escenario fallido',
+      text: `${why} Podés seguir jugando esta vida, pero el objetivo ya no cuenta.`,
+      deltas: [],
+      icon: 'Flag',
+      scene: 'money_loss',
+    });
     return 'lost';
   }
   return null;

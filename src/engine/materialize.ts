@@ -37,17 +37,27 @@ export function materializeLife(wd: WorldData, nodeId: string): Life | null {
     const seed = (Date.now() + attempt * 15485863) % 2147483647;
     // Durante la simulación solo están los padres y hermanos (congelados).
     const family: Person[] = [];
-    const rnd = (a: number, b: number) => a + ((seed >> attempt) % (b - a + 1) + (b - a + 1)) % (b - a + 1);
+    const rnd = (a: number, b: number) => a + ((((seed >> attempt) % (b - a + 1)) + (b - a + 1)) % (b - a + 1));
     const father = node.fatherId ? w.nodes[node.fatherId] : undefined;
     const mother = node.motherId ? w.nodes[node.motherId] : undefined;
     if (father) family.push(person(father, 'father', rnd(50, 90), { alive: true, frozen: true }));
     if (mother) family.push(person(mother, 'mother', rnd(55, 92), { alive: true, frozen: true }));
-    const siblings = nodes.filter((n) => n.id !== node.id && ((node.fatherId && n.fatherId === node.fatherId) || (node.motherId && n.motherId === node.motherId)));
+    const siblings = nodes.filter(
+      (n) => n.id !== node.id && ((node.fatherId && n.fatherId === node.fatherId) || (node.motherId && n.motherId === node.motherId)),
+    );
     for (const s of siblings) family.push(person(s, 'sibling', rnd(35, 80), { alive: true, frozen: true }));
 
     const life = createLife(seed, {
-      name: node.name, surname: node.surname, gender: node.gender, look: node.look, birthYear: node.birthYear,
-      wealthClass: node.wealthClass, people: family, lineageId: w.familyId, generation: depthOf(w, node.id), silent: true,
+      name: node.name,
+      surname: node.surname,
+      gender: node.gender,
+      look: node.look,
+      birthYear: node.birthYear,
+      wealthClass: node.wealthClass,
+      people: family,
+      lineageId: w.familyId,
+      generation: depthOf(w, node.id),
+      silent: true,
     });
     life.nodeId = node.id;
     autoPlay(life, { seed, untilAge: node.age, crimeChance: 0.03, activityChance: 0.5, familyBias: false });
@@ -101,10 +111,22 @@ export function applySwitch(target: Life, prev: Life | null, wd: WorldData): voi
     target.flags.heir = true;
     if (realNetWorth(prev) >= 500000) target.flags.famous_family = true;
     if (prev.flags.criminal_record || prev.flags.murderer) target.flags.infamous_family = true;
-    addLog(target, `Continuás la historia de la familia ${prev.surname}. ${first} murió a los ${prev.age} años.`, 'system', `Generación ${target.generation}`, 'Crown');
+    addLog(
+      target,
+      `Continuás la historia de la familia ${prev.surname}. ${first} murió a los ${prev.age} años.`,
+      'system',
+      `Generación ${target.generation}`,
+      'Crown',
+    );
     if (share > 0) addLog(target, `Heredaste ${formatMoney(share)}.`, 'good', 'Herencia', 'Coins');
   } else {
-    addLog(target, `Ahora vivís la vida de ${target.name} (${rel.toLowerCase() || 'familiar'} de ${prev.name}).`, 'system', 'Nuevo personaje', 'Users');
+    addLog(
+      target,
+      `Ahora vivís la vida de ${target.name} (${rel.toLowerCase() || 'familiar'} de ${prev.name}).`,
+      'system',
+      'Nuevo personaje',
+      'Users',
+    );
   }
   void legacyPoints;
 }

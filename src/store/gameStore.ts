@@ -17,15 +17,7 @@ import { advanceWorld, createWorld, syncLifeToWorld, syncWorldToLife } from '../
 import type { WorldData } from '../engine/world';
 import { canSwitchTo, commonAncestor, relationLabel } from '../engine/kinship';
 import { applySwitch, materializeLife } from '../engine/materialize';
-import {
-  dropUniversity,
-  enrollUniversity,
-  quitJob,
-  runActivity,
-  runPersonAction,
-  searchJobs,
-  takeJob,
-} from '../engine/actions';
+import { dropUniversity, enrollUniversity, quitJob, runActivity, runPersonAction, searchJobs, takeJob } from '../engine/actions';
 
 export const SLOT_COUNT = 3;
 const META_KEY = 'vidasim.meta.v2';
@@ -202,7 +194,12 @@ export const useGame = create<GameState>((set, get) => {
     }
 
     if (next.alive && eraAt(next.year).id !== eraAt(cur.year).id && next.age > 0) {
-      toast = { id: Date.now() + 555, title: `Empiezan los ${eraAt(next.year).label.toLowerCase()}`, icon: 'Globe', kicker: 'Cambio de época' };
+      toast = {
+        id: Date.now() + 555,
+        title: `Empiezan los ${eraAt(next.year).label.toLowerCase()}`,
+        icon: 'Globe',
+        kicker: 'Cambio de época',
+      };
     }
 
     let scenarioWins = get().scenarioWins;
@@ -282,8 +279,15 @@ export const useGame = create<GameState>((set, get) => {
           const { slots, worlds } = loadSlotsFrom(lives, ws);
           const active = Math.min(Math.max(m.activeSlot ?? 0, 0), SLOT_COUNT - 1);
           set({
-            slots, worlds, activeSlot: active, life: slots[active], world: worlds[active],
-            history: m.history ?? [], achievements: m.achievements ?? [], scenarioWins: m.scenarioWins ?? [], ready: true,
+            slots,
+            worlds,
+            activeSlot: active,
+            life: slots[active],
+            world: worlds[active],
+            history: m.history ?? [],
+            achievements: m.achievements ?? [],
+            scenarioWins: m.scenarioWins ?? [],
+            ready: true,
           });
           slots.forEach((l, i) => {
             if (l && !ws[i]) void saveWorld(i, worlds[i]);
@@ -295,7 +299,16 @@ export const useGame = create<GameState>((set, get) => {
         if (old) {
           const d = JSON.parse(old) as { life: Life | null; history?: LifeSummary[]; achievements?: string[] };
           const { slots, worlds } = loadSlotsFrom([d.life], []);
-          set({ slots, worlds, activeSlot: 0, life: slots[0], world: worlds[0], history: d.history ?? [], achievements: d.achievements ?? [], ready: true });
+          set({
+            slots,
+            worlds,
+            activeSlot: 0,
+            life: slots[0],
+            world: worlds[0],
+            history: d.history ?? [],
+            achievements: d.achievements ?? [],
+            ready: true,
+          });
           void saveSlot(0, slots[0]);
           void saveWorld(0, worlds[0]);
           void saveMeta(meta());
@@ -371,23 +384,42 @@ export const useGame = create<GameState>((set, get) => {
     exportData: () => {
       const s = get();
       return JSON.stringify({
-        app: 'vidasim', schemaVersion: SCHEMA_VERSION, activeSlot: s.activeSlot, slots: s.slots, worlds: s.worlds,
-        history: s.history, achievements: s.achievements, scenarioWins: s.scenarioWins,
+        app: 'vidasim',
+        schemaVersion: SCHEMA_VERSION,
+        activeSlot: s.activeSlot,
+        slots: s.slots,
+        worlds: s.worlds,
+        history: s.history,
+        achievements: s.achievements,
+        scenarioWins: s.scenarioWins,
       });
     },
 
     importData: (json) => {
       try {
         const d = JSON.parse(json.trim()) as {
-          app?: string; slots?: (Life | null)[]; worlds?: (WorldData | null)[]; history?: LifeSummary[];
-          achievements?: string[]; scenarioWins?: string[]; activeSlot?: number;
+          app?: string;
+          slots?: (Life | null)[];
+          worlds?: (WorldData | null)[];
+          history?: LifeSummary[];
+          achievements?: string[];
+          scenarioWins?: string[];
+          activeSlot?: number;
         };
         if (d.app !== 'vidasim' || !Array.isArray(d.slots)) return 'Este texto no es una copia de seguridad de VidaSim.';
         const { slots, worlds } = loadSlotsFrom(d.slots.slice(0, SLOT_COUNT), d.worlds ?? []);
         const active = Math.min(Math.max(d.activeSlot ?? 0, 0), SLOT_COUNT - 1);
         set({
-          slots, worlds, activeSlot: active, life: slots[active], world: worlds[active], history: d.history ?? [],
-          achievements: d.achievements ?? [], scenarioWins: d.scenarioWins ?? [], tab: 'life', creating: null,
+          slots,
+          worlds,
+          activeSlot: active,
+          life: slots[active],
+          world: worlds[active],
+          history: d.history ?? [],
+          achievements: d.achievements ?? [],
+          scenarioWins: d.scenarioWins ?? [],
+          tab: 'life',
+          creating: null,
         });
         slots.forEach((l, i) => {
           void saveSlot(i, l);
@@ -418,7 +450,18 @@ export const useGame = create<GameState>((set, get) => {
     withdraw: () => mutate(withdrawInvestments),
 
     wipe: async () => {
-      set({ life: null, world: null, slots: emptySlots(), worlds: emptyWorlds(), activeSlot: 0, history: [], achievements: [], scenarioWins: [], tab: 'life', creating: null });
+      set({
+        life: null,
+        world: null,
+        slots: emptySlots(),
+        worlds: emptyWorlds(),
+        activeSlot: 0,
+        history: [],
+        achievements: [],
+        scenarioWins: [],
+        tab: 'life',
+        creating: null,
+      });
       try {
         for (let i = 0; i < SLOT_COUNT; i++) {
           await AsyncStorage.removeItem(slotKey(i));
