@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Arreglo] materializar personajes
+
+- Al pasar a vivir la vida de un pariente, un evento del pasado simulado podía quitar a un hermano o padre de su lista y la vida quedaba con una familia incompleta (causa del test intermitente `materializar a un hermano`). Ahora los familiares reales del árbol se reponen siempre.
+
 ## [Gesto de volver]
 - **Ajuste de fluidez**: el fondo que queda detrás al deslizar ya no es oscuro (era el "pantallazo negro"), la pantalla de destino aparece de una (sin el fundido desde transparente, `FadeIn` con `duration=0` arranca visible) y la página vuelve a su lugar recién cuando la nueva ya está dibujada.
 

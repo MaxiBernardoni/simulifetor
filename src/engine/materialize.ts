@@ -65,6 +65,9 @@ export function materializeLife(wd: WorldData, nodeId: string): Life | null {
 
     // Quita lo que el bot inventó (pareja, hijos, hermanos) y pone lo real del árbol.
     life.people = life.people.filter((p) => p.nodeId || !['partner', 'child', 'ex', 'sibling'].includes(p.kind));
+    // Un evento del pasado simulado pudo quitar a un padre o hermano de la lista: se los repone (son reales).
+    const missing = family.filter((f) => !life.people.some((p) => p.nodeId === f.nodeId));
+    life.people.push(...missing.map((f) => ({ ...f, frozen: true })));
     for (const p of life.people) {
       if (!p.frozen) continue;
       p.frozen = false;
