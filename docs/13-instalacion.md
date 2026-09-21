@@ -2,7 +2,11 @@
 
 VidaSim se exporta como **sitio estático** (`npm run build:web` → carpeta `dist/`). Cualquier hosting estático gratuito sirve. En el iPhone se abre en Safari y se agrega a la pantalla de inicio: queda como una app, sin App Store ni Expo Go.
 
-## Opción recomendada: Cloudflare Pages (o Netlify / Vercel)
+## Desde la terminal (Cloudflare Workers Static Assets)
+
+El repo ya trae `wrangler.jsonc`. Una sola vez: `npx wrangler login` (abre el navegador para autorizar). Después, cada vez que quieras publicar: `npm run deploy:web`. Queda en `https://vidasim.<tu-subdominio>.workers.dev`.
+
+## Opción por Git: Cloudflare Pages (o Netlify / Vercel)
 
 Las tres son gratis para uso personal, dan HTTPS (obligatorio) y se actualizan solas con cada `git push`.
 

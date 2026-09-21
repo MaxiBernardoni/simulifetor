@@ -4,7 +4,7 @@ Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada
 
 ## [Publicación web]
 
-- `npm run build:web` exporta el sitio estático (`dist/`), con `public/index.html` (metadatos para iPhone), manifiesto y ícono de inicio. Verificado servido como estático y sin errores de consola. Guía en `docs/13-instalacion.md` (Cloudflare Pages / Netlify / Vercel, instalar en el iPhone y advertencias).
+- `npm run build:web` exporta el sitio estático (`dist/`), con `public/index.html` (metadatos para iPhone), manifiesto y ícono de inicio. Verificado servido como estático y sin errores de consola. `wrangler.jsonc` + `npm run deploy:web` para Cloudflare (Workers Static Assets, validado con `--dry-run`). Guía en `docs/13-instalacion.md` (Cloudflare Pages / Netlify / Vercel, instalar en el iPhone y advertencias).
 
 ## [Arreglo] materializar personajes
 

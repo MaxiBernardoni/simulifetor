@@ -26,7 +26,8 @@
     "prettier": "^3.9.8",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.1",
+    "wrangler": "^4.136.0"
   },
   "scripts": {
     "start": "expo start",
@@ -42,7 +43,8 @@
     "icons": "node scripts/gen-icons.mjs",
     "check:all": "npm run lint && npm run format:check && npm run typecheck && npm test",
     "balance": "tsx scripts/balance.ts",
-    "build:web": "expo export --platform web"
+    "build:web": "expo export --platform web",
+    "deploy:web": "npm run build:web && wrangler deploy"
   },
   "private": true
 }
