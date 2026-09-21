@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { useAI } from '../../ai/store';
 import type { ProviderId } from '../../ai/types';
 import { Button, Card, SectionTitle } from '../components';
+import { Icon } from '../Icon';
 import { colors, radius, space } from '../theme';
 
 const PROVIDERS: { id: ProviderId; label: string; url: string }[] = [
@@ -11,9 +12,67 @@ const PROVIDERS: { id: ProviderId; label: string; url: string }[] = [
   { id: 'compat', label: 'Modelo propio (sin censura)', url: '' },
 ];
 
+/** Estado de la conexión: ruedita mientras verifica, tick si anda, cruz si falla (al tocarla se despliega el motivo). */
+function ConnectionStatus() {
+  const verify = useAI((st) => st.verify);
+  const [open, setOpen] = useState(false);
+  const { state, error } = verify;
+  return (
+    <View style={s.statusWrap}>
+      <View style={s.statusRow}>
+        {state === 'checking' ? (
+          <View style={s.badge}>
+            <ActivityIndicator size="small" color={colors.accent} />
+          </View>
+        ) : state === 'ok' ? (
+          <View style={[s.badge, { backgroundColor: colors.good }]}>
+            <Icon name="Check" size={18} color="#fff" />
+          </View>
+        ) : state === 'error' ? (
+          <Pressable
+            onPress={() => setOpen((o) => !o)}
+            style={[s.badge, { backgroundColor: colors.bad }]}
+            accessibilityRole="button"
+            accessibilityLabel="Ver el error de conexión"
+          >
+            <Icon name="X" size={18} color="#fff" />
+          </Pressable>
+        ) : (
+          <View style={[s.badge, { backgroundColor: colors.border }]} />
+        )}
+        <Text style={s.statusText}>
+          {state === 'checking'
+            ? 'Verificando la conexión…'
+            : state === 'ok'
+              ? 'Conexión verificada'
+              : state === 'error'
+                ? 'No se pudo verificar (tocá la cruz para ver el motivo)'
+                : 'Completá los datos y la conexión se verifica sola.'}
+        </Text>
+      </View>
+      {state === 'error' && open ? (
+        <View style={s.errorBox}>
+          <Text style={s.errorText}>{error}</Text>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
 export function AIScreen() {
   const ai = useAI();
+  const saveKey = useAI((st) => st.saveKey);
   const [key, setKey] = useState('');
+  // Al pegar (o terminar de escribir) la clave se guarda sola y dispara la verificación.
+  useEffect(() => {
+    const k = key.trim();
+    if (k.length < 8) return;
+    const id = setTimeout(() => {
+      void saveKey(k);
+      setKey('');
+    }, 600);
+    return () => clearTimeout(id);
+  }, [key, saveKey]);
   const [showLog, setShowLog] = useState(false);
   const prov = PROVIDERS.find((p) => p.id === ai.config.provider)!;
   const own = ai.config.provider === 'compat';
@@ -119,7 +178,7 @@ export function AIScreen() {
             </View>
           ) : null}
           <Text style={s.small}>
-            Si «Probar conexión» da error de modelo o de acceso, probá con otro de la lista (la cuenta gratuita no incluye todos).
+            Si aparece la cruz roja por un error de modelo o de acceso, probá con otro de la lista (la cuenta gratuita no incluye todos).
           </Text>
         </View>
       ) : null}
@@ -138,34 +197,22 @@ export function AIScreen() {
                 ? 'Clave guardada (pegá otra para reemplazarla)'
                 : own
                   ? 'Solo si tu servidor la pide (OpenRouter sí)'
-                  : 'Pegá tu clave acá'
+                  : 'Pegá tu clave acá: se guarda y se prueba sola'
             }
             placeholderTextColor={colors.muted}
             secureTextEntry
             autoCapitalize="none"
             autoCorrect={false}
           />
+          {ai.hasKey ? (
+            <View style={{ marginTop: 8 }}>
+              <Button label="Borrar clave" variant="ghost" onPress={() => void ai.saveKey('')} />
+            </View>
+          ) : null}
         </>
       )}
-      <View style={{ gap: 8, marginTop: 8 }}>
-        {local ? null : (
-          <Button
-            label="Guardar clave"
-            disabled={!key.trim()}
-            onPress={() => {
-              void ai.saveKey(key);
-              setKey('');
-            }}
-          />
-        )}
-        {!local && ai.hasKey ? <Button label="Borrar clave" variant="ghost" onPress={() => void ai.saveKey('')} /> : null}
-        <Button
-          label={ai.busy ? 'Probando…' : 'Probar conexión'}
-          variant="ghost"
-          disabled={ai.busy || !canUse}
-          onPress={() => void ai.testConnection()}
-        />
-      </View>
+
+      <ConnectionStatus />
 
       <View style={s.switchRow}>
         <View style={{ flex: 1 }}>
@@ -175,7 +222,7 @@ export function AIScreen() {
             Además te deja responder las situaciones escribiendo: la IA decide qué pasa y cuántos puntos ganás o perdés.
           </Text>
           <Text style={[s.small, { color: ai.config.verified ? colors.good : colors.warn, fontWeight: '700' }]}>
-            {ai.config.verified ? 'Conexión verificada ✓' : 'Para activarlo, primero probá la conexión con éxito.'}
+            {ai.config.verified ? 'Conexión verificada ✓' : 'Para activarlo, esperá a que la conexión se verifique (tick verde).'}
           </Text>
         </View>
         <Switch
@@ -232,6 +279,12 @@ export function AIScreen() {
 }
 
 const s = StyleSheet.create({
+  statusWrap: { marginTop: space.lg },
+  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  badge: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface2 },
+  statusText: { flex: 1, color: colors.text, fontSize: 14, fontWeight: '700' },
+  errorBox: { marginTop: 10, borderRadius: radius.md, borderWidth: 1, borderColor: colors.bad, backgroundColor: '#FBE3E5', padding: 12 },
+  errorText: { color: colors.text, fontSize: 13, lineHeight: 19 },
   lead: { color: colors.text, fontWeight: '700', fontSize: 15 },
   small: { color: colors.muted, fontSize: 12.5, marginTop: 6, lineHeight: 18 },
   label: { color: colors.text, fontWeight: '700', fontSize: 15 },

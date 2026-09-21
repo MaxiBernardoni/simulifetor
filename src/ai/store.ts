@@ -11,7 +11,7 @@ import { generateEvents, narrate, resolveFreeText } from './service';
 import { summarizeLife } from './prompts';
 import { getApiKey, loadAIData, saveAIData, setApiKey } from './storage';
 import { inputProblem, norm } from './filter';
-import { applyConfigPatch, canAnswerByText } from './config';
+import { applyConfigPatch, canAnswerByText, connectionChanged, connectionUsable, describeAIError } from './config';
 import type { GameEvent } from '../engine/types';
 
 let pool: GameEvent[] = [];
@@ -37,7 +37,8 @@ interface AIState {
   load: () => Promise<void>;
   setConfig: (patch: Partial<AIConfig>) => Promise<void>;
   saveKey: (key: string) => Promise<void>;
-  testConnection: () => Promise<void>;
+  /** Estado de la verificación automática de la conexión. */
+  verify: { state: 'idle' | 'checking' | 'ok' | 'error'; error: string | null };
   generate: (n: number, mock?: boolean) => Promise<void>;
   clearPool: () => Promise<void>;
   narrateText: (eventId: string, text: string) => Promise<string | null>;
@@ -69,6 +70,48 @@ export const useAI = create<AIState>((set, get) => {
     return life && life.alive ? summarizeLife(life) : 'una persona adulta cualquiera, sin trabajo fijo';
   };
 
+  // Verificación automática: se dispara sola cuando cambia algo de la conexión (con un pequeño retardo al escribir).
+  let verifyTimer: ReturnType<typeof setTimeout> | undefined;
+  let verifySeq = 0;
+  const setVerified = (verified: boolean) => set({ config: { ...get().config, verified } });
+  const runVerify = async () => {
+    const seq = ++verifySeq;
+    const cfg = get().config;
+    const key = await keyFor(cfg);
+    if (seq !== verifySeq) return;
+    if (key === null || !connectionUsable(cfg, get().hasKey)) {
+      set({ verify: { state: 'idle', error: null } });
+      setVerified(false);
+      return;
+    }
+    try {
+      const out = await providerFor(cfg).generate('Respondé solamente con la palabra OK.', key, { timeoutMs: 10000 });
+      if (seq !== verifySeq) return;
+      const ok = out.trim().length > 0;
+      set({ verify: ok ? { state: 'ok', error: null } : { state: 'error', error: 'El proveedor respondió vacío.' } });
+      setVerified(ok);
+    } catch (e) {
+      if (seq !== verifySeq) return;
+      const { kind, message } = e as { kind?: string; message?: string };
+      set({ verify: { state: 'error', error: describeAIError(kind, message) } });
+      setVerified(false);
+    }
+    await persist();
+  };
+  const scheduleVerify = (delay = 700) => {
+    clearTimeout(verifyTimer);
+    verifySeq++; // invalida cualquier verificación en curso
+    setVerified(false);
+    if (!connectionUsable(get().config, get().hasKey)) {
+      set({ verify: { state: 'idle', error: null } });
+      void persist();
+      return;
+    }
+    set({ verify: { state: 'checking', error: null } });
+    void persist();
+    verifyTimer = setTimeout(() => void runVerify(), delay);
+  };
+
   return {
     config: { ...DEFAULT_AI_CONFIG },
     hasKey: false,
@@ -76,59 +119,32 @@ export const useAI = create<AIState>((set, get) => {
     audit: [],
     busy: false,
     status: null,
+    verify: { state: 'idle', error: null },
 
     load: async () => {
       const d = await loadAIData();
       pool = d.pool.slice(-POOL_MAX);
       const key = await getApiKey();
-      set({ config: d.config, audit: d.audit, hasKey: !!key });
+      set({ config: d.config, audit: d.audit, hasKey: !!key, verify: { state: d.config.verified ? 'ok' : 'idle', error: null } });
       publishPool();
       // Generación en segundo plano: nunca bloquea la UI ni el turno de envejecer.
       if (d.config.enabled && (await keyFor(d.config)) !== null) void get().generate(SESSION_BATCH);
     },
 
     setConfig: async (patch) => {
-      set({ config: applyConfigPatch(get().config, patch) });
+      const prev = get().config;
+      const next = applyConfigPatch(prev, patch);
+      set({ config: next });
       publishPool();
+      if (connectionChanged(prev, next)) scheduleVerify();
       await persist();
     },
 
     saveKey: async (key) => {
       await setApiKey(key);
-      // Otra clave (o ninguna): la conexión hay que volver a probarla.
-      set({ config: { ...get().config, verified: false } });
-      await persist();
-      set({ hasKey: key.trim().length > 0, status: key.trim() ? 'Clave guardada de forma segura en este dispositivo.' : 'Clave borrada.' });
-    },
-
-    testConnection: async () => {
-      const key = await keyFor(get().config);
-      if (key === null) return set({ status: 'Primero pegá tu clave.' });
-      set({ busy: true, status: 'Probando…' });
-      try {
-        const out = await providerFor(get().config).generate('Respondé solamente con la palabra OK.', key, { timeoutMs: 8000 });
-        const ok = out.trim().length > 0;
-        set({ config: { ...get().config, verified: ok }, status: ok ? 'Conexión correcta.' : 'El proveedor respondió vacío.' });
-        await persist();
-      } catch (e) {
-        set({ config: { ...get().config, verified: false } });
-        await persist();
-        const { kind, message } = e as { kind?: string; message?: string };
-        set({
-          status:
-            kind === 'auth'
-              ? `La clave fue rechazada o no tiene acceso a ese modelo. ${message ?? ''}`.trim()
-              : kind === 'quota'
-                ? `Sin cuota por ahora (límite gratuito). ${message ?? ''}`.trim()
-                : kind === 'timeout'
-                  ? 'Tardó demasiado.'
-                  : kind === 'bad-response'
-                    ? `La IA respondió con un error: ${message ?? 'desconocido'}`
-                    : `No se pudo conectar: ${message ?? 'sin detalle'}. Puede ser falta de internet o que el navegador (o un bloqueador de anuncios/contenido) bloqueó el pedido.`,
-        });
-      } finally {
-        set({ busy: false });
-      }
+      set({ hasKey: key.trim().length > 0 });
+      // Otra clave (o ninguna): se vuelve a verificar sola.
+      scheduleVerify(0);
     },
 
     generate: async (n, mock = false) => {

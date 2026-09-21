@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyConfigPatch, canAnswerByText } from './config';
+import { applyConfigPatch, canAnswerByText, connectionChanged, connectionUsable, describeAIError } from './config';
 import { DEFAULT_AI_CONFIG } from './types';
 import type { AIConfig } from './types';
 
@@ -41,5 +41,35 @@ describe('la conexión probada se invalida al cambiar de conexión', () => {
     expect(applyConfigPatch(ready, { provider: 'groq' }).verified).toBe(true);
     expect(applyConfigPatch(ready, { provider: 'gemini', verified: true }).verified).toBe(true);
     expect(applyConfigPatch({ ...ready, verified: false }, { verified: true }).verified).toBe(true);
+  });
+});
+
+describe('verificación automática de la conexión', () => {
+  const own: AIConfig = { ...DEFAULT_AI_CONFIG, provider: 'compat', baseUrl: 'http://localhost:11434/v1', model: 'dolphin3' };
+
+  it('detecta cuándo cambió la conexión (y cuándo no)', () => {
+    expect(connectionChanged(own, { ...own, model: 'hermes3' })).toBe(true);
+    expect(connectionChanged(own, { ...own, baseUrl: 'https://x.ts.net/v1' })).toBe(true);
+    expect(connectionChanged(ready, { ...ready, cloudModel: 'openai/gpt-oss-20b' })).toBe(true);
+    expect(connectionChanged(ready, { ...ready, narrator: false, enabled: false })).toBe(false);
+  });
+
+  it('solo intenta conectar cuando la configuración está completa', () => {
+    expect(connectionUsable(own, false)).toBe(true); // el modelo propio no usa clave
+    expect(connectionUsable({ ...own, baseUrl: 'localhost' }, false)).toBe(false); // dirección inválida
+    expect(connectionUsable({ ...own, model: '  ' }, false)).toBe(false);
+    expect(connectionUsable({ ...ready, provider: 'groq' }, false)).toBe(false); // falta la clave
+    expect(connectionUsable({ ...ready, provider: 'groq' }, true)).toBe(true);
+  });
+
+  it('el texto del error (lo que muestra la cruz) explica cada caso', () => {
+    expect(describeAIError('auth', 'clave rechazada o sin acceso — model x')).toContain('rechazada');
+    expect(describeAIError('auth', 'clave rechazada o sin acceso — model x')).toContain('model x');
+    expect((describeAIError('auth', 'clave rechazada o sin acceso — model x').match(/rechazada/g) ?? []).length).toBe(1);
+    expect(describeAIError('quota')).toContain('cuota');
+    expect(describeAIError('timeout')).toContain('demasiado');
+    expect(describeAIError('bad-response', 'error 404')).toContain('error 404');
+    expect(describeAIError('network', '(Failed to fetch)')).toContain('Failed to fetch');
+    expect(describeAIError(undefined)).toContain('No se pudo conectar');
   });
 });
