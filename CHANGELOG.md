@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [IA: solo con conexión verificada]
+
+- Responder escribiendo (y el modo narrador) solo se habilitan después de un "Probar conexión" exitoso; cambiar proveedor, dirección, modelo o clave, o un fallo, lo invalida. Ajustes muestra "Conexión verificada ✓" o el aviso. Verificado en el navegador con Ollama real. 9 tests (`ai/config.test.ts`).
+
 ## [IA: errores claros y modelo elegible]
 
 - "Probar conexión" mostraba "No se pudo conectar" ante cualquier error que no fuera de clave o cuota (por ejemplo un modelo sin acceso en el plan gratuito de Groq). Ahora muestra el motivo real del proveedor. Gemini y Groq tienen campo de **modelo** (con atajos para Groq); el modelo por defecto de Groq pasó a `llama-3.1-8b-instant`. 3 tests.

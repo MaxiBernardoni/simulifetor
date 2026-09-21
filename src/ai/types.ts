@@ -28,10 +28,20 @@ export interface AIConfig {
   model: string;
   /** Modelo elegido para Gemini/Groq (vacío = el de por defecto). */
   cloudModel: string;
+  /** La conexión se probó con éxito ("Probar conexión"). Habilita el modo narrador y el responder escribiendo. */
+  verified: boolean;
   narrator: boolean;
 }
 
-export const DEFAULT_AI_CONFIG: AIConfig = { enabled: false, provider: 'gemini', narrator: false, baseUrl: '', model: '', cloudModel: '' };
+export const DEFAULT_AI_CONFIG: AIConfig = {
+  enabled: false,
+  provider: 'gemini',
+  narrator: false,
+  baseUrl: '',
+  model: '',
+  cloudModel: '',
+  verified: false,
+};
 
 export interface AuditEntry {
   t: number;

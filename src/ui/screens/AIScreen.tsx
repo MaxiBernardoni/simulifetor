@@ -174,12 +174,15 @@ export function AIScreen() {
             Reescribe el texto de los eventos con tu contexto (si tarda más de 3 segundos o no conserva los hechos, se muestra el original).
             Además te deja responder las situaciones escribiendo: la IA decide qué pasa y cuántos puntos ganás o perdés.
           </Text>
+          <Text style={[s.small, { color: ai.config.verified ? colors.good : colors.warn, fontWeight: '700' }]}>
+            {ai.config.verified ? 'Conexión verificada ✓' : 'Para activarlo, primero probá la conexión con éxito.'}
+          </Text>
         </View>
         <Switch
           value={ai.config.narrator}
           onValueChange={(v) => void ai.setConfig({ narrator: v })}
           trackColor={{ true: colors.accent }}
-          disabled={!ai.config.enabled}
+          disabled={!ai.config.enabled || !ai.config.verified}
         />
       </View>
 

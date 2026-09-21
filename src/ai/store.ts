@@ -11,6 +11,7 @@ import { generateEvents, narrate, resolveFreeText } from './service';
 import { summarizeLife } from './prompts';
 import { getApiKey, loadAIData, saveAIData, setApiKey } from './storage';
 import { inputProblem, norm } from './filter';
+import { applyConfigPatch, canAnswerByText } from './config';
 import type { GameEvent } from '../engine/types';
 
 let pool: GameEvent[] = [];
@@ -87,13 +88,16 @@ export const useAI = create<AIState>((set, get) => {
     },
 
     setConfig: async (patch) => {
-      set({ config: { ...get().config, ...patch } });
+      set({ config: applyConfigPatch(get().config, patch) });
       publishPool();
       await persist();
     },
 
     saveKey: async (key) => {
       await setApiKey(key);
+      // Otra clave (o ninguna): la conexión hay que volver a probarla.
+      set({ config: { ...get().config, verified: false } });
+      await persist();
       set({ hasKey: key.trim().length > 0, status: key.trim() ? 'Clave guardada de forma segura en este dispositivo.' : 'Clave borrada.' });
     },
 
@@ -103,8 +107,12 @@ export const useAI = create<AIState>((set, get) => {
       set({ busy: true, status: 'Probando…' });
       try {
         const out = await providerFor(get().config).generate('Respondé solamente con la palabra OK.', key, { timeoutMs: 8000 });
-        set({ status: out.trim().length ? 'Conexión correcta.' : 'El proveedor respondió vacío.' });
+        const ok = out.trim().length > 0;
+        set({ config: { ...get().config, verified: ok }, status: ok ? 'Conexión correcta.' : 'El proveedor respondió vacío.' });
+        await persist();
       } catch (e) {
+        set({ config: { ...get().config, verified: false } });
+        await persist();
         const { kind, message } = e as { kind?: string; message?: string };
         set({
           status:
@@ -159,7 +167,7 @@ export const useAI = create<AIState>((set, get) => {
 
     narrateText: async (eventId, text) => {
       const { config } = get();
-      if (!config.enabled || !config.narrator) return null;
+      if (!config.enabled || !config.narrator || !config.verified) return null;
       const key = await keyFor(config);
       if (key === null) return null;
       return narrate(providerFor(config), key, eventId, text, ctxNow(), 3000);
@@ -173,7 +181,8 @@ export const useAI = create<AIState>((set, get) => {
       if (text.length < 3) return 'Escribí qué hacés (aunque sea una frase corta).';
       if (inputProblem(text, life.age)) return 'Esa respuesta no la puedo usar. Escribí otra cosa o elegí una opción.';
       const { config } = get();
-      if (!config.enabled || !config.narrator) return 'Activá la IA y el modo narrador para responder escribiendo.';
+      if (!canAnswerByText(config, get().hasKey))
+        return 'Probá la conexión en Menú → IA y activá el modo narrador para responder escribiendo.';
       const key = await keyFor(config);
       if (key === null) return 'Falta la clave de la IA.';
       const res = await resolveFreeText(providerFor(config), key, {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAI } from '../ai/store';
+import { canAnswerByText } from '../ai/config';
 import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useGame } from '../store/gameStore';
 import { getEvent } from '../engine/registry';
@@ -20,9 +21,9 @@ export function PromptModal() {
   const dismiss = useGame((st) => st.dismiss);
   const prompt = life?.pending[0];
   const narrateText = useAI((st) => st.narrateText);
-  const narratorOn = useAI((st) => st.config.enabled && st.config.narrator);
+  const narratorOn = useAI((st) => st.config.enabled && st.config.narrator && st.config.verified);
   // Responder escribiendo: hace falta la IA activa, el modo narrador y un proveedor usable (el modelo propio no pide clave).
-  const canWrite = useAI((st) => st.config.enabled && st.config.narrator && (st.hasKey || st.config.provider === 'compat'));
+  const canWrite = useAI((st) => canAnswerByText(st.config, st.hasKey));
   const answerText = useAI((st) => st.answerText);
   const [draft, setDraft] = useState<{ key: string; text: string; error: string | null }>({ key: '', text: '', error: null });
   const [thinking, setThinking] = useState(false);
