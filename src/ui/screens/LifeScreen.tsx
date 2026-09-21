@@ -142,7 +142,14 @@ export function LifeScreen() {
         />
       </View>
 
-      <CoachTarget id="nav" style={s.navBar}>
+      <CoachTarget id="stats" style={s.stats}>
+        {STATS.map((k) => (
+          <LifeStat key={k} stat={k} value={life.stats[k]} />
+        ))}
+        <DeltaChips deltas={life.lastDelta} />
+      </CoachTarget>
+
+      <CoachTarget id="nav" style={[s.navBar, { paddingBottom: Math.max(insets.bottom, 10) }]}>
         <NavItem icon="BriefcaseBusiness" label="Ocupación" onPress={() => setTab('work')} />
         <NavItem icon="PiggyBank" label="Activos" onPress={() => setTab('assets')} />
         <CoachTarget id="age" style={s.ageSlot}>
@@ -155,13 +162,6 @@ export function LifeScreen() {
         </CoachTarget>
         <NavItem icon="HeartHandshake" label="Relaciones" onPress={() => setTab('people')} />
         <NavItem icon="LayoutGrid" label="Actividades" onPress={() => setTab('activities')} />
-      </CoachTarget>
-
-      <CoachTarget id="stats" style={[s.stats, { paddingBottom: Math.max(insets.bottom, 10) }]}>
-        {STATS.map((k) => (
-          <LifeStat key={k} stat={k} value={life.stats[k]} />
-        ))}
-        <DeltaChips deltas={life.lastDelta} />
       </CoachTarget>
     </View>
   );
@@ -231,5 +231,5 @@ const s = StyleSheet.create({
     elevation: 6,
   },
   ageText: { color: '#fff', fontWeight: '800', fontSize: 15, marginTop: -2 },
-  stats: { backgroundColor: colors.bg, paddingHorizontal: 12, paddingTop: 10 },
+  stats: { backgroundColor: colors.bg, paddingHorizontal: 12, paddingTop: 10, paddingBottom: 30 },
 });

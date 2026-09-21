@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Pantalla de vida: barra abajo]
+
+- La barra de navegación (Ocupación, Activos, Envejecer, Relaciones, Actividades) pasó al borde inferior, debajo de las barras de stats, como en BitLife; antes flotaba a mitad de pantalla en el celular. Verificado en el navegador a 390×844.
+
 ## [IA: sin reescritura de textos]
 
 - Se eliminó el modo narrador que reescribía los textos de los eventos (causaba incoherencias). Quedan solo responder escribiendo y el retruque de la IA; el interruptor pasó a llamarse "Responder escribiendo". Se borraron sus tests (204 en total).
