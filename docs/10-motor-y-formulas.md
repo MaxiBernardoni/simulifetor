@@ -62,6 +62,25 @@ Cada año: con probabilidad `activityChance` busca trabajo, se anota a la univer
 - Comparaciones entre épocas (logros, escenarios, legado, "familia famosa") usan `realNetWorth` = patrimonio / índice de precios.
 - Carreras: `since`/`until` (año). Actividades: `tech`. Condiciones: `c.tech`, `c.law`, `c.era`.
 
+## Bandas de balance objetivo (T01)
+
+Medidas con `npm run balance -- --n=500 --profile=<perfil>` (perfiles: `normal`, `crimen`, `familia`, `pasivo`; ver `engine/balance.ts`). El bot elige al azar, así que las bandas sirven para **detectar roturas**, no para simular a una persona.
+
+| Métrica (perfil) | Banda | Última medición |
+|---|---|---|
+| Esperanza de vida media (normal) | 70–79 | 73,9 |
+| p10 de la edad de muerte (normal) | ≥ 45 | 60 |
+| Quiebras (normal) | ≤ 15 % | 6,4 % |
+| Millonarias, patrimonio ≥ $1.000.000 en valores del 2000 (normal) | 5–20 % | 13,6 % |
+| Con antecedentes (normal, `crimeChance` 0,08) | ≤ 25 % | 20 % |
+| Con antecedentes (crimen) | ≥ 40 % | 83,6 % |
+| Con hijos (familia) | ≥ 40 % | 45 % |
+| Casadas (familia) | ≥ 18 % (el bot propone el 30 % de los años elegibles) | 22 % |
+| Eventos que dominan (> 5 % de los disparos) | ninguno | ninguno |
+| Eventos sin disparos (1.000 vidas) | solo `dyn.*` y `law.*` | 8 (`dyn.*` y `hist.rock_nace`, ya corregido) |
+
+`engine/balance.bands.test.ts` verifica estas bandas con 100–150 vidas y tolerancia amplia. Los ajustes hechos están en `docs/balance/CALIBRACION.md` y los informes en `docs/balance/`.
+
 ## Puntos de extensión frecuentes
 
 | Quiero… | Tocar |

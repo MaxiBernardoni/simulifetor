@@ -2,6 +2,14 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Balance] — T01
+
+- `npm run balance -- --n=500 --profile=normal|crimen|familia|pasivo [--json] [--out]`: informe de esperanza de vida, causas de muerte, patrimonio, % de quiebras/millonarias/antecedentes/casadas/con hijos, uso de cada evento (dominantes y muertos) y rendimiento (`engine/balance.ts`, `scripts/balance.ts`). Informes en `docs/balance/`.
+- Bandas objetivo documentadas en `docs/10` y verificadas por `balance.bands.test.ts`.
+- **Calibración**: el desajuste (42 % de quiebras, 49 % con antecedentes) venía del **bot**, no de la economía: ahora busca trabajo de forma constante, esquiva las opciones criminales según su perfil y no se anota siempre en la universidad. Quiebras 42 % → 6 %, antecedentes 49 % → 20 %. Ninguna constante del juego cambió. Ver `docs/balance/CALIBRACION.md`.
+- `hist.rock_nace` nunca se disparaba: corregido el rango de años.
+- Dependencia de desarrollo nueva: `@types/node`.
+
 ## [Robustez del motor] — T02
 
 **Bugs encontrados y corregidos**

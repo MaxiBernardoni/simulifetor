@@ -29,7 +29,7 @@ export const HISTORY: GameEvent[] = [
   H('guerra_frontera', 'Guerra en la frontera', 1951, 1954, 'Estalló una guerra en la frontera. Los diarios hablan de héroes; las radios, de listas de ausentes.', [fx.hap(-4), fx.moneyPct(-0.03)]),
   H('tv_llega', 'Llega la televisión', 1953, 1957, 'En tu barrio aparece el primer televisor. Medio pueblo se junta a mirar una pantalla del tamaño de una ventana chica.', [fx.hap(3), fx.sma(-1)], { cond: [c.tech('tv')] }),
   H('boom_posguerra', 'Boom de posguerra', 1957, 1960, 'La economía crece como nunca. Hay trabajo, hay heladeras y hay optimismo. Nadie sospecha lo que viene.', [fx.moneyPct(0.05), fx.hap(3)]),
-  H('rock_nace', 'Nace el rock', 1955, 1959, 'Un ritmo nuevo enloquece a los jóvenes y espanta a sus padres. Tu casa se divide en dos bandos.', [fx.hap(4), fx.close('mother', -2)], { age: [10, 35] }),
+  H('rock_nace', 'Nace el rock', 1960, 1965, 'Un ritmo nuevo enloquece a los jóvenes y espanta a sus padres. Tu casa se divide en dos bandos.', [fx.hap(4), fx.close('mother', -2)], { age: [10, 35] }),
   H('carrera_espacial', 'Carrera espacial', 1961, 1963, 'Dos potencias compiten por llegar al espacio. En la escuela todos quieren ser astronautas, aunque no sepan sumar.', [fx.sma(2), fx.hap(2)], { age: [4, 60] }),
   H('terremoto_1964', 'Gran terremoto', 1964, 1965, 'Un terremoto destruyó media ciudad. Vos perdiste cosas, pero conservaste lo importante.', [fx.hap(-5), fx.money(-600), fx.hea(-2)]),
   H('juventud_rebelde', 'Juventud en las calles', 1967, 1969, 'Estudiantes de todo el mundo salen a protestar. Tu generación quiere cambiarlo todo y hasta prepara los carteles.', [], {

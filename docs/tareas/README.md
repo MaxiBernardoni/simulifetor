@@ -16,7 +16,7 @@ Cada archivo `Txx-*.md` es una tarea **autocontenida**: objetivo, contexto (arch
 |---|---|---|---|---|---|---|
 | 1 | [T14](T14-calidad-de-codigo.md) | Calidad de código: lint, formato, scripts, dividir archivos grandes | M | — | ✅ segura | parcial (ver T14) |
 | 2 | [T02](T02-robustez-del-motor.md) | Robustez: tests de propiedades, fuzz, tests del store y migraciones | L | — | ✅ segura | review |
-| 3 | [T01](T01-herramienta-de-balance.md) | Herramienta de balance (`npm run balance`) y calibración | L | T02 | ✅ segura | todo |
+| 3 | [T01](T01-herramienta-de-balance.md) | Herramienta de balance (`npm run balance`) y calibración | L | T02 | ✅ segura | review |
 | 4 | [T03](T03-contenido-masivo.md) | +250 eventos, +30 actividades, +10 carreras (por lotes) | XL | T01 | ✅ segura (contenido) | todo |
 | 5 | [T16](T16-arbol-anti-abuso-y-ux.md) | Árbol: enfriamiento anti-abuso, zoom/pan, novedades de la familia | L | — | ⚠️ revisar decisión | todo |
 | 6 | [T04](T04-salud-y-adicciones.md) | Enfermedades y adicciones detalladas | XL | T02 | ✅ segura | todo |

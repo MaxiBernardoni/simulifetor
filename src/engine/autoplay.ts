@@ -56,7 +56,10 @@ export function autoPlay(life: Life, opts: AutoOpts): void {
         const ev = getEvent(p.eventId)!;
         const target = life.people.find((x) => x.id === p.targetId);
         const options = ev.choices!.map((c, i) => ({ c, i })).filter(({ c }) => choiceAvailable(life, c, target));
-        resolveChoice(life, options.length ? bot.pick(options).i : 0);
+        // Las opciones que terminan en arresto se eligen con la probabilidad de crimen del perfil (como las actividades).
+        const clean = options.filter(({ c }) => !JSON.stringify(c.outcomes).includes('"arrest"'));
+        const pool = clean.length && clean.length < options.length && !bot.chance(crimeChance) ? clean : options;
+        resolveChoice(life, pool.length ? bot.pick(pool).i : 0);
       }
     }
   };
@@ -83,12 +86,13 @@ export function autoPlay(life: Life, opts: AutoOpts): void {
   while (life.alive && life.age < until && safety++ < 100000) {
     drain();
     if (!life.alive) break;
+    // Casi todas las personas buscan trabajo cuando no lo tienen (aunque no hagan otras actividades ese año).
+    if (!life.job && life.age >= 16 && life.age < 65 && bot.chance(0.6)) {
+      searchJobs(life);
+      if (life.offers.length) takeJob(life, life.offers[0]);
+    }
     if (bot.chance(chance)) {
-      if (!life.job && bot.chance(0.5)) {
-        searchJobs(life);
-        if (life.offers.length) takeJob(life, life.offers[0]);
-      }
-      if (canEnrollUniversity(life) && bot.chance(0.3)) enrollUniversity(life);
+      if (canEnrollUniversity(life) && bot.chance(0.1)) enrollUniversity(life);
       // Finanzas: compra, préstamo e inversión al azar.
       if (bot.chance(0.15)) {
         const it = bot.pick(CATALOG);

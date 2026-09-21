@@ -3,7 +3,7 @@
 - **Prioridad / esfuerzo:** alta · L
 - **Depende de:** T02 (invariantes)
 - **Autonomía:** ✅ segura (los cambios de constantes deben ser conservadores y quedar documentados)
-- **Estado:** todo
+- **Estado:** review
 
 ## Objetivo
 Convertir las mediciones ad hoc (tests temporales `_probe.test.ts`) en un **comando permanente** que produzca un informe de balance, definir **bandas objetivo** documentadas y calibrar el juego para que caiga dentro de ellas. Sin esto, cada evento nuevo puede romper la economía o la esperanza de vida sin que nadie lo note.

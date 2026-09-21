@@ -20,6 +20,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@types/node": "^26.6.2",
     "@types/react": "~19.2.2",
     "eslint": "^9.39.5",
     "prettier": "^3.9.8",
@@ -41,7 +42,8 @@
     "icons": "node scripts/gen-icons.mjs",
     "dev:web": "node scripts/dev-web.mjs",
     "stop:web": "node scripts/stop-web.mjs",
-    "check:all": "npm run lint && npm run format:check && npm run typecheck && npm test"
+    "check:all": "npm run lint && npm run format:check && npm run typecheck && npm test",
+    "balance": "tsx scripts/balance.ts"
   },
   "private": true
 }
