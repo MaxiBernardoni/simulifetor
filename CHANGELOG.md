@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Leyes de época] — cierre de T05
+
+- `Outcome.conditions`: un resultado solo puede salir si se cumplen sus condiciones. Nuevas condiciones `c.noLaw()`. Ejemplo: con `drogas_blandas_legales` vender drogas ya no termina en arresto (multa por venta sin habilitación).
+
 ## [Tutorial y ayuda] — T15
 
 - Tutorial de 5 tarjetas la primera vez (con "Saltar"), pantalla **Cómo se juega** con secciones plegables y glosario, consejos contextuales al morir y aviso en el árbol cuando no hay a quién cambiarse. Las partidas existentes no ven el tutorial (`meta.seenTutorial` opcional).
@@ -83,7 +87,7 @@ Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada
 - Balance verificado con 600 vidas por década de nacimiento: patrimonio real mediano 160–310 mil y 10–22 % de millonarios en todas las décadas (comparable a antes).
 - `world.test.ts`: el "padre" de un nodo puede ser de género F (parejas del mismo género), el test lo asumía M.
 
-**Pendiente de T05**: efectos de leyes sobre probabilidades (p. ej. arresto por drogas) y desenlace de pena de muerte; escenas nuevas `war`/`disaster`; `npm run balance` (T01).
+**Pendiente de T05**: desenlace de pena de muerte en juicios y escenas nuevas `war`/`disaster` (decisión de Max).
 
 ## [Familia viva] — árbol genealógico jugable · `32a0edb`
 

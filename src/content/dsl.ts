@@ -32,6 +32,7 @@ export const c = {
   single: (): Cond => ({ married: false }),
   tech: (t: string): Cond => ({ tech: t }),
   law: (l: string): Cond => ({ law: l }),
+  noLaw: (l: string): Cond => ({ noLaw: l }),
   era: (e: string): Cond => ({ era: e }),
 };
 

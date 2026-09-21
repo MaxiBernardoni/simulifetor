@@ -31,6 +31,7 @@ export type Cond =
   | { loan: boolean }
   | { tech: string }
   | { law: string }
+  | { noLaw: string }
   | { era: string };
 
 // ───────── Efectos ─────────
@@ -60,6 +61,8 @@ export type Effect =
 
 export interface Outcome {
   weight?: number;
+  /** Si no se cumplen, este resultado no puede salir (p. ej. cambios por ley de época). */
+  conditions?: Cond[];
   text: string;
   effects?: Effect[];
 }

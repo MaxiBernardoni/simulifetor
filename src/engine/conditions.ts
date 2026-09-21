@@ -37,6 +37,7 @@ export function evalCond(life: Life, cond: Cond, rng: Rng, ctx: Ctx = {}): boole
   if ('loan' in cond) return life.loan > 0 === cond.loan;
   if ('tech' in cond) return eraAt(life.year).tech.has(cond.tech);
   if ('law' in cond) return eraAt(life.year).laws.has(cond.law);
+  if ('noLaw' in cond) return !eraAt(life.year).laws.has(cond.noLaw);
   if ('era' in cond) return eraAt(life.year).id === cond.era;
   if ('married' in cond) {
     const partner = firstAlive(life, 'partner');

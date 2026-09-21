@@ -215,7 +215,8 @@ export const ACTIVITIES: Activity[] = [
     outcomes: [
       { weight: 6, text: 'Un año de buen negocio en la esquina correcta.', effects: [fx.money(8000), fx.hap(2), fx.flag('dealer')] },
       { weight: 2, text: 'Un rival te asaltó la mercadería y te dejó bastante golpeado.', effects: [fx.money(-2000), fx.hea(-10), fx.hap(-6)] },
-      { weight: 3, text: 'Redada. Te encontraron con la mercadería.', effects: [fx.hap(-10), fx.arrest('narcotráfico', 2, 9)] },
+      { weight: 3, text: 'Redada. Te encontraron con la mercadería.', effects: [fx.hap(-10), fx.arrest('narcotráfico', 2, 9)], conditions: [c.noLaw('drogas_blandas_legales')] },
+      { weight: 3, text: 'Te multaron por vender sin habilitación. La ley cambió, pero la burocracia no.', effects: [fx.hap(-4), fx.money(-1500)], conditions: [c.law('drogas_blandas_legales')] },
     ],
   },
   {

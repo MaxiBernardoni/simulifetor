@@ -78,7 +78,9 @@ function runTriggers(life: Life, ctx: EffectCtx): void {
 
 export function pickOutcome(life: Life, outcomes: Outcome[]): Outcome {
   const rng = rngOf(life);
-  return rng.weighted(outcomes, (o) => o.weight ?? 1) ?? outcomes[0];
+  const allowed = outcomes.some((o) => o.conditions) ? outcomes.filter((o) => allConds(life, o.conditions, rng)) : outcomes;
+  const pool = allowed.length ? allowed : outcomes;
+  return rng.weighted(pool, (o) => o.weight ?? 1) ?? pool[0];
 }
 
 /** Resuelve la decisión pendiente (primer prompt de tipo choice). */

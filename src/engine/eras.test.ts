@@ -11,6 +11,7 @@ import { isEligibleForCareer, activityStatus } from './actions';
 import { ageUp } from './ageUp';
 import { simulateLife } from './sim';
 import { realNetWorth } from './assets';
+import { pickOutcome } from './events';
 
 describe('eras', () => {
   it('índices positivos, acotados y crecientes para precios', () => {
@@ -134,5 +135,18 @@ describe('eras', () => {
       ageUp(l);
     }
     expect(l.year).toBe(1980);
+  });
+
+  it('las leyes cambian los resultados posibles (drogas blandas: sin arresto por vender)', () => {
+    const sell = ACTIVITIES.find((a) => a.id === 'sell_drugs')!;
+    const arrests = (year: number) => {
+      const l = createLife(5);
+      l.year = year;
+      let n = 0;
+      for (let i = 0; i < 300; i++) if (JSON.stringify(pickOutcome(l, sell.outcomes).effects).includes('arrest')) n++;
+      return n;
+    };
+    expect(arrests(1990)).toBeGreaterThan(20);
+    expect(arrests(2020)).toBe(0);
   });
 });
