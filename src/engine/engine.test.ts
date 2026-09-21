@@ -3,6 +3,7 @@ import { ALL_EVENTS } from '../content/events';
 import { ACTIVITIES } from '../content/activities';
 import { PERSON_ACTIONS } from '../content/personActions';
 import { CAREERS } from '../content/careers';
+import { HAIRS, hairGenderOf, hairForGender, hairStylesFor } from '../content/look';
 import { priceIndex } from '../content/eras';
 import { createLife } from './life';
 import { ageUp } from './ageUp';
@@ -91,7 +92,8 @@ describe('motor', () => {
   it('sin opciones el aspecto es aleatorio pero válido', () => {
     const l = createLife(11);
     expect(l.look.skin).toBeGreaterThanOrEqual(0);
-    expect(l.look.hairStyle).toBeLessThan(8);
+    expect(l.look.hairStyle).toBeLessThan(HAIRS.length);
+    expect(hairGenderOf(l.look.hairStyle)).toBe(l.gender);
   });
 
   it('año de nacimiento dentro del rango', () => {

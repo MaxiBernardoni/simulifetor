@@ -78,7 +78,7 @@ export function LifeScreen() {
 
       <View style={s.info}>
         <Animated.View style={hop}>
-          <Avatar look={life.look} size={52} />
+          <Avatar look={life.look} size={52} animated />
         </Animated.View>
         <View style={{ flex: 1, marginLeft: 10 }}>
           <Text style={s.name} numberOfLines={1}>

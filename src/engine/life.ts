@@ -3,7 +3,7 @@ import type { Gender, Life, Look, Person } from './types';
 import { rngFromState } from './rng';
 import { makePerson, randomFirstName } from './people';
 import { SURNAMES } from '../content/names';
-import { EYE_COLORS, HAIR_COLORS, HAIR_STYLES, SKIN_TONES } from '../content/look';
+import { EYE_COLORS, HAIR_COLORS, hairForGender, hairStylesFor, SKIN_TONES } from '../content/look';
 import { addLog } from './effects';
 
 export const BIRTH_YEAR_RANGE: [number, number] = [1950, 2010];
@@ -24,11 +24,12 @@ export interface CreateOpts {
   silent?: boolean;
 }
 
-export function randomLook(rng: { int(a: number, b: number): number }): Look {
+export function randomLook(rng: { int(a: number, b: number): number }, gender: Gender = 'M'): Look {
+  const styles = hairStylesFor(gender);
   return {
     skin: rng.int(0, SKIN_TONES.length - 1),
     eyes: rng.int(0, EYE_COLORS.length - 1),
-    hairStyle: rng.int(0, HAIR_STYLES.length - 1),
+    hairStyle: styles[rng.int(0, styles.length - 1)],
     hairColor: rng.int(0, HAIR_COLORS.length - 1),
   };
 }
@@ -46,8 +47,9 @@ export function createLife(seed?: number, opts: CreateOpts = {}): Life {
   const randomGender: Gender = rng.chance(0.5) ? 'M' : 'F';
   const gender: Gender = opts.gender ?? randomGender;
   const surname = opts.surname?.trim() || rng.pick(SURNAMES);
-  const rl = randomLook(rng);
+  const rl = randomLook(rng, gender);
   const look: Look = { ...rl, ...opts.look };
+  look.hairStyle = hairForGender(look.hairStyle, gender);
   const drawnYear = rng.int(BIRTH_YEAR_RANGE[0], BIRTH_YEAR_RANGE[1]);
   const birthYear = opts.birthYear ?? drawnYear;
   const drawnWealth = (rng.weighted([1, 2, 3], (w) => (w === 1 ? 3 : w === 2 ? 5 : 2)) ?? 2) as 1 | 2 | 3;
@@ -126,6 +128,8 @@ export function migrateLife(raw: Life): Life {
   l.trial ??= null;
   l.lineageId ??= l.id;
   l.generation ??= 1;
+  // Los peinados ahora son de hombre o de mujer: las partidas viejas pasan al equivalente.
+  if (l.look) l.look.hairStyle = hairForGender(l.look.hairStyle, l.gender);
   l.schemaVersion = SCHEMA_VERSION;
   return l;
 }

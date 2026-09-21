@@ -2,6 +2,22 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Avatares pulidos] — peinados por género
+
+- **Peinados separados por género**: 9 de hombre (corto, pelado, cresta, afro, jopo, raya al costado, rulos cortos, despeinado, entradas) y 11 de mujer (largo, rulos, rodete, carré, trenza, colitas, pixie, ondas largas, flequillo, cola alta, afro rizado). Ninguno es unisex (`content/look.ts`: `HAIRS`, `hairStylesFor`, `hairForGender`).
+- **Creación de personaje**: el selector muestra una grilla con la vista previa de cada peinado con tu piel y tu color de pelo, filtrada por el género elegido; al cambiar de género el peinado se ajusta solo. El avatar grande respira y parpadea.
+- **Avatar rediseñado** (`ui/Avatar.tsx`): degradados en cara y ropa, mejillas, ojos con iris y brillos, pestañas y cejas finas en rasgos femeninos, cuello con sombra, cuello en V, brillos en el pelo, sonrisa con dientes. `Avatar animated` respira y parpadea (se usa en la creación y en la cabecera de la vida).
+- **Compatibilidad**: los hijos, familiares y personas nuevas usan peinados de su género. Las partidas viejas se migran (`migrateLife`) y `deriveLook` corrige a las demás personas al dibujarlas.
+- Tests: `looks.test.ts` (5).
+
+## [Avatares pulidos] — peinados por género
+
+- **Peinados separados por género**: 9 de hombre (corto, pelado, cresta, afro, jopo, raya al costado, rulos cortos, despeinado, entradas) y 11 de mujer (largo, rulos, rodete, carré, trenza, colitas, pixie, ondas largas, flequillo, cola alta, afro rizado). Ninguno es unisex (`content/look.ts`: `HAIRS`, `hairStylesFor`, `hairForGender`).
+- **Creación de personaje**: grilla con vista previa de cada peinado (con tu piel y color de pelo) filtrada por género; al cambiar de género el peinado se ajusta solo. El avatar grande respira y parpadea.
+- **Estilo del avatar** (`ui/Avatar.tsx`): plano y amable — cabeza redonda y grande, ojos de punto con brillo, cejas marcadas, mejillas, sonrisa simple, hombros anchos con remera y cuello. Rasgos femeninos (pestañas, cejas finas) según el peinado. `Avatar animated` respira y parpadea (creación y cabecera de la vida).
+- **Compatibilidad**: hijos, familiares y personas nuevas usan peinados de su género; las partidas viejas se migran (`migrateLife`) y `deriveLook` corrige al resto al dibujar.
+- Tests: `looks.test.ts` (5).
+
 ## [Fase 4 · Eras] — la época importa (T05, hitos 1 a 3 parciales)
 
 **Nuevo**

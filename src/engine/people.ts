@@ -1,6 +1,7 @@
 import type { Gender, Life, Look, Person, PersonKind } from './types';
 import type { Rng } from './rng';
 import { FEMALE_NAMES, MALE_NAMES, SURNAMES } from '../content/names';
+import { hairStylesFor } from '../content/look';
 
 let counter = 0;
 const uid = (rng: Rng) => `p${Date.now().toString(36)}${(counter++).toString(36)}${rng.int(0, 999)}`;
@@ -49,7 +50,7 @@ export function spawnPerson(
 
 /** Aspecto de un hijo: hereda los rasgos del progenitor con algo de azar. */
 export function inheritLook(parent: Look, gender: Gender, rng: Rng): Look {
-  const styles = gender === 'F' ? [1, 1, 5, 6, 2, 0] : [0, 0, 3, 4, 7, 0];
+  const styles = hairStylesFor(gender);
   return {
     skin: rng.chance(0.75) ? parent.skin : Math.max(0, Math.min(5, parent.skin + rng.int(-1, 1))),
     eyes: rng.chance(0.55) ? parent.eyes : rng.int(0, 5),

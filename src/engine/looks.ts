@@ -1,4 +1,5 @@
 import type { Look, Person } from './types';
+import { hairForGender, hairStylesFor, kidHairStyles } from '../content/look';
 
 function hash(str: string): number {
   let h = 2166136261;
@@ -8,10 +9,10 @@ function hash(str: string): number {
 
 /** Aspecto determinístico para una persona sin aspecto propio. Los familiares comparten tono de piel con `base`. */
 export function deriveLook(p: Person, base: Look): Look {
-  if (p.look) return p.look;
+  if (p.look) return { ...p.look, hairStyle: hairForGender(p.look.hairStyle, p.gender) };
   const h = hash(p.id);
   const family = p.kind === 'mother' || p.kind === 'father' || p.kind === 'sibling' || p.kind === 'child';
-  const styles = p.age < 12 ? [0, 5, 6] : p.gender === 'F' ? [1, 1, 5, 6, 2, 0] : [0, 0, 3, 4, 7, 0];
+  const styles = p.age < 12 ? kidHairStyles(p.gender) : hairStylesFor(p.gender);
   return {
     skin: family ? base.skin : h % 6,
     eyes: (h >> 4) % 6,

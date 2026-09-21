@@ -6,6 +6,7 @@ import { FEMALE_NAMES, MALE_NAMES, SURNAMES } from '../content/names';
 import { baseMortality, personDied } from './ageUp';
 import { inheritLook } from './people';
 import { deriveLook } from './looks';
+import { hairStylesFor } from '../content/look';
 import { netWorth } from './assets';
 import { autoPlay } from './autoplay';
 
@@ -78,11 +79,12 @@ const jobLabel = (l: Life): string =>
 /** Probabilidad aproximada de seguir vivo a cierta edad (para generar ancestros). */
 const survives = (age: number) => (age < 50 ? 0.99 : age < 70 ? 0.93 : age < 80 ? 0.72 : age < 90 ? 0.38 : 0.1);
 
-function randomLook(rng: Rng, near?: Look): Look {
+function randomLook(rng: Rng, gender: Gender, near?: Look): Look {
+  const styles = hairStylesFor(gender);
   return {
     skin: near ? clamp(near.skin + rng.int(-1, 1), 0, 5) : rng.int(0, 5),
     eyes: rng.int(0, 5),
-    hairStyle: rng.int(0, 7),
+    hairStyle: styles[rng.int(0, styles.length - 1)],
     hairColor: rng.int(0, 7),
   };
 }
@@ -151,7 +153,7 @@ function genAncestors(w: World, child: TreeNode, rng: Rng): void {
     const age = w.year - birth;
     const node = addNode(w, {
       name: rng.pick(gender === 'M' ? MALE_NAMES : FEMALE_NAMES), surname, gender,
-      look: randomLook(rng, child.look), birthYear: birth, alive: true, age, blood: true, wealthClass: child.wealthClass,
+      look: randomLook(rng, gender, child.look), birthYear: birth, alive: true, age, blood: true, wealthClass: child.wealthClass,
     });
     if (parents) setParents(node, parents[0], parents[1]);
     if (age >= 55 && !rng.chance(survives(age))) setDeath(w, node, rng);
@@ -176,7 +178,7 @@ function genAncestors(w: World, child: TreeNode, rng: Rng): void {
       const pg: Gender = gender === 'M' ? 'F' : 'M';
       const partner = addNode(w, {
         name: rng.pick(pg === 'M' ? MALE_NAMES : FEMALE_NAMES), surname: rng.pick(SURNAMES), gender: pg,
-        look: randomLook(rng), birthYear: birth + rng.int(-6, 6), alive: true, age: 0, blood: false, wealthClass: child.wealthClass,
+        look: randomLook(rng, pg), birthYear: birth + rng.int(-6, 6), alive: true, age: 0, blood: false, wealthClass: child.wealthClass,
       });
       partner.age = w.year - partner.birthYear;
       if (partner.age >= 55 && !rng.chance(survives(partner.age))) setDeath(w, partner, rng);
@@ -250,7 +252,7 @@ function newPartner(w: World, n: TreeNode, rng: Rng): void {
   const pg: Gender = rng.chance(0.92) ? (n.gender === 'M' ? 'F' : 'M') : n.gender;
   const age = Math.max(18, n.age + rng.int(-5, 5));
   const p = addNode(w, {
-    name: rng.pick(pg === 'M' ? MALE_NAMES : FEMALE_NAMES), surname: rng.pick(SURNAMES), gender: pg, look: randomLook(rng),
+    name: rng.pick(pg === 'M' ? MALE_NAMES : FEMALE_NAMES), surname: rng.pick(SURNAMES), gender: pg, look: randomLook(rng, pg),
     birthYear: w.year - age, alive: true, age, blood: false, wealthClass: n.wealthClass,
   });
   link(n, p, rng.chance(0.8));

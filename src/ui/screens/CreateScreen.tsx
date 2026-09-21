@@ -5,7 +5,7 @@ import { getScenario } from '../../content/scenarios';
 import type { Gender, Look } from '../../engine/types';
 import { randomLook } from '../../engine/life';
 import { FEMALE_NAMES, MALE_NAMES, SURNAMES } from '../../content/names';
-import { EYE_COLORS, EYE_NAMES, HAIR_COLORS, HAIR_STYLES, SKIN_NAMES, SKIN_TONES } from '../../content/look';
+import { EYE_COLORS, EYE_NAMES, HAIR_COLORS, HAIRS, hairForGender, hairStylesFor, SKIN_NAMES, SKIN_TONES } from '../../content/look';
 import { Avatar } from '../Avatar';
 import { Button, IconTile, SectionTitle } from '../components';
 import { Icon } from '../Icon';
@@ -42,6 +42,10 @@ export function CreateScreen() {
   const [surname, setSurname] = useState('');
   const [gender, setGender] = useState<Gender>('M');
   const [look, setLook] = useState<Look>({ skin: 1, eyes: 0, hairStyle: 0, hairColor: 1 });
+  const changeGender = (g: Gender) => {
+    setGender(g);
+    setLook((l) => ({ ...l, hairStyle: hairForGender(l.hairStyle, g) }));
+  };
   const set = (patch: Partial<Look>) => setLook((l) => ({ ...l, ...patch }));
 
   const randomize = () => {
@@ -49,7 +53,7 @@ export function CreateScreen() {
     setGender(g);
     setName(pick(g === 'M' ? MALE_NAMES : FEMALE_NAMES));
     setSurname(pick(SURNAMES));
-    setLook(randomLook({ int: rint }));
+    setLook(randomLook({ int: rint }, g));
   };
 
   return (
@@ -65,7 +69,7 @@ export function CreateScreen() {
           </View>
         ) : null}
         <View style={{ alignItems: 'center', marginBottom: space.lg }}>
-          <Avatar look={look} size={130} />
+          <Avatar look={look} size={150} animated />
         </View>
 
         <Button label="Aleatorio" icon="Dices" variant="ghost" onPress={randomize} />
@@ -93,7 +97,7 @@ export function CreateScreen() {
         <SectionTitle icon="Users" color="#9B5DE5">Género</SectionTitle>
         <View style={{ flexDirection: 'row', gap: 10 }}>
           {(['M', 'F'] as Gender[]).map((g) => (
-            <Pressable key={g} onPress={() => setGender(g)} style={[s.choice, s.half, gender === g && s.choiceOn]}>
+            <Pressable key={g} onPress={() => changeGender(g)} style={[s.choice, s.half, gender === g && s.choiceOn]}>
               <Text style={[s.choiceText, gender === g && { color: '#fff' }]}>{g === 'M' ? 'Masculino' : 'Femenino'}</Text>
             </Pressable>
           ))}
@@ -106,10 +110,11 @@ export function CreateScreen() {
         <Swatches palette={EYE_COLORS} value={look.eyes} onChange={(i) => set({ eyes: i })} names={EYE_NAMES} />
 
         <SectionTitle icon="Scissors" color="#E0517A">Peinado</SectionTitle>
-        <View style={s.chipRow}>
-          {HAIR_STYLES.map((n, i) => (
-            <Pressable key={n} onPress={() => set({ hairStyle: i })} style={[s.choice, s.chip, look.hairStyle === i && s.choiceOn]}>
-              <Text style={[s.choiceText, look.hairStyle === i && { color: '#fff' }]}>{n}</Text>
+        <View style={s.hairGrid}>
+          {hairStylesFor(gender === 'F' ? 'F' : 'M').map((i) => (
+            <Pressable key={i} onPress={() => set({ hairStyle: i })} style={[s.hairCard, look.hairStyle === i && s.hairCardOn]}>
+              <Avatar look={{ ...look, hairStyle: i }} size={64} />
+              <Text style={[s.hairName, look.hairStyle === i && { color: colors.accent }]} numberOfLines={1}>{HAIRS[i].name}</Text>
             </Pressable>
           ))}
         </View>
@@ -133,6 +138,10 @@ const s = StyleSheet.create({
   choice: { alignItems: 'center', paddingVertical: 12, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
   choiceOn: { backgroundColor: colors.accent, borderColor: colors.accent },
   choiceText: { color: colors.muted, fontWeight: '700' },
+  hairGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  hairCard: { width: '23%', alignItems: 'center', paddingVertical: 6, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 2, borderColor: 'transparent' },
+  hairCardOn: { borderColor: colors.accent },
+  hairName: { color: colors.muted, fontSize: 10.5, fontWeight: '700', marginTop: 3 },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { paddingHorizontal: 14, paddingVertical: 9 },
   half: { flex: 1 },
