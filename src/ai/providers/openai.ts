@@ -22,7 +22,7 @@ export function createOpenAICompat(id: ProviderId, baseUrl: string, model: strin
       const data = (await postJson(
         `${url}/chat/completions`,
         apiKey ? { Authorization: `Bearer ${apiKey}` } : {},
-        { model: model.trim(), messages: [{ role: 'user', content: prompt }], temperature: 1 },
+        { model: model.trim(), messages: [{ role: 'user', content: prompt }], temperature: opts?.temperature ?? 1 },
         { ...opts, fetchImpl },
       )) as { choices?: { message?: { content?: string } }[] };
       const text = data.choices?.[0]?.message?.content;

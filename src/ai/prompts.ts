@@ -49,7 +49,12 @@ Límites: cada efecto de stat entre -15 y 15; "money" entre -20000 y 20000 (en d
 export function narratorPrompt(text: string, ctx: string): string {
   return `${CONTENT_RULES}
 
-Reescribí este texto de un evento adaptándolo al personaje (${ctx}). Mantené el mismo significado y el mismo desenlace, no agregues datos que cambien las opciones, máximo 2 oraciones. Respondé SOLO con el texto reescrito, sin comillas.
+Adaptá este texto de un evento de un juego al personaje (${ctx}) CAMBIANDO LO MÍNIMO.
+- Conservá todos los hechos, las personas (quién hace qué a quién), los lugares y el desenlace tal cual.
+- Solo podés cambiar algunas palabras por otras equivalentes o sumar un detalle corto del personaje.
+- Hablale al jugador en segunda persona con voseo. Máximo 2 oraciones.
+- Si no se te ocurre una mejora segura, devolvé el texto original idéntico.
+Respondé SOLO con el texto, sin comillas ni explicaciones.
 
 Texto: ${text}`;
 }
