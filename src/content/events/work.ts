@@ -88,7 +88,7 @@ export const WORK: GameEvent[] = [
     choices: [
       { label: 'Aprovecharlo', outcomes: [
         { weight: 6, text: 'Te llevaste unos buenos pesos. Nadie sospecha.', effects: [fx.money(10000), fx.hap(2), fx.flag('embezzler')] },
-        { weight: 4, text: 'Una auditoría te descubrió. Te procesan por fraude.', effects: [fx.hap(-12), fx.fired(), fx.jail(1, 4)] },
+        { weight: 4, text: 'Una auditoría te descubrió. Te procesan por fraude.', effects: [fx.hap(-12), fx.fired(), fx.arrest('desfalco', 2, 6)] },
       ] },
       { label: 'Ignorarlo', outcomes: [{ weight: 1, text: 'Pasaste de largo. La honestidad no paga, pero tampoco te da dolor de cabeza.', effects: [fx.hap(1)] }] },
     ] },

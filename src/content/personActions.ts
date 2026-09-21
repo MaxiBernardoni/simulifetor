@@ -106,4 +106,66 @@ export const PERSON_ACTIONS: PersonAction[] = [
       { weight: 3, text: '{target} te dijo "no te quiero" y se encerró en su cuarto.', effects: [fx.close('target', -10), fx.hap(-3)] },
     ],
   },
+  {
+    id: 'hug', label: 'Dar un abrazo', icon: 'Heart', kinds: ['mother', 'father', 'sibling', 'partner', 'child', 'friend'],
+    conditions: [c.tAge(1)],
+    outcomes: [
+      { weight: 8, text: 'Le diste un abrazo enorme a {target}. Se quedaron así un rato.', effects: [fx.close('target', 6), fx.hap(3)] },
+      { weight: 2, text: '{target} se sorprendió, pero terminó abrazándote fuerte.', effects: [fx.close('target', 9), fx.hap(4)] },
+    ],
+  },
+  {
+    id: 'apologize', label: 'Pedir perdón', icon: 'Megaphone', kinds: ['mother', 'father', 'sibling', 'friend', 'partner', 'child', 'ex'],
+    conditions: [c.tClose(undefined, 60), c.tAge(6)],
+    outcomes: [
+      { weight: 6, text: '{target} aceptó tus disculpas. Se aliviaron los dos.', effects: [fx.close('target', 14), fx.hap(3)] },
+      { weight: 3, text: '{target} escuchó pero no dijo nada. Ya se verá.', effects: [fx.close('target', 3)] },
+      { weight: 1, text: '{target} te tiró la puerta en la cara.', effects: [fx.close('target', -5), fx.hap(-2)] },
+    ],
+  },
+  {
+    id: 'give_money', label: 'Darle plata', icon: 'Banknote', kinds: ['mother', 'father', 'sibling', 'friend', 'partner', 'child'], cost: 1000,
+    conditions: [c.age(18, 99)],
+    outcomes: [
+      { weight: 1, text: 'Le diste $1.000 a {target}. Se emocionó y te lo agradeció.', effects: [fx.close('target', 12), fx.hap(2)] },
+    ],
+  },
+  {
+    id: 'advice', label: 'Pedir un consejo', icon: 'Lightbulb', kinds: ['mother', 'father'],
+    conditions: [c.tAge(35)],
+    outcomes: [
+      { weight: 6, text: '{target} te dio un consejo sabio que no querías escuchar.', effects: [fx.close('target', 5), fx.sma(1), fx.hap(1)] },
+      { weight: 4, text: '{target} te contó otra vez la historia de cómo era todo en su época.', effects: [fx.close('target', 3)] },
+    ],
+  },
+  {
+    id: 'cheat', label: 'Engañar a tu pareja', icon: 'VenetianMask', kinds: ['partner'],
+    conditions: [c.age(18, 99)],
+    outcomes: [
+      { weight: 6, text: 'Tuviste una aventura a espaldas de {target}. Nadie se enteró, por ahora.', effects: [fx.hap(4), fx.close('target', -3)] },
+      { weight: 4, text: '{target} se enteró de todo. Fue una escena que nadie olvida.', effects: [fx.close('target', -45), fx.hap(-8)] },
+    ],
+  },
+  {
+    id: 'divorce', label: 'Pedir el divorcio', icon: 'HeartCrack', kinds: ['partner'], cost: 3000,
+    conditions: [c.married()],
+    outcomes: [
+      { weight: 1, text: 'Te divorciaste de {target}. Firmaron los papeles y se repartieron los muebles.', effects: [fx.becomes('target', 'ex'), fx.flag('divorced'), fx.hap(-6), fx.moneyPct(-0.25)] },
+    ],
+  },
+  {
+    id: 'cut_off', label: 'Cortar todo contacto', icon: 'X', kinds: ['friend', 'ex', 'sibling', 'father', 'mother'],
+    conditions: [c.tClose(undefined, 40)],
+    outcomes: [
+      { weight: 1, text: 'Cortaste todo contacto con {target}. Es un alivio, con un poco de vacío.', effects: [fx.remove('target'), fx.hap(1)] },
+    ],
+  },
+  {
+    id: 'help_study', label: 'Ayudar con la tarea', icon: 'BookOpen', kinds: ['child', 'sibling'],
+    conditions: [c.tAge(5, 17)],
+    outcomes: [
+      { weight: 8, text: 'Pasaron la tarde con la tarea de {target}. Aprendiste que ya no te acordás de nada.', effects: [fx.close('target', 8), fx.hap(2)] },
+      { weight: 2, text: 'Terminaron discutiendo por una división.', effects: [fx.close('target', -3)] },
+    ],
+  },
 ];

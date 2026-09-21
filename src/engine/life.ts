@@ -74,6 +74,10 @@ export function createLife(seed?: number, opts: CreateOpts = {}): Life {
     edu: { level: 0, enrolled: null, years: 0, gpa: 60 },
     job: null,
     offers: [],
+    assets: [],
+    loan: 0,
+    invested: 0,
+    trial: null,
     people,
     flags: {},
     jailYears: 0,
@@ -96,3 +100,14 @@ export function createLife(seed?: number, opts: CreateOpts = {}): Life {
 export const fullName = (l: Life) => `${l.name} ${l.surname}`;
 
 export const cloneLife = (l: Life): Life => JSON.parse(JSON.stringify(l)) as Life;
+
+/** Completa campos nuevos en partidas guardadas con una versión anterior. */
+export function migrateLife(raw: Life): Life {
+  const l = raw as Life;
+  l.assets ??= [];
+  l.loan ??= 0;
+  l.invested ??= 0;
+  l.trial ??= null;
+  l.schemaVersion = SCHEMA_VERSION;
+  return l;
+}

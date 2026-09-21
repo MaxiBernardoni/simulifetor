@@ -6,6 +6,8 @@ import { dismissPrompt, resolveChoice, choiceAvailable } from './events';
 import { getEvent } from './registry';
 import { activityStatus, personActionStatus, runActivity, runPersonAction, searchJobs, takeJob, canEnrollUniversity, enrollUniversity } from './actions';
 import { allActivities, allPersonActions } from './registry';
+import { buyAsset, canBuy, investMoney, loanCapacity, sellAsset, takeLoan, withdrawInvestments } from './assets';
+import { CATALOG } from '../content/assets';
 
 /** Juega una vida entera con decisiones al azar. Sirve para tests de humo y balance. */
 export function simulateLife(seed: number, opts: { activityChance?: number } = {}): Life {
@@ -41,8 +43,20 @@ export function simulateLife(seed: number, opts: { activityChance?: number } = {
         if (life.offers.length) takeJob(life, life.offers[0]);
       }
       if (canEnrollUniversity(life) && bot.chance(0.3)) enrollUniversity(life);
+      // Finanzas: compra, préstamo e inversión al azar.
+      if (bot.chance(0.15)) {
+        const it = bot.pick(CATALOG);
+        const financed = bot.chance(0.5);
+        if (!canBuy(life, it.id, financed)) buyAsset(life, it.id, financed);
+      }
+      if (bot.chance(0.1) && loanCapacity(life) >= 5000) takeLoan(life, 5000);
+      if (bot.chance(0.1)) investMoney(life, 2000);
+      if (bot.chance(0.05)) withdrawInvestments(life);
+      if (life.assets.length && bot.chance(0.05)) sellAsset(life, life.assets[0].id);
       const acts = allActivities().filter((a) => {
         const s = activityStatus(life, a);
+        // El bot evita el crimen el 92% de las veces, como haría un jugador "normal".
+        if (a.category === 'crimen' && !a.inJail && bot.chance(0.92)) return false;
         return s.visible && !s.reason;
       });
       if (acts.length) runActivity(life, bot.pick(acts).id);

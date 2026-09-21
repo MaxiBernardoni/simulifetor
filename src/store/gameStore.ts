@@ -2,9 +2,12 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Life, LifeSummary } from '../engine/types';
 import { SCHEMA_VERSION } from '../engine/types';
-import { cloneLife, createLife } from '../engine/life';
+import { cloneLife, createLife, migrateLife } from '../engine/life';
 import type { CreateOpts } from '../engine/life';
 import { ageUp } from '../engine/ageUp';
+import { addLog } from '../engine/effects';
+import { ACHIEVEMENTS } from '../content/achievements';
+import { buyAsset, investMoney, repayLoan, sellAsset, takeLoan, withdrawInvestments } from '../engine/assets';
 import { dismissPrompt, resolveChoice } from '../engine/events';
 import {
   dropUniversity,
@@ -24,6 +27,7 @@ interface SaveData {
   schemaVersion: number;
   life: Life | null;
   history: LifeSummary[];
+  achievements?: string[];
 }
 
 interface GameState {
@@ -31,6 +35,7 @@ interface GameState {
   creating: boolean;
   life: Life | null;
   history: LifeSummary[];
+  achievements: string[];
   tab: Tab;
   load: () => Promise<void>;
   setTab: (t: Tab) => void;
@@ -47,6 +52,12 @@ interface GameState {
   quitJob: () => void;
   enroll: () => void;
   dropUni: () => void;
+  buy: (catalogId: string, financed: boolean) => void;
+  sell: (assetId: string) => void;
+  loan: (amount: number) => void;
+  repay: (amount: number) => void;
+  invest: (amount: number) => void;
+  withdraw: () => void;
   wipe: () => Promise<void>;
 }
 
@@ -61,9 +72,9 @@ const summarize = (l: Life): LifeSummary => ({
   job: l.job?.title ?? (l.flags.retired ? 'Jubilado/a' : 'Sin trabajo'),
 });
 
-async function persist(life: Life | null, history: LifeSummary[]): Promise<void> {
+async function persist(life: Life | null, history: LifeSummary[], achievements: string[]): Promise<void> {
   try {
-    const data: SaveData = { schemaVersion: SCHEMA_VERSION, life, history };
+    const data: SaveData = { schemaVersion: SCHEMA_VERSION, life, history, achievements };
     await AsyncStorage.setItem(KEY, JSON.stringify(data));
   } catch {
     // Sin guardado: el juego sigue funcionando en memoria.
@@ -79,8 +90,16 @@ export const useGame = create<GameState>((set, get) => {
     fn(next);
     let history = get().history;
     if (cur.alive && !next.alive) history = [summarize(next), ...history];
-    set({ life: next, history });
-    void persist(next, history);
+    // Logros nuevos.
+    let achievements = get().achievements;
+    for (const a of ACHIEVEMENTS) {
+      if (!achievements.includes(a.id) && a.check(next)) {
+        achievements = [...achievements, a.id];
+        addLog(next, `Logro desbloqueado: ${a.title}.`, 'good', 'Logro');
+      }
+    }
+    set({ life: next, history, achievements });
+    void persist(next, history, achievements);
   };
 
   return {
@@ -88,6 +107,7 @@ export const useGame = create<GameState>((set, get) => {
     creating: false,
     life: null,
     history: [],
+    achievements: [],
     tab: 'life',
 
     load: async () => {
@@ -95,8 +115,13 @@ export const useGame = create<GameState>((set, get) => {
         const raw = await AsyncStorage.getItem(KEY);
         if (raw) {
           const data = JSON.parse(raw) as SaveData;
-          if (data.schemaVersion === SCHEMA_VERSION) {
-            set({ life: data.life, history: data.history ?? [], ready: true });
+          if (data.schemaVersion >= 2 && data.schemaVersion <= SCHEMA_VERSION) {
+            set({
+              life: data.life ? migrateLife(data.life) : null,
+              history: data.history ?? [],
+              achievements: data.achievements ?? [],
+              ready: true,
+            });
             return;
           }
         }
@@ -114,7 +139,7 @@ export const useGame = create<GameState>((set, get) => {
     newLife: (opts) => {
       const life = createLife(undefined, opts);
       set({ life, tab: 'life', creating: false });
-      void persist(life, get().history);
+      void persist(life, get().history, get().achievements);
     },
 
     ageUp: () => mutate(ageUp),
@@ -127,9 +152,15 @@ export const useGame = create<GameState>((set, get) => {
     quitJob: () => mutate(quitJob),
     enroll: () => mutate(enrollUniversity),
     dropUni: () => mutate(dropUniversity),
+    buy: (id, financed) => mutate((l) => buyAsset(l, id, financed)),
+    sell: (id) => mutate((l) => sellAsset(l, id)),
+    loan: (n) => mutate((l) => takeLoan(l, n)),
+    repay: (n) => mutate((l) => repayLoan(l, n)),
+    invest: (n) => mutate((l) => investMoney(l, n)),
+    withdraw: () => mutate(withdrawInvestments),
 
     wipe: async () => {
-      set({ life: null, history: [], tab: 'life', creating: false });
+      set({ life: null, history: [], achievements: [], tab: 'life', creating: false });
       try {
         await AsyncStorage.removeItem(KEY);
       } catch {

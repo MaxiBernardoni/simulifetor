@@ -22,7 +22,7 @@ export const CRIME: GameEvent[] = [
     choices: [
       { label: 'Aceptar', outcomes: [
         { weight: 6, text: 'Ganaste bastante en unos meses. Lo dejaste antes de que te agarren.', effects: [fx.money(7000), fx.hap(2), fx.flag('dealer')] },
-        { weight: 4, text: 'Te agarraron en una redada. Vas preso.', effects: [fx.hap(-10), fx.jail(1, 4)] },
+        { weight: 4, text: 'Te agarraron en una redada.', effects: [fx.hap(-10), fx.arrest('narcotráfico', 1, 4)] },
       ] },
       { label: 'Rechazar', outcomes: [{ weight: 1, text: 'Dijiste que no. Te miró raro, pero te dejó en paz.', effects: [] }] },
     ] },
@@ -40,7 +40,7 @@ export const CRIME: GameEvent[] = [
     choices: [
       { label: 'Cumplir', outcomes: [
         { weight: 5, text: 'Hiciste el trabajo. Te ganaste un poco de respeto y plata.', effects: [fx.money(1500), fx.hap(-2)] },
-        { weight: 5, text: 'La policía te esperaba. Vas preso.', effects: [fx.hap(-10), fx.jail(1, 3)] },
+        { weight: 5, text: 'La policía te esperaba.', effects: [fx.hap(-10), fx.arrest('asociación ilícita', 1, 4)] },
       ] },
       { label: 'Negarte', outcomes: [
         { weight: 1, text: 'Te negaste. Te dieron una golpiza como advertencia.', effects: [fx.hea(-12), fx.hap(-6), fx.unflag('gang')] },
@@ -52,11 +52,11 @@ export const CRIME: GameEvent[] = [
     choices: [
       { label: 'Colaborar', outcomes: [
         { weight: 5, text: 'Colaboraste y los desviaste. Quedaste limpio.', effects: [fx.unflag('thief'), fx.hap(1)] },
-        { weight: 5, text: 'Te tendieron una trampa. Vas preso.', effects: [fx.hap(-9), fx.jail(1, 4)] },
+        { weight: 5, text: 'Te tendieron una trampa.', effects: [fx.hap(-9), fx.arrest('robo', 1, 4)] },
       ] },
       { label: 'Huir', outcomes: [
         { weight: 3, text: 'Huiste. Por ahora te salvaste.', effects: [fx.hap(-2)] },
-        { weight: 7, text: 'Te agarraron a las dos cuadras. Cargo agravado.', effects: [fx.hap(-10), fx.jail(2, 6)] },
+        { weight: 7, text: 'Te agarraron a las dos cuadras. Cargo agravado.', effects: [fx.hap(-10), fx.arrest('robo y resistencia a la autoridad', 2, 6)] },
       ] },
     ] },
   { id: 'crime.jail_fight', title: 'Pelea en la cárcel', tags: ['jail'], weight: 14,
@@ -85,7 +85,7 @@ export const CRIME: GameEvent[] = [
     text: 'Un preso te ofrece participar de un plan para escapar. Es una locura.',
     choices: [
       { label: 'Intentarlo', outcomes: [
-        { weight: 2, text: '¡Lograron escapar! Vivir prófugo/a no es fácil, pero es mejor que la celda.', effects: [fx.hap(6)] },
+        { weight: 2, text: '¡Lograron escapar! Vivir prófugo/a no es fácil, pero es mejor que la celda.', effects: [fx.parole(99), fx.flag('fugitive'), fx.hap(6)] },
         { weight: 8, text: 'Los descubrieron. Te agregaron años a la condena.', effects: [fx.hap(-8), fx.jail(2, 4)] },
       ] },
       { label: 'Decir que no', outcomes: [{ weight: 1, text: 'No te metiste. Un año más tranquilo.', effects: [] }] },

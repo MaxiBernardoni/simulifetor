@@ -8,6 +8,9 @@ import { FAMILY } from './family';
 import { HEALTH } from './health';
 import { CRIME } from './crime';
 import { HISTORICAL, RANDOM, OLD } from './misc';
+import { COURT } from './court';
+import { RELATIONSHIPS } from './relationships';
+import { CAREER, MONEY_EXTRA } from './career';
 
 export const ALL_EVENTS: GameEvent[] = [
   ...CHILDHOOD,
@@ -21,4 +24,8 @@ export const ALL_EVENTS: GameEvent[] = [
   ...HISTORICAL,
   ...RANDOM,
   ...OLD,
+  ...COURT,
+  ...RELATIONSHIPS,
+  ...CAREER,
+  ...MONEY_EXTRA,
 ];

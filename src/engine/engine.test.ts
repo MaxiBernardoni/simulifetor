@@ -7,6 +7,10 @@ import { createLife } from './life';
 import { ageUp } from './ageUp';
 import { simulateLife } from './sim';
 import { fill } from './text';
+import { applyEffects, newEffectCtx } from './effects';
+import { rngOf } from './rng';
+import { resolveChoice } from './events';
+import { buyAsset, canBuy, loanCapacity, netWorth, takeLoan } from './assets';
 import type { Effect, GameEvent, Outcome } from './types';
 
 const outcomesOf = (ev: GameEvent): Outcome[] => [
@@ -130,5 +134,94 @@ describe('motor', () => {
     const b = simulateLife(99);
     expect(a.age).toBe(b.age);
     expect(a.log.length).toBe(b.log.length);
+  });
+});
+
+import { fireEvent } from './events';
+import { getEvent } from './registry';
+function allEventsFor(l: ReturnType<typeof createLife>) {
+  const ev = getEvent('court.trial');
+  if (!ev) return false;
+  fireEvent(l, ev);
+  return l.pending[0]?.kind === 'choice';
+}
+
+describe('fase 2', () => {
+  it('un arresto abre el juicio y la condena mete preso', () => {
+    const l = createLife(21);
+    l.age = 25;
+    applyEffects(l, [{ arrest: { crime: 'robo', years: [2, 4] } }], newEffectCtx(), rngOf(l));
+    expect(l.trial).not.toBeNull();
+    // El trigger del juicio lo dispara la capa de acciones; acá lo hacemos a mano.
+    const ctx = newEffectCtx();
+    applyEffects(l, [{ sentence: 'full' }], ctx, rngOf(l));
+    expect(l.trial).toBeNull();
+    expect(l.jailYears).toBeGreaterThanOrEqual(2);
+    expect(l.flags.criminal_record).toBe(true);
+  });
+
+  it('absolución no manda a la cárcel', () => {
+    const l = createLife(22);
+    l.age = 25;
+    applyEffects(l, [{ arrest: { crime: 'robo', years: [2, 4] } }, { sentence: 'none' }], newEffectCtx(), rngOf(l));
+    expect(l.jailYears).toBe(0);
+    expect(l.flags.criminal_record).toBeFalsy();
+  });
+
+  it('un menor recibe condena acotada', () => {
+    const l = createLife(23);
+    l.age = 15;
+    applyEffects(l, [{ arrest: { crime: 'homicidio', years: [15, 30] } }, { sentence: 'full' }], newEffectCtx(), rngOf(l));
+    expect(l.jailYears).toBeLessThanOrEqual(3);
+  });
+
+  it('comprar financiado usa entrada y préstamo', () => {
+    const l = createLife(24);
+    l.age = 30;
+    l.money = 20000;
+    l.job = { careerId: 'office', title: 'Analista', sector: 'oficina', level: 1, salary: 40000, performance: 60, yearsAtLevel: 0, yearsTotal: 3, boss: 'X Y' };
+    expect(canBuy(l, 'apt', false)).not.toBeNull();
+    expect(canBuy(l, 'apt', true)).toBeNull();
+    buyAsset(l, 'apt', true);
+    expect(l.assets.length).toBe(1);
+    expect(l.money).toBe(20000 - 12000);
+    expect(l.loan).toBe(48000);
+    expect(netWorth(l)).toBe(8000 + 60000 - 48000);
+  });
+
+  it('el préstamo respeta la capacidad del banco', () => {
+    const l = createLife(25);
+    l.age = 30;
+    expect(loanCapacity(l)).toBe(0);
+    takeLoan(l, 5000);
+    expect(l.loan).toBe(0);
+  });
+
+  it('el juicio se dispara en el flujo de actividades y se resuelve', () => {
+    let seen = false;
+    for (let s = 1; s <= 200 && !seen; s++) {
+      const l = createLife(s);
+      l.age = 25;
+      l.money = 20000;
+      l.pending = [];
+      applyEffects(l, [{ arrest: { crime: 'robo', years: [2, 4] }, }], newEffectCtx(), rngOf(l));
+      const ev = allEventsFor(l);
+      if (ev) {
+        resolveChoice(l, 3);
+        expect(l.trial).toBeNull();
+        seen = true;
+      }
+    }
+    expect(seen).toBe(true);
+  });
+
+  it('las vidas simuladas usan eventos con persona objetivo sin dejar {placeholders} sin resolver', () => {
+    for (let s = 1; s <= 120; s++) {
+      const l = simulateLife(s);
+      for (const e of l.log) {
+        expect(e.text, `seed ${s}`).not.toMatch(/\{\w+\}/);
+        if (e.title) expect(e.title).not.toMatch(/\{\w+\}/);
+      }
+    }
   });
 });

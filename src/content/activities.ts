@@ -188,7 +188,7 @@ export const ACTIVITIES: Activity[] = [
     outcomes: [
       { weight: 7, text: 'Te llevaste algo y nadie te vio. Lo vendiste después.', effects: [fx.money(500), fx.hap(2)] },
       { weight: 3, text: 'Te agarró el guardia. Llamaron a la policía, pero zafaste con una advertencia.', effects: [fx.hap(-5), fx.flag('shoplifted')] },
-      { weight: 1, text: 'Te detuvieron y te dieron un año de prisión.', effects: [fx.hap(-8), fx.jail(1, 1)] },
+      { weight: 1, text: 'Te detuvieron y te dieron un año de prisión.', effects: [fx.hap(-8), fx.arrest('robo en un local', 1, 2)] },
     ],
   },
   {
@@ -197,7 +197,7 @@ export const ACTIVITIES: Activity[] = [
     outcomes: [
       { weight: 6, text: 'El golpe salió bien. Sacaste un buen botín.', effects: [fx.money(5500), fx.hap(3), fx.flag('thief')] },
       { weight: 2, text: 'La víctima se resistió. Te fuiste con las manos vacías.', effects: [fx.hap(-4), fx.hea(-4)] },
-      { weight: 4, text: 'Te atrapó la policía. Vas preso.', effects: [fx.hap(-10), fx.jail(1, 5)] },
+      { weight: 4, text: 'Te atrapó la policía y te llevaron detenido.', effects: [fx.hap(-10), fx.arrest('robo a mano armada', 2, 6)] },
     ],
   },
   {
@@ -206,7 +206,7 @@ export const ACTIVITIES: Activity[] = [
     outcomes: [
       { weight: 6, text: 'La estafa funcionó a la perfección. Nadie sospecha nada.', effects: [fx.money(12000), fx.hap(4), fx.flag('scammer')] },
       { weight: 2, text: 'Se te cayó la estafa. Perdiste plata pero nadie te vinculó.', effects: [fx.money(-1000), fx.hap(-4)] },
-      { weight: 3, text: 'Te descubrieron. Cargo por fraude.', effects: [fx.hap(-10), fx.jail(2, 6)] },
+      { weight: 3, text: 'Te descubrieron. Te imputan por fraude.', effects: [fx.hap(-10), fx.arrest('fraude', 2, 7)] },
     ],
   },
   {
@@ -215,7 +215,7 @@ export const ACTIVITIES: Activity[] = [
     outcomes: [
       { weight: 6, text: 'Un año de buen negocio en la esquina correcta.', effects: [fx.money(8000), fx.hap(2), fx.flag('dealer')] },
       { weight: 2, text: 'Un rival te asaltó la mercadería y te dejó bastante golpeado.', effects: [fx.money(-2000), fx.hea(-10), fx.hap(-6)] },
-      { weight: 3, text: 'Redada. Te encontraron con la mercadería.', effects: [fx.hap(-10), fx.jail(2, 8)] },
+      { weight: 3, text: 'Redada. Te encontraron con la mercadería.', effects: [fx.hap(-10), fx.arrest('narcotráfico', 2, 9)] },
     ],
   },
   {
@@ -224,10 +224,57 @@ export const ACTIVITIES: Activity[] = [
     outcomes: [
       { weight: 5, text: 'Ganaste la pelea. Nadie se atreve a mirarte feo.', effects: [fx.hap(3), fx.hea(-4)] },
       { weight: 4, text: 'Te dieron una paliza.', effects: [fx.hap(-5), fx.hea(-10), fx.loo(-3)] },
-      { weight: 1, text: 'Alguien llamó a la policía. Terminaste preso por lesiones.', effects: [fx.hap(-6), fx.jail(1, 2)] },
+      { weight: 1, text: 'Alguien llamó a la policía. Te detuvieron por lesiones.', effects: [fx.hap(-6), fx.arrest('lesiones', 1, 3)] },
+    ],
+  },
+  {
+    id: 'vandalism', label: 'Hacer destrozos', desc: 'Vandalismo', icon: 'Hammer', category: 'crimen',
+    conditions: [c.age(12, 60)],
+    outcomes: [
+      { weight: 7, text: 'Rompiste unas cuantas cosas y te fuiste corriendo. Adrenalina pura.', effects: [fx.hap(4)] },
+      { weight: 3, text: 'Una cámara de seguridad te grabó. Te detuvieron.', effects: [fx.hap(-5), fx.arrest('daños y vandalismo', 1, 2)] },
+    ],
+  },
+  {
+    id: 'hacking', label: 'Hackear cuentas', desc: 'Requiere inteligencia', icon: 'Brain', category: 'crimen',
+    conditions: [c.age(15, 70), c.stat('smarts', '>=', 60), c.year(1995, 2300)],
+    outcomes: [
+      { weight: 6, text: 'Entraste a un sistema y desviaste plata sin dejar rastro.', effects: [fx.money(9000), fx.hap(4), fx.flag('hacker')] },
+      { weight: 2, text: 'El sistema tenía buena seguridad. No sacaste nada.', effects: [fx.hap(-2)] },
+      { weight: 2, text: 'Te rastrearon la IP. La policía golpeó tu puerta.', effects: [fx.hap(-10), fx.arrest('delito informático', 2, 6)] },
+    ],
+  },
+  {
+    id: 'bank_robbery', label: 'Asaltar un banco', desc: 'Todo o nada', icon: 'Landmark', category: 'crimen',
+    conditions: [c.age(18, 60), c.flag('thief')],
+    outcomes: [
+      { weight: 3, text: 'El golpe del siglo. Salieron con las bolsas llenas y sin un rasguño.', effects: [fx.money(45000), fx.hap(10), fx.flag('bank_robber')] },
+      { weight: 3, text: 'Se complicó: hubo tiros y saliste con las manos vacías.', effects: [fx.hea(-10), fx.hap(-6)] },
+      { weight: 5, text: 'La policía los estaba esperando.', effects: [fx.hap(-12), fx.arrest('robo a un banco', 8, 20)] },
+    ],
+  },
+  {
+    id: 'murder', label: 'Matar a alguien', desc: 'El peor camino', icon: 'Skull', category: 'crimen',
+    conditions: [c.age(16, 80)],
+    outcomes: [
+      { weight: 3, text: 'Lo hiciste. Nadie sabe. Vas a cargar con eso el resto de tu vida.', effects: [fx.hap(-25), fx.flag('murderer')] },
+      { weight: 7, text: 'Te atraparon. Es el crimen más grave que existe.', effects: [fx.hap(-20), fx.flag('murderer'), fx.arrest('homicidio', 15, 30)] },
     ],
   },
   // ── Prisión ──
+  {
+    id: 'jail_work', label: 'Trabajar en la cárcel', desc: 'Prisión', icon: 'Hammer', category: 'dinero', inJail: true,
+    outcomes: [
+      { weight: 1, text: 'Pasaste el año en el taller de la prisión. Ganás unos pesos y buena conducta.', effects: [fx.money(700), fx.hap(1)] },
+    ],
+  },
+  {
+    id: 'jail_escape', label: 'Intentar escapar', desc: 'Prisión · muy arriesgado', icon: 'Zap', category: 'crimen', inJail: true,
+    outcomes: [
+      { weight: 1, text: 'Lo lograste. Te escapaste de la cárcel. Ahora sos prófugo.', effects: [fx.parole(99), fx.flag('fugitive'), fx.hap(6)] },
+      { weight: 5, text: 'Te agarraron en el intento. Te agregaron años y te pusieron en aislamiento.', effects: [fx.hap(-10), fx.hea(-6), fx.jail(2, 5)] },
+    ],
+  },
   {
     id: 'jail_gym', label: 'Entrenar en el patio', desc: 'Prisión', icon: 'Dumbbell', category: 'salud', inJail: true,
     outcomes: [

@@ -6,6 +6,7 @@ import { runYearEvents } from './events';
 import { getCareer } from './registry';
 import { firstAlive } from './text';
 import { formatMoney } from './format';
+import { carCost, housingCost, updateAssets } from './assets';
 
 const TAX = 0.8;
 const RETIRE_AGE = 65;
@@ -64,6 +65,25 @@ function agePeople(life: Life, rng: Rng): void {
       if (rng.chance(0.5)) p.closeness = clamp(p.closeness - rng.int(1, 4));
     } else if (rng.chance(0.4)) {
       p.closeness = clamp(p.closeness - rng.int(0, 3));
+    }
+  }
+  // Consecuencias de descuidar relaciones.
+  for (const p of [...life.people]) {
+    if (!p.alive) continue;
+    const first = p.name.split(' ')[0];
+    if ((p.kind === 'friend' || p.kind === 'ex') && p.closeness <= 8) {
+      life.people = life.people.filter((x) => x !== p);
+      addLog(life, `Perdiste el contacto con ${first}. Ya ni se saludan.`, 'neutral', 'Distancia');
+    } else if (p.kind === 'partner' && p.closeness <= 15 && rng.chance(0.5)) {
+      const was = p.married;
+      p.kind = 'ex';
+      p.married = false;
+      life.stats.happiness = clamp(life.stats.happiness - 10);
+      if (was) {
+        life.money -= Math.round(Math.max(0, life.money) * 0.3);
+        life.flags.divorced = true;
+      }
+      addLog(life, was ? `${first} pidió el divorcio. Se acabó.` : `${first} te dejó. Ya no había nada que salvar.`, 'bad', 'Ruptura');
     }
   }
   // Los hijos que se fueron a vivir solos: se quedan en la lista.
@@ -168,12 +188,16 @@ function updateWork(life: Life, rng: Rng): void {
   }
   if (life.pension > 0 && life.jailYears === 0) life.money += life.pension;
 
+  updateAssets(life, rng);
+
   // Gastos de vida.
   if (life.age >= 18 && life.jailYears === 0) {
     const familyHelps = life.age < 22 && life.wealthClass >= 2 && !life.job;
     if (!familyHelps) {
       const kids = life.people.filter((p) => p.kind === 'child' && p.alive && p.age < 18).length;
-      life.money -= 7000 + kids * 2500;
+      // Gasto de estilo de vida: quien gana más, gasta más.
+      const lifestyle = life.job ? Math.round(Math.max(0, life.job.salary * TAX - 12000) * 0.6) : 0;
+      life.money -= housingCost(life) + carCost(life) + kids * 2500 + lifestyle;
     }
   }
   if (life.money < 0) life.money = Math.round(life.money * 1.08);
@@ -183,6 +207,9 @@ function updateWork(life: Life, rng: Rng): void {
   if (life.money < -40000) {
     // Quiebra: se pierde todo y se arranca con una deuda chica.
     life.money = -5000;
+    life.assets = [];
+    life.loan = 0;
+    life.invested = 0;
     life.flags.bankrupt = true;
     life.stats.happiness = clamp(life.stats.happiness - 12);
     addLog(life, 'Te declararon en quiebra. Te embargaron todo lo que tenías.', 'bad', 'Quiebra');
@@ -194,7 +221,10 @@ function updateJail(life: Life): void {
   life.jailYears--;
   life.stats.health = clamp(life.stats.health - 1);
   life.stats.happiness = clamp(life.stats.happiness - 3);
-  if (life.jailYears === 0) addLog(life, 'Saliste de prisión. Con antecedentes.', 'system');
+  if (life.jailYears === 0) {
+    life.flags.ex_convict = true;
+    addLog(life, 'Saliste de prisión. Con antecedentes.', 'system');
+  }
 }
 
 function checkMortality(life: Life, rng: Rng): void {

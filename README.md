@@ -49,4 +49,6 @@ Para agregar contenido, editá los archivos de `src/content` (ver `docs/04-conte
 
 **Fase 1 (MVP jugable) completa**: crear vida aleatoria (año de nacimiento 1950–2010), envejecer año a año, 133 eventos, 28 actividades, 13 acciones con personas, 4 stats, escuela y universidad, trabajo con ascensos, relaciones básicas, dinero y deudas, crimen y cárcel, muerte y resumen, guardado automático.
 
-Próximo: Fase 2 (relaciones profundas, carrera y dinero, crimen), ver `docs/08-roadmap.md`.
+**Fase 2 (núcleo) completa**: 190+ eventos (con personas específicas como objetivo), 15 acciones con personas (engañar, divorciarse, cortar contacto…), 25 carreras con eventos por sector, propiedades, autos, préstamos e inversiones, delitos con arresto y **juicio** (abogado de oficio/privado, soborno, declararse culpable), cárcel con libertad condicional, fuga y reinserción, y 19 logros.
+
+Próximo: Fase 3 (dinastía: continuar con un hijo, árbol genealógico, escenarios), ver `docs/08-roadmap.md`.

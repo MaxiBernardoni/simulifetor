@@ -15,7 +15,7 @@ Objetivo: vivir una vida completa en el iPhone.
 - Guardado local con autoguardado.
 - Tests del motor y validación de contenido.
 
-## Fase 2 — Núcleo BitLife
+## Fase 2 — Núcleo BitLife ✅ (núcleo completo; faltan enfermedades/adicciones detalladas y sonidos)
 Prioridad de sistemas: **1) relaciones, 2) carrera y dinero, 3) crimen y justicia**; el resto después.
 - Relaciones completas con NPCs (parejas, hijos, amigos, familia).
 - Escuela → universidad, carreras, ascensos.

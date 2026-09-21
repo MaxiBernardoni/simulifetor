@@ -2,12 +2,14 @@ import React from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 import { useGame } from '../../store/gameStore';
 import { formatMoney } from '../../engine/format';
-import { Button, Card, SectionTitle } from '../components';
+import { Button, Card, Row, SectionTitle } from '../components';
+import { ACHIEVEMENTS } from '../../content/achievements';
 import { colors, space } from '../theme';
 
 export function MoreScreen() {
   const life = useGame((st) => st.life)!;
   const history = useGame((st) => st.history);
+  const unlocked = useGame((st) => st.achievements);
   const start = useGame((st) => st.startCreating);
   const wipe = useGame((st) => st.wipe);
 
@@ -31,6 +33,12 @@ export function MoreScreen() {
         <Button label="Nueva vida" icon="Baby" onPress={confirmNew} />
         <Button label="Borrar todos los datos" variant="danger" onPress={confirmWipe} />
       </View>
+
+      <SectionTitle>Logros · {unlocked.length}/{ACHIEVEMENTS.length}</SectionTitle>
+      {ACHIEVEMENTS.map((a) => {
+        const done = unlocked.includes(a.id);
+        return <Row key={a.id} icon={done ? a.icon : 'Lock'} title={done ? a.title : '???'} subtitle={a.desc} disabled={!done} />;
+      })}
 
       <SectionTitle>Vidas anteriores</SectionTitle>
       {history.length === 0 ? (

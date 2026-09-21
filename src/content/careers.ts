@@ -47,4 +47,34 @@ export const CAREERS: Career[] = [
   { id: 'doctor', sector: 'salud', minAge: 26, minEdu: 3, minSmarts: 75, noRecord: true, levels: [
     { title: 'Médico/a residente', salary: 26000 }, { title: 'Médico/a', salary: 55000 }, { title: 'Especialista', salary: 95000 }, { title: 'Director/a de hospital', salary: 150000 },
   ] },
+  { id: 'mechanic', sector: 'oficios', minAge: 18, minEdu: 0, levels: [
+    { title: 'Ayudante de taller', salary: 9500 }, { title: 'Mecánico/a', salary: 15000 }, { title: 'Jefe/a de taller', salary: 24000 }, { title: 'Dueño/a de concesionaria', salary: 60000 },
+  ] },
+  { id: 'hairdresser', sector: 'servicios', minAge: 16, minEdu: 0, levels: [
+    { title: 'Ayudante de peluquería', salary: 8500 }, { title: 'Peluquero/a', salary: 13000 }, { title: 'Estilista', salary: 20000 }, { title: 'Dueño/a de salón', salary: 36000 },
+  ] },
+  { id: 'firefighter', sector: 'seguridad', minAge: 20, minEdu: 2, noRecord: true, levels: [
+    { title: 'Bombero/a', salary: 13000 }, { title: 'Bombero/a especialista', salary: 19000 }, { title: 'Jefe/a de cuartel', salary: 30000 }, { title: 'Comandante', salary: 50000 },
+  ] },
+  { id: 'journalist', sector: 'medios', minAge: 20, minEdu: 3, minSmarts: 50, levels: [
+    { title: 'Cronista', salary: 14000 }, { title: 'Periodista', salary: 22000 }, { title: 'Editor/a', salary: 38000 }, { title: 'Director/a de medio', salary: 75000 },
+  ] },
+  { id: 'architect', sector: 'construcción', minAge: 23, minEdu: 3, minSmarts: 60, levels: [
+    { title: 'Arquitecto/a junior', salary: 20000 }, { title: 'Arquitecto/a', salary: 36000 }, { title: 'Jefe/a de proyectos', salary: 62000 }, { title: 'Socio/a de estudio', salary: 105000 },
+  ] },
+  { id: 'engineer', sector: 'ingeniería', minAge: 23, minEdu: 3, minSmarts: 65, levels: [
+    { title: 'Ingeniero/a junior', salary: 24000 }, { title: 'Ingeniero/a', salary: 42000 }, { title: 'Ingeniero/a senior', salary: 70000 }, { title: 'Director/a técnico/a', salary: 115000 },
+  ] },
+  { id: 'psychologist', sector: 'salud', minAge: 24, minEdu: 3, minSmarts: 60, levels: [
+    { title: 'Psicólogo/a junior', salary: 15000 }, { title: 'Psicólogo/a', salary: 28000 }, { title: 'Terapeuta reconocido/a', salary: 52000 }, { title: 'Director/a de clínica', salary: 85000 },
+  ] },
+  { id: 'pilot', sector: 'transporte', minAge: 24, minEdu: 3, minSmarts: 60, noRecord: true, levels: [
+    { title: 'Copiloto', salary: 35000 }, { title: 'Piloto', salary: 65000 }, { title: 'Comandante', salary: 100000 }, { title: 'Jefe/a de pilotos', salary: 140000 },
+  ] },
+  { id: 'professor', sector: 'educación', minAge: 26, minEdu: 3, minSmarts: 70, levels: [
+    { title: 'Ayudante de cátedra', salary: 14000 }, { title: 'Profesor/a adjunto/a', salary: 26000 }, { title: 'Profesor/a titular', salary: 44000 }, { title: 'Decano/a', salary: 72000 },
+  ] },
+  { id: 'pharmacist', sector: 'salud', minAge: 22, minEdu: 3, minSmarts: 55, levels: [
+    { title: 'Auxiliar de farmacia', salary: 15000 }, { title: 'Farmacéutico/a', salary: 27000 }, { title: 'Director/a técnico/a', salary: 44000 }, { title: 'Dueño/a de farmacia', salary: 78000 },
+  ] },
 ];

@@ -23,6 +23,7 @@ export function fill(life: Life, text: string, target?: Person): string {
   return text.replace(/\{(\w+)\}/g, (_m, key: string) => {
     if (key === 'name') return life.name;
     if (key === 'job') return life.job?.title ?? 'tu trabajo';
+    if (key === 'crime') return life.trial?.crime ?? 'un delito';
     if (key === 'boss') return life.job?.boss ?? FALLBACK.boss;
     if (key === 'target') return target ? first(target.name) : FALLBACK.target;
     const p = firstAlive(life, key as PersonKind);

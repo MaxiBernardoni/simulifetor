@@ -15,7 +15,20 @@ export function isEligible(life: Life, ev: GameEvent): boolean {
   if (last !== undefined && life.year - last < (ev.cooldown ?? DEFAULT_COOLDOWN)) return false;
   const jailEvent = !!ev.tags?.includes('jail');
   if (!ev.tags?.includes('historical') && jailEvent !== life.jailYears > 0) return false;
+  if (ev.target) return eligibleTargets(life, ev).length > 0;
   return allConds(life, ev.conditions, rng);
+}
+
+/** Personas del tipo pedido que cumplen las condiciones del evento (evaluadas con esa persona de objetivo). */
+function eligibleTargets(life: Life, ev: GameEvent): Person[] {
+  const rng = rngOf(life);
+  return life.people.filter((p) => p.alive && p.kind === ev.target && allConds(life, ev.conditions, rng, { target: p }));
+}
+
+function pickTarget(life: Life, ev: GameEvent): Person | undefined {
+  if (!ev.target) return undefined;
+  const list = eligibleTargets(life, ev);
+  return list.length ? rngOf(life).pick(list) : undefined;
 }
 
 export function choiceAvailable(life: Life, choice: Choice, target?: Person): boolean {
@@ -35,7 +48,7 @@ export function fireEvent(life: Life, ev: GameEvent, target?: Person): void {
     life.pending.push({
       kind: 'choice',
       eventId: ev.id,
-      title: ev.title,
+      title: fill(life, ev.title, target),
       text: fill(life, ev.text, target),
       targetId: target?.id,
     });
@@ -44,7 +57,7 @@ export function fireEvent(life: Life, ev: GameEvent, target?: Person): void {
   const ctx = newEffectCtx(target);
   const text = fill(life, ev.text, target);
   applyEffects(life, ev.effects, ctx, rng);
-  addLog(life, text, toneOf(ctx.deltas), ev.title);
+  addLog(life, text, toneOf(ctx.deltas), fill(life, ev.title, target));
   flushCtx(life, ctx);
   runTriggers(life, ctx);
 }
@@ -82,9 +95,10 @@ export function resolveChoice(life: Life, index: number): void {
   const ctx = newEffectCtx(target);
   const text = fill(life, outcome.text, target);
   applyEffects(life, outcome.effects, ctx, rng);
-  addLog(life, text, toneOf(ctx.deltas), ev.title);
+  const title = fill(life, ev.title, target);
+  addLog(life, text, toneOf(ctx.deltas), title);
   flushCtx(life, ctx);
-  life.pending.unshift({ kind: 'result', title: ev.title, text, deltas: ctx.deltas });
+  life.pending.unshift({ kind: 'result', title, text, deltas: ctx.deltas });
   runTriggers(life, ctx);
 }
 
@@ -98,7 +112,7 @@ export function runYearEvents(life: Life): void {
   // Eventos históricos: siempre se disparan cuando aplican.
   for (const ev of allEvents()) {
     if (!life.alive) return;
-    if (ev.tags?.includes('historical') && isEligible(life, ev)) fireEvent(life, ev);
+    if (ev.tags?.includes('historical') && isEligible(life, ev)) fireEvent(life, ev, pickTarget(life, ev));
   }
 
   const n =
@@ -108,7 +122,7 @@ export function runYearEvents(life: Life): void {
         ? (rng.weighted([1, 2], (x) => (x === 1 ? 60 : 40)) ?? 1)
         : (rng.weighted([1, 2, 3], (x) => (x === 1 ? 35 : x === 2 ? 45 : 20)) ?? 1);
 
-  let pool = allEvents().filter((e) => !e.tags?.includes('historical') && isEligible(life, e));
+  let pool = allEvents().filter((e) => !e.tags?.includes('historical') && !e.tags?.includes('court') && isEligible(life, e));
   let choicesQueued = life.pending.filter((p) => p.kind === 'choice').length;
 
   for (let i = 0; i < n && life.alive; i++) {
@@ -119,6 +133,6 @@ export function runYearEvents(life: Life): void {
       if (choicesQueued >= 2) continue;
       choicesQueued++;
     }
-    fireEvent(life, ev);
+    fireEvent(life, ev, pickTarget(life, ev));
   }
 }

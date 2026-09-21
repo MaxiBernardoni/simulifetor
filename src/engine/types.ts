@@ -24,7 +24,11 @@ export type Cond =
   | { targetAge: { gte?: number; lte?: number } }
   | { performance: { gte?: number; lte?: number } }
   | { wealth: number[] }
-  | { married: boolean };
+  | { married: boolean }
+  | { trial: boolean }
+  | { asset: 'house' | 'car' }
+  | { invested: { gte?: number; lte?: number } }
+  | { loan: boolean };
 
 // ───────── Efectos ─────────
 export type Who = 'target' | PersonKind;
@@ -36,13 +40,17 @@ export type Effect =
   | { setFlag: string }
   | { clearFlag: string }
   | { addPerson: { kind: PersonKind; age?: 'baby' | 'peer' | 'young' } }
-  | { relation: { who: Who; closeness?: number; becomes?: PersonKind; married?: boolean } }
+  | { relation: { who: Who; closeness?: number; becomes?: PersonKind; married?: boolean; remove?: boolean } }
   | { performance: number }
   | { gpa: number }
   | { salaryMult: number }
   | { loseJob: true }
   | { jail: [number, number] }
   | { parole: number }
+  | { arrest: { crime: string; years: [number, number] } }
+  | { sentence: 'full' | 'half' | 'double' | 'none' | 'probation' }
+  | { loseAsset: 'house' | 'car' }
+  | { invest: number }
   | { die: string }
   | { log: string }
   | { trigger: string };
@@ -67,6 +75,7 @@ export interface GameEvent {
   weight?: number;
   cooldown?: number;
   once?: boolean;
+  target?: PersonKind;
   conditions?: Cond[];
   effects?: Effect[];
   choices?: Choice[];
@@ -158,6 +167,15 @@ export type Prompt =
     }
   | { kind: 'result'; title: string; text: string; deltas: Delta[] };
 
+export interface Asset {
+  id: string;
+  catalogId: string;
+  kind: 'house' | 'car';
+  name: string;
+  value: number;
+  boughtYear: number;
+}
+
 export interface Look {
   skin: number;
   eyes: number;
@@ -184,6 +202,10 @@ export interface Life {
   edu: Education;
   job: Job | null;
   offers: string[];
+  assets: Asset[];
+  loan: number;
+  invested: number;
+  trial: { crime: string; years: [number, number] } | null;
   people: Person[];
   flags: Record<string, boolean>;
   jailYears: number;
@@ -206,4 +228,4 @@ export interface LifeSummary {
   job: string;
 }
 
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;

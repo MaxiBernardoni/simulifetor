@@ -25,6 +25,10 @@ export const c = {
   perf: (gte?: number, lte?: number): Cond => ({ performance: { gte, lte } }),
   wealth: (...n: number[]): Cond => ({ wealth: n }),
   married: (): Cond => ({ married: true }),
+  trial: (): Cond => ({ trial: true }),
+  asset: (k: 'house' | 'car'): Cond => ({ asset: k }),
+  invested: (gte?: number, lte?: number): Cond => ({ invested: { gte, lte } }),
+  loan: (): Cond => ({ loan: true }),
   single: (): Cond => ({ married: false }),
 };
 
@@ -49,6 +53,11 @@ export const fx = {
   fired: (): Effect => ({ loseJob: true }),
   jail: (min: number, max: number): Effect => ({ jail: [min, max] }),
   parole: (years: number): Effect => ({ parole: years }),
+  arrest: (crime: string, min: number, max: number): Effect => ({ arrest: { crime, years: [min, max] } }),
+  sentence: (s: 'full' | 'half' | 'double' | 'none' | 'probation'): Effect => ({ sentence: s }),
+  loseAsset: (k: 'house' | 'car'): Effect => ({ loseAsset: k }),
+  invest: (n: number): Effect => ({ invest: n }),
+  remove: (who: 'target' | PersonKind): Effect => ({ relation: { who, remove: true } }),
   die: (cause: string): Effect => ({ die: cause }),
   log: (text: string): Effect => ({ log: text }),
   trigger: (id: string): Effect => ({ trigger: id }),

@@ -56,6 +56,16 @@ function resolveWho(life: Life, ctx: EffectCtx, who: string): Person | undefined
   return firstAlive(life, who as Person['kind']);
 }
 
+function sendToJail(life: Life, ctx: EffectCtx, years: number): void {
+  // Menores de edad: reformatorio, condenas acotadas.
+  const y = life.age < 18 ? Math.min(years, 3) : years;
+  life.jailYears += y;
+  life.flags.criminal_record = true;
+  life.job = null;
+  if (life.edu.enrolled === 'university') life.edu.enrolled = null;
+  ctx.logs.push(`Te condenaron a ${y} ${y === 1 ? 'año' : 'años'} de ${life.age < 18 ? 'reformatorio' : 'prisión'}.`);
+}
+
 export function applyEffect(life: Life, e: Effect, ctx: EffectCtx, rng: Rng): void {
   if ('stat' in e) return changeStat(life, ctx, e.stat, e.add);
   if ('money' in e) return changeMoney(life, ctx, e.money);
@@ -81,6 +91,10 @@ export function applyEffect(life: Life, e: Effect, ctx: EffectCtx, rng: Rng): vo
     const p = resolveWho(life, ctx, e.relation.who);
     if (!p) return;
     if (e.relation.closeness) p.closeness = clamp(p.closeness + e.relation.closeness);
+    if (e.relation.remove) {
+      life.people = life.people.filter((x) => x !== p);
+      return;
+    }
     if (e.relation.becomes) {
       p.kind = e.relation.becomes;
       p.married = false;
@@ -108,12 +122,44 @@ export function applyEffect(life: Life, e: Effect, ctx: EffectCtx, rng: Rng): vo
     return;
   }
   if ('jail' in e) {
-    const years = rng.int(e.jail[0], e.jail[1]);
-    life.jailYears += years;
-    life.flags.criminal_record = true;
-    life.job = null;
-    if (life.edu.enrolled === 'university') life.edu.enrolled = null;
-    ctx.logs.push(`Te condenaron a ${years} ${years === 1 ? 'año' : 'años'} de prisión.`);
+    sendToJail(life, ctx, rng.int(e.jail[0], e.jail[1]));
+    return;
+  }
+  if ('arrest' in e) {
+    life.trial = { crime: e.arrest.crime, years: e.arrest.years };
+    ctx.logs.push(`Te arrestaron por ${e.arrest.crime}.`);
+    ctx.triggers.push('court.trial');
+    return;
+  }
+  if ('sentence' in e) {
+    const t = life.trial;
+    life.trial = null;
+    if (!t) return;
+    const base = rng.int(t.years[0], t.years[1]);
+    if (e.sentence === 'none') {
+      ctx.logs.push('Te absolvieron de todos los cargos.');
+    } else if (e.sentence === 'probation') {
+      life.flags.criminal_record = true;
+      ctx.logs.push('Te dieron libertad condicional: sin cárcel, pero con antecedentes.');
+    } else {
+      const years = e.sentence === 'half' ? Math.max(1, Math.ceil(base / 2)) : e.sentence === 'double' ? base * 2 : base;
+      sendToJail(life, ctx, years);
+    }
+    return;
+  }
+  if ('loseAsset' in e) {
+    const i = life.assets.findIndex((a) => a.kind === e.loseAsset);
+    if (i >= 0) {
+      ctx.logs.push(`Perdiste tu ${life.assets[i].name.toLowerCase()}.`);
+      life.assets.splice(i, 1);
+    }
+    return;
+  }
+  if ('invest' in e) {
+    const amt = Math.min(e.invest, Math.max(0, life.money));
+    life.money -= amt;
+    life.invested += amt;
+    addDelta(ctx, 'money', -amt);
     return;
   }
   if ('parole' in e) {

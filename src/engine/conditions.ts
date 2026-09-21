@@ -31,6 +31,10 @@ export function evalCond(life: Life, cond: Cond, rng: Rng, ctx: Ctx = {}): boole
   if ('targetAge' in cond) return !!ctx.target && inRange(ctx.target.age, cond.targetAge);
   if ('performance' in cond) return !!life.job && inRange(life.job.performance, cond.performance);
   if ('wealth' in cond) return cond.wealth.includes(life.wealthClass);
+  if ('trial' in cond) return (life.trial !== null) === cond.trial;
+  if ('asset' in cond) return life.assets.some((a) => a.kind === cond.asset);
+  if ('invested' in cond) return inRange(life.invested, cond.invested);
+  if ('loan' in cond) return (life.loan > 0) === cond.loan;
   if ('married' in cond) {
     const partner = firstAlive(life, 'partner');
     return (!!partner?.married) === cond.married;

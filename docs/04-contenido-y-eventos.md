@@ -54,6 +54,12 @@ interface Outcome {
 { trigger: "event.id" }          // encadena eventos
 ```
 
+## Efectos y condiciones agregados en la Fase 2
+- Eventos con persona objetivo: `target: 'friend' | 'partner' | ...` (el motor elige a alguien que cumpla las condiciones, y `{target}` en el texto es esa persona).
+- Efectos: `arrest(crimen, min, max)` abre un juicio; `sentence('full'|'half'|'double'|'probation'|'none')` lo resuelve; `remove(who)`, `loseAsset`, `invest`, `parole`.
+- Condiciones: `trial`, `asset('house'|'car')`, `invested`, `loan`.
+- Placeholder `{crime}` disponible durante un juicio.
+
 ## Ejemplo completo
 ```json
 {
