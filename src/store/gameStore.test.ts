@@ -1,3 +1,4 @@
+/* eslint-disable import/first */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // AsyncStorage en memoria.
@@ -28,7 +29,10 @@ async function fresh() {
 
 /** Juega un año resolviendo cualquier decisión pendiente. */
 function year() {
-  for (let i = 0; i < 10 && get().life!.pending.length; i++) get().life!.pending[0].kind === 'result' ? get().dismiss() : get().choose(0);
+  for (let i = 0; i < 10 && get().life!.pending.length; i++) {
+    if (get().life!.pending[0].kind === 'result') get().dismiss();
+    else get().choose(0);
+  }
   get().ageUp();
 }
 
