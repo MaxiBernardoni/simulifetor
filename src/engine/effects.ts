@@ -100,6 +100,8 @@ export function applyEffect(life: Life, e: Effect, ctx: EffectCtx, rng: Rng): vo
     if (e.relation.becomes) {
       p.kind = e.relation.becomes;
       p.married = false;
+      // Una sola pareja a la vez: si alguien pasa a ser tu pareja, la anterior queda como ex.
+      if (p.kind === 'partner') for (const o of life.people) if (o !== p && o.kind === 'partner' && o.alive) o.kind = 'ex';
     }
     if (e.relation.married !== undefined) p.married = e.relation.married;
     return;

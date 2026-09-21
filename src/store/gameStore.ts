@@ -1,4 +1,5 @@
 import { eraAt } from '../content/eras';
+import { performSwitch } from '../engine/switch';
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Life, LifeSummary } from '../engine/types';
@@ -16,7 +17,6 @@ import { getScenario } from '../content/scenarios';
 import { advanceWorld, createWorld, syncLifeToWorld, syncWorldToLife } from '../engine/world';
 import type { WorldData } from '../engine/world';
 import { canSwitchTo, commonAncestor, relationLabel } from '../engine/kinship';
-import { applySwitch, materializeLife } from '../engine/materialize';
 import { dropUniversity, enrollUniversity, quitJob, runActivity, runPersonAction, searchJobs, takeJob } from '../engine/actions';
 
 export const SLOT_COUNT = 3;
@@ -337,22 +337,9 @@ export const useGame = create<GameState>((set, get) => {
       const cur = s.life;
       const wd = s.world;
       if (!cur || !wd) return 'No hay una partida activa.';
-      if (cur.alive && cur.pending.length > 0) return 'Terminá lo que estás haciendo antes de cambiar de personaje.';
-      if (cur.alive && cur.scenario?.status === 'active') return 'No podés cambiar de personaje mientras hay un escenario en curso.';
-      const check = canSwitchTo(wd.world, wd.world.currentId, nodeId);
-      if (!check.ok) return check.reason ?? 'No se puede cambiar a esa persona.';
-      const target = wd.lives[nodeId] ?? materializeLife(wd, nodeId);
-      if (!target) return 'No se pudo generar esa vida. Probá de nuevo.';
-      delete wd.lives[nodeId];
-      // El personaje anterior, si sigue vivo, continúa solo (bot).
-      if (cur.alive) {
-        cur.log = cur.log.slice(-40);
-        wd.lives[cur.nodeId!] = cur;
-      }
-      applySwitch(target, cur, wd);
-      wd.world.currentId = nodeId;
-      syncLifeToWorld(wd.world, target);
-      syncWorldToLife(wd.world, target);
+      const res = performSwitch(wd, cur, nodeId);
+      if ('error' in res) return res.error;
+      const target = res.life;
       const slots = s.slots.slice();
       const worlds = s.worlds.slice();
       slots[s.activeSlot] = target;

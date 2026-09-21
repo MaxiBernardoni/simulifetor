@@ -396,6 +396,8 @@ export function syncLifeToWorld(w: World, life: Life): void {
       if (!n) continue;
       if (p.kind === 'partner' && me.partnerId !== n.id) {
         if (me.partnerId && w.nodes[me.partnerId]) endRelationship(w, me, w.nodes[me.partnerId]);
+        // Si esa persona ya estaba con otra, esa relación termina (una sola pareja por nodo).
+        if (n.partnerId && n.partnerId !== me.id && w.nodes[n.partnerId]) endRelationship(w, n, w.nodes[n.partnerId]);
         link(me, n, !!p.married);
       } else if (p.kind === 'partner') {
         me.married = n.married = !!p.married;

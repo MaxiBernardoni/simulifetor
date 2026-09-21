@@ -2,6 +2,17 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Robustez del motor] — T02
+
+**Bugs encontrados y corregidos**
+- Podías terminar con **2–3 parejas vivas**: reconectar con un ex (`relation.becomes: 'partner'`) no dejaba a la pareja anterior como ex. Ahora una sola pareja a la vez en cualquier camino.
+- En el árbol, si un familiar ya tenía pareja y pasaba a ser la pareja del jugador, su relación anterior quedaba colgada (pareja no recíproca). Ahora la relación previa termina.
+- Cambiar a un pariente muy anciano fallaba con demasiada frecuencia ("No se pudo generar esa vida"): el bot ahora reintenta hasta 40 veces.
+- Test `world.test.ts` intermitente: dependía de semillas con `Date.now()`; los invariantes nuevos no dependen del azar.
+
+**Nuevo**
+- `engine/invariants.ts` (`checkLife`, `checkWorld`), `engine/switch.ts` (`performSwitch`, usado por el store) y tests de robustez y del store (ver `docs/12`). Suite de ~120 tests en ~15 s; `FULL=1` para la muestra grande.
+
 ## [Calidad de código] — T14 (parcial)
 
 - ESLint (`eslint.config.js`, config de Expo; 0 errores, 0 advertencias) y Prettier (`.prettierrc.json`, ancho 140; `src/content/**` sin formatear). Scripts: `lint`, `format`, `format:check`, `check:all`.

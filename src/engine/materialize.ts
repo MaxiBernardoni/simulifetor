@@ -33,7 +33,7 @@ export function materializeLife(wd: WorldData, nodeId: string): Life | null {
   if (!node || !node.alive) return null;
   const nodes = Object.values(w.nodes);
 
-  for (let attempt = 0; attempt < 10; attempt++) {
+  for (let attempt = 0; attempt < 40; attempt++) {
     const seed = (Date.now() + attempt * 15485863) % 2147483647;
     // Durante la simulación solo están los padres y hermanos (congelados).
     const family: Person[] = [];

@@ -3,7 +3,7 @@
 - **Prioridad / esfuerzo:** alta · L
 - **Depende de:** —
 - **Autonomía:** ✅ segura (agrega tests y arregla bugs que aparezcan)
-- **Estado:** todo
+- **Estado:** review
 
 ## Objetivo
 Hoy hay 39 tests, casi todos de humo y de casos puntuales. Antes de sumar más sistemas hay que blindar el motor con **invariantes** que se comprueben sobre miles de vidas, la capa de guardado (store) y las migraciones. Cada bug que aparezca se corrige en la misma tarea.

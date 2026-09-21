@@ -47,3 +47,13 @@ Checklist de una tarea de UI: sin errores en consola, funciona en 375×812, espe
 - No se probó en un iPhone físico el rendimiento de las animaciones ni del mundo (solo en Node y en el navegador).
 - El guardado en AsyncStorage no tiene test automatizado (se probó a mano: recargar y comparar).
 - No hay pruebas de propiedades / fuzz masivo del motor (tarea T02).
+
+
+## Robustez (T02)
+
+- `engine/invariants.ts`: `checkLife(life)` y `checkWorld(wd, life?)` devuelven la lista de violaciones (stats 0–100, números finitos, edad = año − nacimiento, una sola pareja viva, sin placeholders `{…}` en el log, ida y vuelta por JSON idéntica; referencias del árbol válidas, parejas recíprocas entre vivos, sin ciclos de ancestros, hijos ≥ 12 años menores que sus padres…).
+- `engine/robustness.test.ts`: cuatro perfiles de bot (sin crimen, crimen alto, sesgo familiar, por defecto) revisados en 6 edades, los 9 escenarios × 11 vidas y un fuzz de mundos con cambio de personaje cada 3–7 años. **Muestra chica por defecto; `FULL=1 npm test` corre 1.000 vidas por perfil y 200 mundos.**
+- `engine/switch.ts` (`performSwitch`): el cambio de personaje es una función pura del motor (el store la usa), para poder probarlo sin UI.
+- `store/gameStore.test.ts`: AsyncStorage simulado en memoria; cubre guardado por ranura, recarga, cambio de ranura, exportar/borrar/importar, importación inválida, migración desde `vidasim.save.v1`, partida corrupta y cambio de personaje con decisiones pendientes.
+- No cubierto: componentes de UI, animaciones, `expo-secure-store` (la IA usa proveedores simulados).
+- Ojo: `createLife`/`materializeLife`/`createScenarioLife` usan `Date.now()` como semilla en algunos caminos, así que algunas pruebas de mundo no son 100 % reproducibles: los invariantes están pensados para valer siempre.
