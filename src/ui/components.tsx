@@ -1,11 +1,12 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { ViewStyle } from 'react-native';
 import type { Delta, Life, Look, Person, StatKey } from '../engine/types';
 import { Avatar } from './Avatar';
 import { formatMoney } from '../engine/format';
 import { colors, radius, space, barColor } from './theme';
 import { Icon } from './Icon';
+import { Pop } from './anim';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const STAT_META: Record<StatKey, { label: string; icon: string; color: string }> = {
@@ -93,18 +94,20 @@ export function DeltaChips({ deltas }: { deltas: Delta[] }) {
   if (!deltas.length) return null;
   return (
     <View style={s.chips}>
-      {deltas.map((d) => {
+      {deltas.map((d, idx) => {
         const up = d.amount > 0;
         const color = up ? colors.good : colors.bad;
         const meta = d.key === 'money' ? { icon: 'Banknote', label: '' } : STAT_META[d.key];
         return (
-          <View key={d.key} style={[s.chip, { borderColor: color }]}>
-            <Icon name={meta.icon} size={13} color={color} />
-            <Text style={[s.chipText, { color }]}>
-              {up ? '+' : ''}
-              {d.key === 'money' ? formatMoney(d.amount) : d.amount}
-            </Text>
-          </View>
+          <Pop key={d.key + d.amount} delay={idx * 110}>
+            <View style={[s.chip, { borderColor: color, backgroundColor: color + '14' }]}>
+              <Icon name={meta.icon} size={13} color={color} />
+              <Text style={[s.chipText, { color }]}>
+                {up ? '+' : ''}
+                {d.key === 'money' ? formatMoney(d.amount) : d.amount}
+              </Text>
+            </View>
+          </Pop>
         );
       })}
     </View>
@@ -208,6 +211,10 @@ export function CircleButton({ icon, onPress }: { icon: string; onPress: () => v
 export function LifeStat({ stat, value }: { stat: StatKey; value: number }) {
   const m = STAT_META[stat];
   const color = barColor(value);
+  const w = React.useRef(new Animated.Value(value)).current;
+  React.useEffect(() => {
+    Animated.timing(w, { toValue: value, duration: 700, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
+  }, [value, w]);
   return (
     <View style={ls.row}>
       <View style={[ls.chip, { backgroundColor: m.color + '26' }]}>
@@ -216,7 +223,7 @@ export function LifeStat({ stat, value }: { stat: StatKey; value: number }) {
       <View style={{ flex: 1 }}>
         <Text style={ls.label}>{m.label}</Text>
         <View style={ls.track}>
-          <View style={[ls.fill, { width: `${Math.max(3, Math.min(100, value))}%`, backgroundColor: color }]} />
+          <Animated.View style={[ls.fill, { width: w.interpolate({ inputRange: [0, 100], outputRange: ['3%', '100%'], extrapolate: 'clamp' }), backgroundColor: color }]} />
         </View>
       </View>
       <Text style={ls.pct}>{value}</Text>

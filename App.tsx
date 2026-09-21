@@ -6,6 +6,8 @@ import { useGame } from './src/store/gameStore';
 import type { Tab } from './src/store/gameStore';
 import { Header } from './src/ui/components';
 import { PromptModal } from './src/ui/PromptModal';
+import { AchievementToast } from './src/ui/Toast';
+import { FadeIn } from './src/ui/anim';
 import { colors } from './src/ui/theme';
 import { LifeScreen } from './src/ui/screens/LifeScreen';
 import { ActivitiesScreen } from './src/ui/screens/ActivitiesScreen';
@@ -72,16 +74,17 @@ function Main() {
       ) : (
         <>
           <Header title={TITLES[tab]} onBack={() => setTab('life')} />
-          <View style={{ flex: 1 }}>
+          <FadeIn key={tab} from={18} duration={260} style={{ flex: 1 }}>
             {tab === 'activities' && <ActivitiesScreen />}
             {tab === 'work' && <WorkScreen />}
             {tab === 'people' && <PeopleScreen />}
             {tab === 'assets' && <AssetsScreen />}
             {tab === 'more' && <MoreScreen />}
-          </View>
+          </FadeIn>
         </>
       )}
       <PromptModal />
+      <AchievementToast />
     </View>
   );
 }

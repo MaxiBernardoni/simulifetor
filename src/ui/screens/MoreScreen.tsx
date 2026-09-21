@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 import { useGame } from '../../store/gameStore';
 import { formatMoney } from '../../engine/format';
 import { Button, Card, Row, SectionTitle } from '../components';
 import { ACHIEVEMENTS } from '../../content/achievements';
+import { Scene, SCENE_KEYS } from '../art/Scene';
 import { colors, space } from '../theme';
 
 export function MoreScreen() {
@@ -12,6 +13,7 @@ export function MoreScreen() {
   const unlocked = useGame((st) => st.achievements);
   const start = useGame((st) => st.startCreating);
   const wipe = useGame((st) => st.wipe);
+  const [gallery, setGallery] = useState(false);
 
   const confirmNew = () => {
     if (!life.alive) return start();
@@ -31,7 +33,19 @@ export function MoreScreen() {
       <View style={{ gap: 10, marginTop: space.md }}>
         <Button label="Nueva vida" icon="Baby" onPress={confirmNew} />
         <Button label="Borrar todos los datos" variant="danger" onPress={confirmWipe} />
+        {__DEV__ ? <Button label={gallery ? 'Ocultar galería de escenas' : 'Galería de escenas (dev)'} variant="ghost" onPress={() => setGallery((g) => !g)} /> : null}
       </View>
+
+      {gallery ? (
+        <View style={{ gap: 10, marginTop: 12 }}>
+          {SCENE_KEYS.map((k) => (
+            <View key={k}>
+              <Text style={{ color: colors.muted, fontWeight: '700', marginBottom: 4 }}>{k}</Text>
+              <Scene scene={k} life={life} height={150} />
+            </View>
+          ))}
+        </View>
+      ) : null}
 
       <SectionTitle icon="Trophy" color="#E9A23B">Logros · {unlocked.length}/{ACHIEVEMENTS.length}</SectionTitle>
       {ACHIEVEMENTS.map((a) => {

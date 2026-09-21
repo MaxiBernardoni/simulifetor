@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGame } from '../../store/gameStore';
 import type { Life, LogEntry, StatKey } from '../../engine/types';
@@ -8,6 +8,7 @@ import { CircleButton, DeltaChips, Header, IconPattern, IconTile, LifeStat, Stat
 import { styleForText, TONE_STYLE } from '../../content/icons';
 import { Avatar } from '../Avatar';
 import { Icon } from '../Icon';
+import { FadeIn, PressScale, Pulse, useBump, useHop } from '../anim';
 import { colors, space } from '../theme';
 
 const STATS: StatKey[] = ['happiness', 'health', 'smarts', 'looks'];
@@ -32,10 +33,10 @@ function occupation(l: Life): string {
 
 function NavItem({ icon, label, onPress }: { icon: string; label: string; onPress: () => void }) {
   return (
-    <Pressable onPress={onPress} style={s.navItem}>
+    <PressScale onPress={onPress} outerStyle={s.navItem} style={{ alignItems: 'center', gap: 4 }} to={0.85}>
       <Icon name={icon} size={26} color={colors.navIcon} />
       <Text style={s.navLabel}>{label}</Text>
-    </Pressable>
+    </PressScale>
   );
 }
 
@@ -45,6 +46,8 @@ export function LifeScreen() {
   const ageUp = useGame((st) => st.ageUp);
   const setTab = useGame((st) => st.setTab);
   const insets = useSafeAreaInsets();
+  const hop = useHop(life.age);
+  const bump = useBump(life.money);
 
   const groups = useMemo(() => {
     const out: Group[] = [];
@@ -73,7 +76,9 @@ export function LifeScreen() {
       />
 
       <View style={s.info}>
-        <Avatar look={life.look} size={52} />
+        <Animated.View style={hop}>
+          <Avatar look={life.look} size={52} />
+        </Animated.View>
         <View style={{ flex: 1, marginLeft: 10 }}>
           <Text style={s.name} numberOfLines={1}>
             {life.name} {life.surname}
@@ -82,10 +87,10 @@ export function LifeScreen() {
             {occupation(life)}
           </Text>
         </View>
-        <View style={[s.moneyPill, debt && { backgroundColor: '#FBE3E5' }]}>
+        <Animated.View style={[s.moneyPill, debt && { backgroundColor: '#FBE3E5' }, bump]}>
           <Text style={[s.money, debt && { color: colors.bad }]}>{formatMoney(life.money)}</Text>
           <Text style={s.moneyLabel}>{debt ? 'Deuda' : 'En el banco'}</Text>
-        </View>
+        </Animated.View>
       </View>
 
       <StatusBadges life={life} />
@@ -98,7 +103,7 @@ export function LifeScreen() {
         data={groups}
         keyExtractor={(g) => String(g.age)}
         renderItem={({ item }) => (
-          <View style={{ marginBottom: 16 }}>
+          <FadeIn style={{ marginBottom: 16 }}>
             <View style={s.ageRow}>
               <Text style={s.ageHead}>
                 {item.age} {item.age === 1 ? 'año' : 'años'}
@@ -119,7 +124,7 @@ export function LifeScreen() {
                 </View>
               );
             })}
-          </View>
+          </FadeIn>
         )}
       />
       </View>
@@ -128,10 +133,12 @@ export function LifeScreen() {
         <NavItem icon="BriefcaseBusiness" label="Ocupación" onPress={() => setTab('work')} />
         <NavItem icon="PiggyBank" label="Activos" onPress={() => setTab('assets')} />
         <View style={s.ageSlot}>
-          <Pressable onPress={ageUp} disabled={blocked} style={({ pressed }) => [s.ageButton, { opacity: blocked ? 0.5 : pressed ? 0.85 : 1 }]}>
-            <Icon name="ChevronsRight" size={38} color="#fff" />
-            <Text style={s.ageText}>Envejecer</Text>
-          </Pressable>
+          <Pulse active={!blocked} amount={0.045} style={s.pulse}>
+            <PressScale onPress={ageUp} disabled={blocked} to={0.88} style={[s.ageButton, { opacity: blocked ? 0.5 : 1 }]}>
+              <Icon name="ChevronsRight" size={38} color="#fff" />
+              <Text style={s.ageText}>Envejecer</Text>
+            </PressScale>
+          </Pulse>
         </View>
         <NavItem icon="HeartHandshake" label="Relaciones" onPress={() => setTab('people')} />
         <NavItem icon="LayoutGrid" label="Actividades" onPress={() => setTab('activities')} />
@@ -170,9 +177,10 @@ const s = StyleSheet.create({
   navItem: { flex: 1, alignItems: 'center', gap: 4 },
   navLabel: { color: '#DCE9E8', fontSize: 12, fontWeight: '600' },
   ageSlot: { flex: 1.15, alignItems: 'center' },
+  pulse: { marginTop: -34, marginBottom: -2 },
   ageButton: {
     width: 92, height: 92, borderRadius: 30, backgroundColor: colors.ageButton, borderWidth: 5, borderColor: colors.bg,
-    alignItems: 'center', justifyContent: 'center', marginTop: -34, marginBottom: -2,
+    alignItems: 'center', justifyContent: 'center',
     shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6,
   },
   ageText: { color: '#fff', fontWeight: '800', fontSize: 15, marginTop: -2 },

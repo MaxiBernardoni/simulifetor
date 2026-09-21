@@ -166,8 +166,9 @@ export type Prompt =
       text: string;
       targetId?: string;
       icon?: string;
+      scene?: string;
     }
-  | { kind: 'result'; title: string; text: string; deltas: Delta[]; icon?: string };
+  | { kind: 'result'; title: string; text: string; deltas: Delta[]; icon?: string; scene?: string; targetId?: string };
 
 export interface Asset {
   id: string;

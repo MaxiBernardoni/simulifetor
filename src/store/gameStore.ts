@@ -36,6 +36,8 @@ interface GameState {
   life: Life | null;
   history: LifeSummary[];
   achievements: string[];
+  toast: { id: number; title: string; icon: string } | null;
+  clearToast: () => void;
   tab: Tab;
   load: () => Promise<void>;
   setTab: (t: Tab) => void;
@@ -92,13 +94,15 @@ export const useGame = create<GameState>((set, get) => {
     if (cur.alive && !next.alive) history = [summarize(next), ...history];
     // Logros nuevos.
     let achievements = get().achievements;
+    let toast = get().toast;
     for (const a of ACHIEVEMENTS) {
       if (!achievements.includes(a.id) && a.check(next)) {
         achievements = [...achievements, a.id];
+        toast = { id: Date.now() + achievements.length, title: a.title, icon: a.icon };
         addLog(next, `Logro desbloqueado: ${a.title}.`, 'good', 'Logro', 'Trophy');
       }
     }
-    set({ life: next, history, achievements });
+    set({ life: next, history, achievements, toast });
     void persist(next, history, achievements);
   };
 
@@ -108,6 +112,8 @@ export const useGame = create<GameState>((set, get) => {
     life: null,
     history: [],
     achievements: [],
+    toast: null,
+    clearToast: () => set({ toast: null }),
     tab: 'life',
 
     load: async () => {

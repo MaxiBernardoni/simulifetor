@@ -4,6 +4,8 @@ import { useGame } from '../../store/gameStore';
 import { formatMoney } from '../../engine/format';
 import { Button, Card, IconTile } from '../components';
 import { Avatar } from '../Avatar';
+import { Scene } from '../art/Scene';
+import { FadeIn } from '../anim';
 import { colors, space } from '../theme';
 
 export function DeathScreen() {
@@ -14,7 +16,10 @@ export function DeathScreen() {
 
   return (
     <ScrollView contentContainerStyle={s.wrap}>
-      <View style={s.center}>
+      <View style={{ marginHorizontal: -space.lg, marginTop: -24, marginBottom: 12 }}>
+        <Scene scene="graveyard" life={life} height={170} />
+      </View>
+      <FadeIn delay={200} style={s.center}>
         <View style={{ opacity: 0.6 }}>
           <Avatar look={life.look} size={104} />
         </View>
@@ -25,7 +30,7 @@ export function DeathScreen() {
           {life.birthYear} – {life.year} · {life.age} años
         </Text>
         <Text style={s.cause}>Murió de {life.cause}</Text>
-      </View>
+      </FadeIn>
 
       <Card style={{ marginTop: space.xl }}>
         <Line icon="Coins" color="#2A9D6F" label="Patrimonio final" value={formatMoney(life.money)} />

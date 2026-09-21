@@ -6,6 +6,7 @@ import type { EffectCtx } from './effects';
 import { allActivities, allCareers, allPersonActions, getCareer, getEvent } from './registry';
 import { pickOutcome, fireEvent } from './events';
 import { fill } from './text';
+import { refineScene, sceneForActivity, sceneForPersonAction } from '../content/scenes';
 import { makePerson } from './people';
 import { formatMoney } from './format';
 
@@ -27,10 +28,10 @@ export function activityStatus(life: Life, a: Activity): Status {
   return { visible: true };
 }
 
-function finish(life: Life, title: string, text: string, ctx: EffectCtx, icon?: string): void {
+function finish(life: Life, title: string, text: string, ctx: EffectCtx, icon?: string, scene?: string, targetId?: string): void {
   addLog(life, text, toneOf(ctx.deltas), title, icon);
   for (const l of ctx.logs) addLog(life, l, 'neutral');
-  life.pending.unshift({ kind: 'result', title, text, deltas: ctx.deltas, icon });
+  life.pending.unshift({ kind: 'result', title, text, deltas: ctx.deltas, icon, scene: scene ? refineScene(scene, ctx.deltas) : undefined, targetId });
   for (const id of ctx.triggers) {
     const ev = getEvent(id);
     if (ev && life.alive) fireEvent(life, ev);
@@ -49,7 +50,7 @@ export function runActivity(life: Life, id: string): void {
   const outcome = pickOutcome(life, a.outcomes);
   const text = fill(life, outcome.text);
   applyEffects(life, outcome.effects, ctx, rng);
-  finish(life, a.label, text, ctx, a.icon);
+  finish(life, a.label, text, ctx, a.icon, sceneForActivity(a.id));
 }
 
 // ───────── Acciones sobre personas ─────────
@@ -75,7 +76,7 @@ export function runPersonAction(life: Life, actionId: string, personId: string):
   const outcome = pickOutcome(life, a.outcomes);
   const text = fill(life, outcome.text, p);
   applyEffects(life, outcome.effects, ctx, rng);
-  finish(life, a.label, text, ctx, a.icon);
+  finish(life, a.label, text, ctx, a.icon, sceneForPersonAction(a.id), p.id);
 }
 
 // ───────── Trabajo ─────────

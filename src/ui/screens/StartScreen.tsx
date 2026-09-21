@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useGame } from '../../store/gameStore';
 import { Button } from '../components';
 import { Icon } from '../Icon';
+import { Bob, Pop } from '../anim';
 import { colors, space } from '../theme';
 
 // Recorrido visual de una vida: de bebé a la despedida.
@@ -27,10 +28,12 @@ export function StartScreen() {
   const start = useGame((st) => st.startCreating);
   return (
     <View style={s.wrap}>
-      {FLOATING.map((f) => (
-        <View key={f.icon} style={{ position: 'absolute', top: f.top, left: f.left, transform: [{ rotate: f.rot }], opacity: 0.28 }}>
-          <Icon name={f.icon} size={f.size} color="#FFF0C7" />
-        </View>
+      {FLOATING.map((f, i) => (
+        <Bob key={f.icon} amp={6} period={2200 + i * 380} delay={i * 200} style={{ position: 'absolute', top: f.top, left: f.left, opacity: 0.32 }}>
+          <View style={{ transform: [{ rotate: f.rot }] }}>
+            <Icon name={f.icon} size={f.size} color="#FFF0C7" />
+          </View>
+        </Bob>
       ))}
       <Text style={s.title}>VidaSim</Text>
       <Text style={s.sub}>Una vida entera. Un año por vez. Muchas malas decisiones.</Text>
@@ -38,12 +41,12 @@ export function StartScreen() {
       <View style={s.path}>
         {PATH.map((p, i) => (
           <React.Fragment key={p.label}>
-            <View style={{ alignItems: 'center', gap: 6 }}>
+            <Pop delay={300 + i * 140} style={{ alignItems: 'center', gap: 6 }}>
               <View style={[s.pathIcon, { backgroundColor: p.color }]}>
                 <Icon name={p.icon} size={24} color="#fff" />
               </View>
               <Text style={s.pathLabel}>{p.label}</Text>
-            </View>
+            </Pop>
             {i < PATH.length - 1 ? <View style={s.pathLine} /> : null}
           </React.Fragment>
         ))}

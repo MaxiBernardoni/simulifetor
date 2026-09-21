@@ -4,12 +4,13 @@ import { useGame } from '../store/gameStore';
 import { getEvent } from '../engine/registry';
 import { choiceAvailable } from '../engine/events';
 import { Button, DeltaChips, IconTile } from './components';
+import { Scene } from './art/Scene';
+import { FadeIn, Pop } from './anim';
 import { styleForTags } from '../content/icons';
 import { colors, radius } from './theme';
 
-function heroColor(deltas: { key: string; amount: number }[]): string {
-  const score = deltas.filter((d) => d.key !== 'money').reduce((a, d) => a + d.amount, 0);
-  return score > 0 ? colors.good : score < 0 ? colors.bad : colors.accent;
+function score(deltas: { key: string; amount: number }[]): number {
+  return deltas.filter((d) => d.key !== 'money').reduce((a, d) => a + d.amount, 0);
 }
 
 export function PromptModal() {
@@ -20,53 +21,60 @@ export function PromptModal() {
   if (!life || !prompt) return null;
 
   const ev = prompt.kind === 'choice' ? getEvent(prompt.eventId) : undefined;
-  const target = prompt.kind === 'choice' ? life.people.find((p) => p.id === prompt.targetId) : undefined;
+  const target = life.people.find((p) => p.id === prompt.targetId);
+  const bad = prompt.kind === 'result' && score(prompt.deltas) < 0;
+  // Clave para reiniciar las animaciones con cada prompt nuevo.
+  const key = `${prompt.kind}:${prompt.title}:${prompt.text.length}:${life.log.length}`;
 
   return (
     <Modal transparent animationType="fade" visible statusBarTranslucent>
       <View style={s.backdrop}>
-        <View style={s.card}>
-          <View style={s.hero}>
-            <IconTile
-              name={prompt.icon ?? (prompt.kind === 'result' ? 'CircleCheck' : 'Sparkles')}
-              color={prompt.kind === 'result' ? heroColor(prompt.deltas) : styleForTags(ev?.tags).color}
-              size={64}
-              solid
-            />
+        <Pop key={key} from={0.82} style={s.card}>
+          {prompt.scene ? (
+            <Scene scene={prompt.scene} life={life} target={target} height={160} shake={bad} />
+          ) : (
+            <View style={s.hero}>
+              <IconTile name={prompt.icon ?? 'Sparkles'} color={styleForTags(ev?.tags).color} size={64} solid />
+            </View>
+          )}
+          <View style={s.body}>
+            <Text style={s.title}>{prompt.title}</Text>
+            <ScrollView style={{ maxHeight: 230 }}>
+              <FadeIn delay={120}>
+                <Text style={s.text}>{prompt.text}</Text>
+              </FadeIn>
+              {prompt.kind === 'result' ? (
+                <View style={{ alignItems: 'center' }}>
+                  <DeltaChips deltas={prompt.deltas} />
+                </View>
+              ) : null}
+            </ScrollView>
+            <View style={s.actions}>
+              {prompt.kind === 'choice' && ev?.choices
+                ? ev.choices.map((c, i) => (
+                    <FadeIn key={i} delay={200 + i * 90} from={10}>
+                      <Button label={c.label} variant="primary" disabled={!choiceAvailable(life, c, target)} onPress={() => choose(i)} />
+                    </FadeIn>
+                  ))
+                : (
+                  <FadeIn delay={250} from={10}>
+                    <Button label="Continuar" onPress={dismiss} />
+                  </FadeIn>
+                )}
+            </View>
           </View>
-          <Text style={s.title}>{prompt.title}</Text>
-          <ScrollView style={{ maxHeight: 260 }}>
-            <Text style={s.text}>{prompt.text}</Text>
-            {prompt.kind === 'result' ? (
-              <View style={{ alignItems: 'center' }}>
-                <DeltaChips deltas={prompt.deltas} />
-              </View>
-            ) : null}
-          </ScrollView>
-          <View style={s.actions}>
-            {prompt.kind === 'choice' && ev?.choices
-              ? ev.choices.map((c, i) => (
-                  <Button
-                    key={i}
-                    label={c.label}
-                    variant="primary"
-                    disabled={!choiceAvailable(life, c, target)}
-                    onPress={() => choose(i)}
-                  />
-                ))
-              : <Button label="Continuar" onPress={dismiss} />}
-          </View>
-        </View>
+        </Pop>
       </View>
     </Modal>
   );
 }
 
 const s = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', justifyContent: 'center', padding: 20 },
-  card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: 20, paddingTop: 22, borderWidth: 1, borderColor: colors.border },
-  title: { color: colors.text, fontSize: 21, fontWeight: '800', marginBottom: 10, textAlign: 'center' },
-  hero: { alignItems: 'center', marginTop: -50, marginBottom: 10 },
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', justifyContent: 'center', padding: 18 },
+  card: { backgroundColor: colors.surface, borderRadius: radius.lg, overflow: 'hidden', borderWidth: 1, borderColor: colors.border },
+  body: { padding: 18, paddingTop: 14 },
+  title: { color: colors.text, fontSize: 21, fontWeight: '800', marginBottom: 8, textAlign: 'center' },
+  hero: { alignItems: 'center', paddingTop: 22, paddingBottom: 4 },
   text: { color: colors.text, fontSize: 16, lineHeight: 23, textAlign: 'center' },
-  actions: { marginTop: 18, gap: 10 },
+  actions: { marginTop: 16, gap: 10 },
 });

@@ -6,6 +6,7 @@ import type { EffectCtx } from './effects';
 import { allEvents, getEvent } from './registry';
 import { fill } from './text';
 import { styleForTags } from '../content/icons';
+import { refineScene, sceneForEvent } from '../content/scenes';
 
 const DEFAULT_COOLDOWN = 4;
 
@@ -53,6 +54,7 @@ export function fireEvent(life: Life, ev: GameEvent, target?: Person): void {
       text: fill(life, ev.text, target),
       targetId: target?.id,
       icon: styleForTags(ev.tags).icon,
+      scene: sceneForEvent(ev.id, ev.tags),
     });
     return;
   }
@@ -101,7 +103,7 @@ export function resolveChoice(life: Life, index: number): void {
   const icon = styleForTags(ev.tags).icon;
   addLog(life, text, toneOf(ctx.deltas), title, icon);
   flushCtx(life, ctx);
-  life.pending.unshift({ kind: 'result', title, text, deltas: ctx.deltas, icon });
+  life.pending.unshift({ kind: 'result', title, text, deltas: ctx.deltas, icon, scene: refineScene(sceneForEvent(ev.id, ev.tags), ctx.deltas), targetId: target?.id });
   runTriggers(life, ctx);
 }
 

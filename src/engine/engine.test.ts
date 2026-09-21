@@ -7,6 +7,7 @@ import { createLife } from './life';
 import { ageUp } from './ageUp';
 import { simulateLife } from './sim';
 import { fill } from './text';
+import { SCENE_KEYS, sceneForActivity, sceneForEvent, sceneForPersonAction } from '../content/scenes';
 import { applyEffects, newEffectCtx } from './effects';
 import { rngOf } from './rng';
 import { resolveChoice } from './events';
@@ -223,5 +224,16 @@ describe('fase 2', () => {
         if (e.title) expect(e.title).not.toMatch(/\{\w+\}/);
       }
     }
+  });
+});
+
+describe('escenas ilustradas', () => {
+  const valid = new Set<string>(SCENE_KEYS);
+  it('todo evento resuelve a una escena existente', () => {
+    for (const ev of ALL_EVENTS) expect(valid.has(sceneForEvent(ev.id, ev.tags)), ev.id).toBe(true);
+  });
+  it('toda actividad y acción con personas resuelve a una escena existente', () => {
+    for (const a of ACTIVITIES) expect(valid.has(sceneForActivity(a.id)), a.id).toBe(true);
+    for (const a of PERSON_ACTIONS) expect(valid.has(sceneForPersonAction(a.id)), a.id).toBe(true);
   });
 });
