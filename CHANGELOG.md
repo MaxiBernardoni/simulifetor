@@ -2,6 +2,14 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [T17 · Amistad y amor (hitos 1–3)]
+
+- **Doble medidor por persona:** amistad (−100 a 100; por debajo de −30 es "mala onda") y amor (0–100, oculto hasta que una acción lo desbloquea). `SCHEMA_VERSION` 5: las partidas viejas migran solas (la cercanía pasa a amistad; la pareja arranca con amor).
+- **Acciones por niveles:** 6 amistosas y 8 románticas nuevas (coquetear, carta de amor, cita, beso, confesarse, sorpresa, escena de celos, pasar la noche). Las románticas piden amistad ≥ 50 y luego amor creciente; solo entre adultos, **también con familiares adultos**. Cada acción tiene reacciones buenas y malas que suman o restan cantidades distintas de amistad y amor.
+- **Variedad:** cada año se ofrece una parte de las acciones desbloqueadas (determinista: no cambia al reabrir la pantalla).
+- **UI:** dos barras en la lista y en la ficha; los resultados muestran chips de amistad y amor. A quien es "mala onda" no se le ofrecen gestos amistosos.
+- Pendiente: varios amoríos con la pareja oficial, infidelidad y su descubrimiento, balance. 15 tests nuevos (222 en total).
+
 ## [Textos: relación con cada persona]
 
 - Al nombrar a alguien en un texto (eventos, resultados, acciones con personas) la primera vez aparece qué es del jugador: "Marcos (tu amigo)", "Ricardo (tu jefe)", "Sofía (tu esposa)". Se omite si el texto ya lo dice o si ya se nombró antes en el mismo texto. 1 test nuevo (207).
