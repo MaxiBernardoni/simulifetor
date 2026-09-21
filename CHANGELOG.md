@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Narrador coherente]
+
+- El modo narrador ya no puede inventar hechos: temperatura baja, prompt de cambios mínimos y guarda que descarta reescrituras que pierden datos del original. Reportado desde el iPhone ("Un tío por el parque siempre de ti te da la lata"). `temperature` es ahora una opción del proveedor. Tests nuevos.
+
 ## [IA desde el iPhone]
 
 - `scripts/ollama-proxy.mjs` (`npm run ollama:proxy`): mini-proxy local que permite publicar Ollama con Tailscale Serve (HTTPS privado, solo tus dispositivos). Guía y verificación en `docs/05-ia.md`.
