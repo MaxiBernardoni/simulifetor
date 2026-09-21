@@ -177,3 +177,13 @@ export function thirdPersonProblem(text: string): string | null {
   }
   return null;
 }
+
+/** Montos de dinero escritos en el texto ("$500", "1.200 dólares"): el juego ya escala y muestra lo que ganás o perdés, y no coincidirían. */
+export function moneyTextProblem(text: string): string | null {
+  return /\$\s?\d|\d[\d.,]*\s*(?:d[oó]lares|usd|pesos|euros|mangos|lucas)/i.test(text) ? 'monto de dinero en el texto' : null;
+}
+
+/** Problemas de estilo del texto generado: tercera persona con nombre propio o montos de dinero escritos. */
+export function textProblem(text: string): string | null {
+  return thirdPersonProblem(text) ?? moneyTextProblem(text);
+}

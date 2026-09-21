@@ -10,7 +10,7 @@ import { createMock, sampleEventJson } from './providers/mock';
 import { generateEvents, resolveFreeText } from './service';
 import { summarizeLife } from './prompts';
 import { getApiKey, loadAIData, saveAIData, setApiKey } from './storage';
-import { inputProblem, norm, speaksToYou, thirdPersonProblem } from './filter';
+import { inputProblem, norm, speaksToYou, textProblem } from './filter';
 import { applyConfigPatch, canAnswerByText, connectionChanged, connectionUsable, describeAIError } from './config';
 import type { GameEvent } from '../engine/types';
 
@@ -123,7 +123,7 @@ export const useAI = create<AIState>((set, get) => {
     load: async () => {
       const d = await loadAIData();
       // Se descartan los eventos ya guardados que no le hablan al jugador (tercera persona, nombres inventados).
-      pool = d.pool.filter((e) => speaksToYou(e.text) && !thirdPersonProblem(e.text)).slice(-POOL_MAX);
+      pool = d.pool.filter((e) => speaksToYou(e.text) && !textProblem(e.text)).slice(-POOL_MAX);
       const key = await getApiKey();
       set({ config: d.config, audit: d.audit, hasKey: !!key, verify: { state: d.config.verified ? 'ok' : 'idle', error: null } });
       publishPool();

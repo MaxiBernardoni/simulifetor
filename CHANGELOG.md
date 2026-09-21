@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [IA: sin montos escritos en los textos]
+
+- Un evento generado decía "cobrás 1.200 dólares" y el juego pagaba $1.550: el monto real se ajusta por época pero la IA escribía la cifra fija. Ahora se rechazan los textos de la IA con montos ("$500", "1.200 dólares", "300 pesos") y el prompt pide describirlos sin cifras; al cargar se limpian los eventos guardados que los tengan. 2 tests nuevos (206).
+
 ## [Web: pantalla completa en el iPhone]
 
 - `public/index.html`: el contenedor raíz pasa a `position: fixed` con los cuatro bordes en 0, porque con `height: 100%` la versión instalada en el iPhone dejaba una franja vacía debajo de la barra de navegación. No se pudo reproducir en el navegador de escritorio; hay que confirmarlo en el iPhone tras `npm run deploy:web`.

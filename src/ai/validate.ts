@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { Effect, GameEvent, Outcome } from '../engine/types';
-import { contentProblem, norm, speaksToYou, thirdPersonProblem } from './filter';
+import { contentProblem, norm, speaksToYou, textProblem } from './filter';
 
 const stat = z.number().int().min(-15).max(15);
 const effectsSchema = z.strictObject({
@@ -102,7 +102,7 @@ export function validateAiEvent(
   const problem = contentProblem(allText.join(' \n '), ev.minAge);
   if (problem) return { ok: false, reason: problem, title };
   if (!speaksToYou(ev.text)) return { ok: false, reason: 'no está en segunda persona', title };
-  const third = [ev.text, ...outcomes.map((o) => o.text)].map(thirdPersonProblem).find(Boolean);
+  const third = [ev.text, ...outcomes.map((o) => o.text)].map(textProblem).find(Boolean);
   if (third) return { ok: false, reason: third, title };
 
   if (ev.effects && magnitude(ev.effects) > 30) return { ok: false, reason: 'efectos demasiado grandes', title };
@@ -170,7 +170,7 @@ function validateNext(raw: unknown, age: number): NextSituation | undefined {
   if (!p.success) return undefined;
   const { title, text, options } = p.data;
   const all = [title, text, ...options].join(' \n ');
-  if (all.includes('{') || all.includes('}') || contentProblem(all, age) || thirdPersonProblem(text) || !speaksToYou(text)) return undefined;
+  if (all.includes('{') || all.includes('}') || contentProblem(all, age) || textProblem(text) || !speaksToYou(text)) return undefined;
   return { title: title.trim(), text: text.trim(), options: options.map((o) => o.trim()) };
 }
 
@@ -191,7 +191,7 @@ export function validateFreeTextOutcome(raw: unknown, age: number): FreeTextResu
   }
   const { text, effects, next } = parsed.data;
   if (text.includes('{') || text.includes('}')) return { ok: false, reason: 'llaves en el texto' };
-  const problem = contentProblem(text, age) ?? thirdPersonProblem(text);
+  const problem = contentProblem(text, age) ?? textProblem(text);
   if (problem) return { ok: false, reason: problem };
   if (magnitude(effects) > 30) return { ok: false, reason: 'efectos demasiado grandes' };
   const cont = next === undefined || next === null ? undefined : validateNext(next, age);

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { validateAiEvent, extractJson } from './validate';
-import { contentProblem, speaksToYou, thirdPersonProblem } from './filter';
+import { contentProblem, moneyTextProblem, speaksToYou, thirdPersonProblem } from './filter';
 import { generateEvents } from './service';
 import { createMock, sampleEventJson } from './providers/mock';
 import { createGemini } from './providers/gemini';
@@ -350,5 +350,19 @@ describe('segunda persona obligatoria', () => {
     expect(speaksToYou('Te quedás despierto hasta tarde.')).toBe(true);
     expect(thirdPersonProblem('Marcos se queda dormido.')).not.toBeNull();
     expect(thirdPersonProblem('Nadie está despierto. Tu jefe se va.')).toBeNull();
+  });
+});
+
+describe('sin montos escritos en los textos', () => {
+  it('detecta cifras de dinero y deja pasar el resto', () => {
+    for (const bad of ['Cobrás 1.200 dólares por la escena.', 'Te ofrecen $500 en mano.', 'Te dan 300 pesos.'])
+      expect(moneyTextProblem(bad)).not.toBeNull();
+    for (const ok of ['Te pagan bien por la escena.', 'Tenés 3 amigos y 2 problemas.', 'Ganás una fortuna.'])
+      expect(moneyTextProblem(ok)).toBeNull();
+  });
+
+  it('el validador rechaza un evento que escribe el monto', () => {
+    const e = { ...base(), text: 'Te ofrecen filmar una escena y cobrás 1.200 dólares por una tarde de trabajo.' };
+    expect(validateAiEvent(JSON.stringify(e)).ok).toBe(false);
   });
 });
