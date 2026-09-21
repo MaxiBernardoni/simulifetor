@@ -3,6 +3,7 @@ import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-nativ
 import type { ViewStyle } from 'react-native';
 import type { Delta, Life, Look, Person, StatKey } from '../engine/types';
 import { Avatar } from './Avatar';
+import { getScenario } from '../content/scenarios';
 import { formatMoney } from '../engine/format';
 import { colors, radius, space, barColor } from './theme';
 import { Icon } from './Icon';
@@ -260,6 +261,7 @@ function hash(str: string): number {
 
 /** Aspecto determinístico para una persona, según su id, género y edad. Los familiares comparten tono de piel. */
 export function lookForPerson(p: Person, life: Life): Look {
+  if (p.look) return p.look;
   const h = hash(p.id);
   const family = p.kind === 'mother' || p.kind === 'father' || p.kind === 'sibling' || p.kind === 'child';
   const styles = p.age < 12 ? [0, 5, 6] : p.gender === 'F' ? [1, 1, 5, 6, 2, 0] : [0, 0, 3, 4, 7, 0];
@@ -339,3 +341,29 @@ export function IconPattern() {
   }
   return <View pointerEvents="none" style={StyleSheet.absoluteFill}>{items}</View>;
 }
+
+/** Objetivo del escenario en curso, con su progreso. */
+export function ScenarioBar({ life }: { life: Life }) {
+  const sc = life.scenario;
+  const def = sc ? getScenario(sc.id) : undefined;
+  if (!sc || !def) return null;
+  const color = sc.status === 'won' ? colors.good : sc.status === 'lost' ? colors.bad : def.color;
+  return (
+    <View style={[scn.bar, { backgroundColor: color + '18', borderColor: color + '55' }]}>
+      <IconTile name={sc.status === 'won' ? 'Trophy' : def.icon} color={color} size={30} solid />
+      <View style={{ flex: 1 }}>
+        <Text style={[scn.title, { color }]} numberOfLines={1}>
+          {def.title}
+          {sc.status === 'won' ? ' · superado' : sc.status === 'lost' ? ' · fallado' : def.deadlineAge ? ` · hasta los ${def.deadlineAge}` : ''}
+        </Text>
+        <Text style={scn.sub} numberOfLines={2}>{def.progress(life)}</Text>
+      </View>
+    </View>
+  );
+}
+
+const scn = StyleSheet.create({
+  bar: { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 12, marginTop: 8, padding: 8, borderRadius: 12, borderWidth: 1 },
+  title: { fontSize: 13, fontWeight: '800' },
+  sub: { color: colors.muted, fontSize: 12, marginTop: 1 },
+});

@@ -13,6 +13,15 @@ export interface CreateOpts {
   surname?: string;
   gender?: Gender;
   look?: Partial<Look>;
+  birthYear?: number;
+  wealthClass?: 1 | 2 | 3;
+  /** Familia a medida (herederos): reemplaza a la generada al azar. */
+  people?: Person[];
+  lineageId?: string;
+  generation?: number;
+  parentLifeId?: string;
+  /** No escribe el texto de nacimiento (lo escribe quien llama). */
+  silent?: boolean;
 }
 
 export function randomLook(rng: { int(a: number, b: number): number }): Look {
@@ -39,8 +48,10 @@ export function createLife(seed?: number, opts: CreateOpts = {}): Life {
   const surname = opts.surname?.trim() || rng.pick(SURNAMES);
   const rl = randomLook(rng);
   const look: Look = { ...rl, ...opts.look };
-  const birthYear = rng.int(BIRTH_YEAR_RANGE[0], BIRTH_YEAR_RANGE[1]);
-  const wealthClass = (rng.weighted([1, 2, 3], (w) => (w === 1 ? 3 : w === 2 ? 5 : 2)) ?? 2) as 1 | 2 | 3;
+  const drawnYear = rng.int(BIRTH_YEAR_RANGE[0], BIRTH_YEAR_RANGE[1]);
+  const birthYear = opts.birthYear ?? drawnYear;
+  const drawnWealth = (rng.weighted([1, 2, 3], (w) => (w === 1 ? 3 : w === 2 ? 5 : 2)) ?? 2) as 1 | 2 | 3;
+  const wealthClass = opts.wealthClass ?? drawnWealth;
 
   const people: Person[] = [];
   const momAge = rng.int(20, 38);
@@ -52,8 +63,12 @@ export function createLife(seed?: number, opts: CreateOpts = {}): Life {
     people.push(makePerson(rng, 'sibling', { age: Math.max(0, rng.int(-6, 8)), closeness: rng.int(35, 80), surname }));
   }
 
+  const lifeId = `life-${Date.now().toString(36)}-${rng.int(0, 9999)}`;
   Object.assign(life, {
-    id: `life-${Date.now().toString(36)}-${rng.int(0, 9999)}`,
+    id: lifeId,
+    lineageId: opts.lineageId ?? lifeId,
+    generation: opts.generation ?? 1,
+    parentLifeId: opts.parentLifeId,
     name: opts.name?.trim() || randomFirstName(rng, gender),
     surname,
     gender,
@@ -78,7 +93,7 @@ export function createLife(seed?: number, opts: CreateOpts = {}): Life {
     loan: 0,
     invested: 0,
     trial: null,
-    people,
+    people: opts.people ?? people,
     flags: {},
     jailYears: 0,
     usedThisYear: [],
@@ -89,6 +104,7 @@ export function createLife(seed?: number, opts: CreateOpts = {}): Life {
     schemaVersion: SCHEMA_VERSION,
   } satisfies Omit<Life, 'rng'>);
 
+  if (opts.silent) return life;
   const clase = wealthClass === 1 ? 'una familia humilde' : wealthClass === 2 ? 'una familia de clase media' : 'una familia acomodada';
   const mom = people[0].name;
   const dad = people[1].name;
@@ -108,6 +124,8 @@ export function migrateLife(raw: Life): Life {
   l.loan ??= 0;
   l.invested ??= 0;
   l.trial ??= null;
+  l.lineageId ??= l.id;
+  l.generation ??= 1;
   l.schemaVersion = SCHEMA_VERSION;
   return l;
 }

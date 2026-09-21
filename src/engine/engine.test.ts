@@ -7,6 +7,10 @@ import { createLife } from './life';
 import { ageUp } from './ageUp';
 import { simulateLife } from './sim';
 import { fill } from './text';
+import { autoPlay } from './autoplay';
+import { createHeir, heirsOf, legacyPoints } from './dynasty';
+import { checkScenario, createScenarioLife } from './scenarios';
+import { SCENARIOS } from '../content/scenarios';
 import { SCENE_KEYS, sceneForActivity, sceneForEvent, sceneForPersonAction } from '../content/scenes';
 import { applyEffects, newEffectCtx } from './effects';
 import { rngOf } from './rng';
@@ -235,5 +239,77 @@ describe('escenas ilustradas', () => {
   it('toda actividad y acción con personas resuelve a una escena existente', () => {
     for (const a of ACTIVITIES) expect(valid.has(sceneForActivity(a.id)), a.id).toBe(true);
     for (const a of PERSON_ACTIONS) expect(valid.has(sceneForPersonAction(a.id)), a.id).toBe(true);
+  });
+});
+
+describe('fase 3: dinastía y escenarios', () => {
+  function lifeWithChildren() {
+    for (let seed = 1; seed <= 300; seed++) {
+      const l = createLife(seed);
+      autoPlay(l, { seed, untilAge: 52, familyBias: true, crimeChance: 0.02 });
+      if (l.alive && l.people.some((p) => p.kind === 'child' && p.alive)) return l;
+    }
+    throw new Error('no se encontró una vida con hijos');
+  }
+
+  it('el heredero continúa a la edad del hijo, con apellido, linaje y padre fallecido', () => {
+    const prev = lifeWithChildren();
+    prev.alive = false;
+    prev.cause = 'vejez';
+    const child = heirsOf(prev)[0];
+    const heir = createHeir(prev, child.id);
+    expect(heir).not.toBeNull();
+    expect(heir!.age).toBe(child.age);
+    expect(heir!.year).toBe(prev.year);
+    expect(heir!.surname).toBe(prev.surname);
+    expect(heir!.generation).toBe(prev.generation + 1);
+    expect(heir!.lineageId).toBe(prev.lineageId);
+    expect(heir!.flags.heir).toBe(true);
+    const dead = heir!.people.find((p) => p.id.startsWith(prev.id));
+    expect(dead?.alive).toBe(false);
+    expect(dead?.age).toBe(prev.age);
+    expect(heir!.people.every((p) => !p.frozen)).toBe(true);
+    expect(heir!.alive).toBe(true);
+  });
+
+  it('el heredero recibe una parte del patrimonio', () => {
+    const prev = lifeWithChildren();
+    prev.money = 400000;
+    prev.alive = false;
+    const heir = createHeir(prev, heirsOf(prev)[0].id)!;
+    expect(heir.log.some((e) => e.text.startsWith('Heredaste'))).toBe(true);
+  });
+
+  it('todos los escenarios se pueden crear y arrancan activos a la edad correcta', () => {
+    for (const sc of SCENARIOS) {
+      const l = createScenarioLife(sc.id)!;
+      expect(l, sc.id).not.toBeNull();
+      expect(l.scenario).toEqual({ id: sc.id, status: 'active' });
+      expect(l.age, sc.id).toBe(sc.startAge);
+      expect(l.alive).toBe(true);
+    }
+  });
+
+  it('Volver a empezar arranca preso', () => {
+    const l = createScenarioLife('prison_reboot')!;
+    expect(l.jailYears).toBe(10);
+    expect(l.flags.criminal_record).toBe(true);
+  });
+
+  it('checkScenario da por ganado el objetivo y por perdido el límite de edad', () => {
+    const win = createScenarioLife('centenarian')!;
+    win.age = 100;
+    expect(checkScenario(win)).toBe('won');
+    expect(win.scenario!.status).toBe('won');
+    const lose = createScenarioLife('rags_to_riches')!;
+    lose.age = 60;
+    expect(checkScenario(lose)).toBe('lost');
+  });
+
+  it('el legado nunca es negativo', () => {
+    const l = createLife(3);
+    l.flags.murderer = true;
+    l.flags.criminal_record = true;
+    expect(legacyPoints(l)).toBeGreaterThanOrEqual(0);
   });
 });

@@ -7,6 +7,7 @@ export interface IconStyle {
 
 // Ícono y color por etiqueta de evento. Se usa el primero que coincida, en este orden.
 const TAG_ORDER: [string, IconStyle][] = [
+  ['dynasty', { icon: 'Crown', color: '#B77A12' }],
   ['court', { icon: 'Gavel', color: '#7A5C2E' }],
   ['jail', { icon: 'Lock', color: '#5B6572' }],
   ['crime', { icon: 'VenetianMask', color: '#8A3B3B' }],

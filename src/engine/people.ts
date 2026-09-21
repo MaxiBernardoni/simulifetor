@@ -1,4 +1,4 @@
-import type { Gender, Life, Person, PersonKind } from './types';
+import type { Gender, Life, Look, Person, PersonKind } from './types';
 import type { Rng } from './rng';
 import { FEMALE_NAMES, MALE_NAMES, SURNAMES } from '../content/names';
 
@@ -42,5 +42,18 @@ export function spawnPerson(
   const gender: Gender | undefined = kind === 'mother' ? 'F' : kind === 'father' ? 'M' : undefined;
   const closeness = kind === 'child' ? rng.int(60, 90) : kind === 'partner' ? rng.int(45, 70) : undefined;
   const surname = kind === 'child' || kind === 'sibling' ? life.surname : undefined;
-  return makePerson(rng, kind, { gender, age: a, surname, closeness });
+  const p = makePerson(rng, kind, { gender, age: a, surname, closeness });
+  if (kind === 'child') p.look = inheritLook(life.look, p.gender, rng);
+  return p;
+}
+
+/** Aspecto de un hijo: hereda los rasgos del progenitor con algo de azar. */
+export function inheritLook(parent: Look, gender: Gender, rng: Rng): Look {
+  const styles = gender === 'F' ? [1, 1, 5, 6, 2, 0] : [0, 0, 3, 4, 7, 0];
+  return {
+    skin: rng.chance(0.75) ? parent.skin : Math.max(0, Math.min(5, parent.skin + rng.int(-1, 1))),
+    eyes: rng.chance(0.55) ? parent.eyes : rng.int(0, 5),
+    hairStyle: rng.pick(styles),
+    hairColor: rng.chance(0.6) ? parent.hairColor : rng.int(0, 7),
+  };
 }

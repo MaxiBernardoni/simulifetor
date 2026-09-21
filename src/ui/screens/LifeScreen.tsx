@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGame } from '../../store/gameStore';
 import type { Life, LogEntry, StatKey } from '../../engine/types';
 import { formatMoney } from '../../engine/format';
-import { CircleButton, DeltaChips, Header, IconPattern, IconTile, LifeStat, StatusBadges } from '../components';
+import { CircleButton, DeltaChips, Header, IconPattern, IconTile, LifeStat, ScenarioBar, StatusBadges } from '../components';
 import { styleForText, TONE_STYLE } from '../../content/icons';
 import { Avatar } from '../Avatar';
 import { Icon } from '../Icon';
@@ -94,6 +94,7 @@ export function LifeScreen() {
       </View>
 
       <StatusBadges life={life} />
+      <ScenarioBar life={life} />
 
       <View style={s.feedWrap}>
       <IconPattern />

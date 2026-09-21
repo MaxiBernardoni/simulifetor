@@ -11,6 +11,7 @@ import { HISTORICAL, RANDOM, OLD } from './misc';
 import { COURT } from './court';
 import { RELATIONSHIPS } from './relationships';
 import { CAREER, MONEY_EXTRA } from './career';
+import { DYNASTY } from './dynasty';
 
 export const ALL_EVENTS: GameEvent[] = [
   ...CHILDHOOD,
@@ -28,4 +29,5 @@ export const ALL_EVENTS: GameEvent[] = [
   ...RELATIONSHIPS,
   ...CAREER,
   ...MONEY_EXTRA,
+  ...DYNASTY,
 ];

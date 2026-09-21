@@ -39,6 +39,13 @@ Se definen como eventos con condición `era` y efectos sobre el **estado del mun
 - ¿Cuánto influye una vida pasada en las siguientes (pequeño guiño vs. gran consecuencia)?
 - ¿Se permite "vida nueva desde cero" sin mundo (modo clásico)?
 
+## Estado actual (implementado en la Fase 3)
+- **Linaje**: cada vida tiene `lineageId` y `generation`; al morir se elige un heredero (hijo vivo o, si no hay, hermano) y la nueva vida continúa desde la edad que ese pariente tenía al morir el personaje anterior, en el mismo año calendario.
+- **Pasado del heredero**: se simula automáticamente (`engine/autoplay.ts`) con la familia real (el personaje anterior y su pareja como padres, hermanos verdaderos) "congelada" durante la simulación.
+- **Herencia**: se reparte el patrimonio neto menos 20% de impuesto; el heredero recibe 85% si es hijo único, 60% si tiene hermanos. Se heredan `famous_family` (patrimonio ≥ $500.000) o `infamous_family` (antecedentes/homicidio), que activan eventos de dinastía.
+- **Árbol genealógico** y **puntaje de legado** por vida y por dinastía.
+- Aún sin hacer: calendario global compartido entre vidas, NPCs persistentes (ex, rivales) y estado del mundo dinámico (Fase 4-5).
+
 ## Implementación por etapas
 1. Fase 3: solo herencia + árbol genealógico + logros persistentes.
 2. Fase 4: calendario global y eventos históricos simples por era.

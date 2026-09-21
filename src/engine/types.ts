@@ -123,6 +123,10 @@ export interface Person {
   alive: boolean;
   closeness: number;
   married?: boolean;
+  /** Aspecto propio (hijos heredan rasgos). Si falta, se deriva del id. */
+  look?: Look;
+  /** No envejece ni muere mientras se simula el pasado de un heredero. */
+  frozen?: boolean;
 }
 
 export interface Job {
@@ -218,6 +222,11 @@ export interface Life {
   pending: Prompt[];
   lastDelta: Delta[];
   schemaVersion: number;
+  /** Dinastía a la que pertenece esta vida. */
+  lineageId: string;
+  generation: number;
+  parentLifeId?: string;
+  scenario?: { id: string; status: 'active' | 'won' | 'lost'; wonAge?: number };
 }
 
 export interface LifeSummary {
@@ -229,6 +238,16 @@ export interface LifeSummary {
   cause: string;
   money: number;
   job: string;
+  lineageId?: string;
+  generation?: number;
+  parentId?: string;
+  look?: Look;
+  gender?: Gender;
+  legacy?: number;
+  children?: number;
+  netWorth?: number;
+  scenarioId?: string;
+  scenarioResult?: 'won' | 'lost' | 'active';
 }
 
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;

@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useGame } from '../../store/gameStore';
+import { getScenario } from '../../content/scenarios';
 import type { Gender, Look } from '../../engine/types';
 import { randomLook } from '../../engine/life';
 import { FEMALE_NAMES, MALE_NAMES, SURNAMES } from '../../content/names';
 import { EYE_COLORS, EYE_NAMES, HAIR_COLORS, HAIR_STYLES, SKIN_NAMES, SKIN_TONES } from '../../content/look';
 import { Avatar } from '../Avatar';
-import { Button, SectionTitle } from '../components';
+import { Button, IconTile, SectionTitle } from '../components';
 import { Icon } from '../Icon';
 import { colors, radius, space } from '../theme';
 
@@ -34,6 +35,8 @@ export function CreateScreen() {
   const life = useGame((st) => st.life);
   const newLife = useGame((st) => st.newLife);
   const cancel = useGame((st) => st.cancelCreate);
+  const creating = useGame((st) => st.creating);
+  const scenario = creating?.scenarioId ? getScenario(creating.scenarioId) : undefined;
 
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
@@ -52,6 +55,15 @@ export function CreateScreen() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+        {scenario ? (
+          <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center', backgroundColor: scenario.color + '18', borderColor: scenario.color + '55', borderWidth: 1, borderRadius: 14, padding: 12, marginBottom: space.lg }}>
+            <IconTile name={scenario.icon} color={scenario.color} size={42} solid />
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: scenario.color, fontWeight: '800' }}>{scenario.title}</Text>
+              <Text style={{ color: colors.text, fontSize: 13, marginTop: 2 }}>{scenario.goal}</Text>
+            </View>
+          </View>
+        ) : null}
         <View style={{ alignItems: 'center', marginBottom: space.lg }}>
           <Avatar look={look} size={130} />
         </View>
@@ -106,8 +118,8 @@ export function CreateScreen() {
         <Swatches palette={HAIR_COLORS} value={look.hairColor} onChange={(i) => set({ hairColor: i })} />
 
         <View style={{ marginTop: space.xl, gap: 10 }}>
-          <Button label="Comenzar vida" icon="Baby" onPress={() => newLife({ name, surname, gender, look })} />
-          {life ? <Button label="Cancelar" variant="ghost" onPress={cancel} /> : null}
+          <Button label={scenario ? 'Comenzar escenario' : 'Comenzar vida'} icon="Baby" onPress={() => newLife({ name, surname, gender, look })} />
+          <Button label="Cancelar" variant="ghost" onPress={cancel} />
         </View>
         <Text style={s.hint}>El año de nacimiento, la familia y los stats iniciales se sortean al azar.</Text>
       </ScrollView>

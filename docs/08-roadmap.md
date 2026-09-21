@@ -26,7 +26,7 @@ Prioridad de sistemas: **1) relaciones, 2) carrera y dinero, 3) crimen y justici
 - Logros.
 - Sonidos de UI y pulido visual.
 
-## Fase 3 — Dinastía y modos
+## Fase 3 — Dinastía y modos ✅ COMPLETA
 - Elegir heredero y continuar con hijo.
 - Árbol genealógico y legado.
 - Modo escenarios/desafíos.

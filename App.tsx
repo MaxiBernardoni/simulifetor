@@ -18,6 +18,11 @@ import { MoreScreen } from './src/ui/screens/MoreScreen';
 import { DeathScreen } from './src/ui/screens/DeathScreen';
 import { StartScreen } from './src/ui/screens/StartScreen';
 import { CreateScreen } from './src/ui/screens/CreateScreen';
+import { ModeScreen, ScenariosScreen } from './src/ui/screens/NewGameScreens';
+import { SlotsScreen } from './src/ui/screens/SlotsScreen';
+import { FamilyTreeScreen } from './src/ui/screens/FamilyTreeScreen';
+import { BackupScreen } from './src/ui/screens/BackupScreen';
+import { getScenario } from './src/content/scenarios';
 
 const TITLES: Record<Exclude<Tab, 'life'>, string> = {
   activities: 'Actividades',
@@ -25,6 +30,9 @@ const TITLES: Record<Exclude<Tab, 'life'>, string> = {
   people: 'Relaciones',
   assets: 'Activos',
   more: 'Menú',
+  tree: 'Árbol genealógico',
+  slots: 'Partidas',
+  backup: 'Copia de seguridad',
 };
 
 function Main() {
@@ -34,6 +42,7 @@ function Main() {
   const tab = useGame((s) => s.tab);
   const setTab = useGame((s) => s.setTab);
   const cancelCreate = useGame((s) => s.cancelCreate);
+  const setCreating = useGame((s) => s.setCreating);
   const load = useGame((s) => s.load);
 
   useEffect(() => {
@@ -48,10 +57,16 @@ function Main() {
     );
   }
   if (creating) {
+    const scen = creating.scenarioId ? getScenario(creating.scenarioId) : undefined;
+    const title = creating.step === 'scenarios' ? 'Escenarios' : creating.step === 'create' && scen ? scen.title : 'Nueva vida';
+    const back =
+      creating.step === 'mode' ? cancelCreate : creating.step === 'scenarios' ? () => setCreating({ step: 'mode' }) : () => setCreating({ step: creating.scenarioId ? 'scenarios' : 'mode' });
     return (
       <View style={s.root}>
-        <Header title="Nueva vida" onBack={life ? cancelCreate : undefined} />
-        <CreateScreen />
+        <Header title={title} onBack={back} />
+        {creating.step === 'mode' && <ModeScreen />}
+        {creating.step === 'scenarios' && <ScenariosScreen />}
+        {creating.step === 'create' && <CreateScreen />}
       </View>
     );
   }
@@ -59,6 +74,14 @@ function Main() {
 
   // Con decisiones pendientes se muestra el modal por encima; si murió y no queda nada pendiente, resumen.
   if (!life.alive && life.pending.length === 0) {
+    if (tab === 'tree') {
+      return (
+        <View style={s.root}>
+          <Header title="Árbol genealógico" onBack={() => setTab('life')} />
+          <FamilyTreeScreen />
+        </View>
+      );
+    }
     return (
       <View style={s.root}>
         <Header title="Fin de la vida" />
@@ -80,6 +103,9 @@ function Main() {
             {tab === 'people' && <PeopleScreen />}
             {tab === 'assets' && <AssetsScreen />}
             {tab === 'more' && <MoreScreen />}
+            {tab === 'tree' && <FamilyTreeScreen />}
+            {tab === 'slots' && <SlotsScreen />}
+            {tab === 'backup' && <BackupScreen />}
           </FadeIn>
         </>
       )}

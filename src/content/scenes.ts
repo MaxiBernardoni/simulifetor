@@ -92,10 +92,13 @@ const EVENT_SCENE: Record<string, string> = {
   'rel.in_laws': 'family_home', 'rel.sibling_rivalry': 'fight', 'rel.sibling_wedding': 'wedding', 'rel.mother_visit': 'family_home',
   'rel.father_health': 'hospital', 'rel.child_first_steps': 'baby', 'rel.child_award': 'school', 'rel.child_rebel': 'fight',
   'rel.child_moves_out': 'family_home', 'rel.ex_gossip': 'breakup',
+  // dinastía
+  'dyn.parents_letter': 'mystery', 'dyn.heirloom': 'family_home', 'dyn.family_business': 'bank', 'dyn.scandal': 'court',
+  'dyn.pressure': 'therapy', 'dyn.name_opens_doors': 'money_win', 'dyn.sibling_dispute': 'fight',
 };
 
 const TAG_SCENE: [string, string][] = [
-  ['court', 'court'], ['jail', 'prison'], ['crime', 'street_crime'], ['justice', 'court'], ['health', 'hospital'],
+  ['dynasty', 'family_home'], ['court', 'court'], ['jail', 'prison'], ['crime', 'street_crime'], ['justice', 'court'], ['health', 'hospital'],
   ['love', 'love'], ['rel', 'friends'], ['work', 'office'], ['money', 'money_win'], ['family', 'family_home'],
   ['school', 'school'], ['child', 'playground'], ['teen', 'friends'], ['tech', 'tech'], ['historical', 'historical'],
   ['old', 'old_age'], ['random', 'random'],

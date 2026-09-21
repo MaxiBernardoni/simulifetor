@@ -49,7 +49,7 @@ function computeDelta(life: Life, before: ReturnType<typeof snapshot>): Delta[] 
 
 function agePeople(life: Life, rng: Rng): void {
   for (const p of life.people) {
-    if (!p.alive) continue;
+    if (!p.alive || p.frozen) continue;
     p.age++;
     if (rng.chance(baseMortality(p.age) * 0.9)) {
       p.alive = false;
@@ -69,7 +69,7 @@ function agePeople(life: Life, rng: Rng): void {
   }
   // Consecuencias de descuidar relaciones.
   for (const p of [...life.people]) {
-    if (!p.alive) continue;
+    if (!p.alive || p.frozen) continue;
     const first = p.name.split(' ')[0];
     if ((p.kind === 'friend' || p.kind === 'ex') && p.closeness <= 8) {
       life.people = life.people.filter((x) => x !== p);

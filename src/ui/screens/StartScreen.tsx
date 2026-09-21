@@ -26,6 +26,8 @@ const FLOATING = [
 
 export function StartScreen() {
   const start = useGame((st) => st.startCreating);
+  const slots = useGame((st) => st.slots);
+  const switchSlot = useGame((st) => st.switchSlot);
   return (
     <View style={s.wrap}>
       {FLOATING.map((f, i) => (
@@ -54,6 +56,13 @@ export function StartScreen() {
 
       <View style={{ width: '100%', marginTop: space.xl * 1.5 }}>
         <Button label="Empezar una vida" icon="Baby" variant="coral" onPress={start} />
+        {slots.map((l, i) =>
+          l ? (
+            <View key={i} style={{ marginTop: 10 }}>
+              <Button label={`Ranura ${i + 1}: ${l.name} (${l.age})`} icon="Zap" variant="ghost" onPress={() => switchSlot(i)} />
+            </View>
+          ) : null,
+        )}
       </View>
     </View>
   );

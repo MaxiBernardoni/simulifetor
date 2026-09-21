@@ -69,6 +69,9 @@ Lista de logros desbloqueables que persisten en el `World`.
 2. **Escenarios/Desafíos**: objetivos con condición de victoria (ej. "llegar a presidente", "morir millonario", "sobrevivir sin trabajar"), con restricciones de inicio.
 3. **Dinastía**: continuar con heredero (ver doc 06).
 
+## Escenarios (Fase 3)
+Desafíos con objetivo y tiempo límite. Algunos empiezan a una edad mayor (se genera el pasado automáticamente) y con condiciones especiales (ej. empezar preso). Están definidos en `src/content/scenarios.ts`; el estado (activo/superado/fallado) vive en `Life.scenario`.
+
 ## Muerte y herencia
 - Causas: vejez, enfermedad, accidente, crimen, suicidio (tratado con cuidado, sin instrucciones ni detalles), etc.
 - Al morir: resumen de vida (edad, patrimonio, logros, familia), puntaje/legado.
