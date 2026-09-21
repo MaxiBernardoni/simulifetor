@@ -18,6 +18,8 @@ export function AIScreen() {
   const prov = PROVIDERS.find((p) => p.id === ai.config.provider)!;
   const own = ai.config.provider === 'compat';
   const canUse = ai.hasKey || own; // el modelo propio no necesita clave
+  // Servidor en tu propia PC o red (Ollama, LM Studio…): no usa clave, así que no se muestra el campo.
+  const local = own && /^https?:\/\/(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.|\[::1\])/i.test(ai.config.baseUrl.trim());
 
   return (
     <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
@@ -83,7 +85,7 @@ export function AIScreen() {
               <Button
                 label="Preset Ollama"
                 variant="ghost"
-                onPress={() => void ai.setConfig({ baseUrl: 'http://192.168.0.10:11434/v1', model: 'dolphin3' })}
+                onPress={() => void ai.setConfig({ baseUrl: 'http://localhost:11434/v1', model: 'dolphin3' })}
               />
             </View>
             <View style={{ flex: 1 }}>
@@ -98,35 +100,41 @@ export function AIScreen() {
         </View>
       ) : null}
 
-      <SectionTitle icon="KeyRound" color="#E9A23B">
-        {own ? 'Clave (no hace falta con Ollama)' : 'Clave'}
-      </SectionTitle>
-      <TextInput
-        style={s.input}
-        value={key}
-        onChangeText={setKey}
-        placeholder={
-          ai.hasKey
-            ? 'Clave guardada (pegá otra para reemplazarla)'
-            : own
-              ? 'Dejala vacía si usás Ollama o un modelo local'
-              : 'Pegá tu clave acá'
-        }
-        placeholderTextColor={colors.muted}
-        secureTextEntry
-        autoCapitalize="none"
-        autoCorrect={false}
-      />
+      {local ? null : (
+        <>
+          <SectionTitle icon="KeyRound" color="#E9A23B">
+            {own ? 'Clave (opcional)' : 'Clave'}
+          </SectionTitle>
+          <TextInput
+            style={s.input}
+            value={key}
+            onChangeText={setKey}
+            placeholder={
+              ai.hasKey
+                ? 'Clave guardada (pegá otra para reemplazarla)'
+                : own
+                  ? 'Solo si tu servidor la pide (OpenRouter sí)'
+                  : 'Pegá tu clave acá'
+            }
+            placeholderTextColor={colors.muted}
+            secureTextEntry
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+        </>
+      )}
       <View style={{ gap: 8, marginTop: 8 }}>
-        <Button
-          label="Guardar clave"
-          disabled={!key.trim()}
-          onPress={() => {
-            void ai.saveKey(key);
-            setKey('');
-          }}
-        />
-        {ai.hasKey ? <Button label="Borrar clave" variant="ghost" onPress={() => void ai.saveKey('')} /> : null}
+        {local ? null : (
+          <Button
+            label="Guardar clave"
+            disabled={!key.trim()}
+            onPress={() => {
+              void ai.saveKey(key);
+              setKey('');
+            }}
+          />
+        )}
+        {!local && ai.hasKey ? <Button label="Borrar clave" variant="ghost" onPress={() => void ai.saveKey('')} /> : null}
         <Button
           label={ai.busy ? 'Probando…' : 'Probar conexión'}
           variant="ghost"

@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [IA: sin campo de clave para servidores locales]
+
+- Con el preset Ollama (o cualquier dirección local: `localhost`, `127.x`, `192.168.x`, `10.x`, `172.16-31.x`) la pantalla de IA oculta el campo y los botones de clave. El preset Ollama usa `http://localhost:11434/v1`. Verificado en el navegador: "Probar conexión" contra un Ollama real responde "Conexión correcta".
+
 ## [IA: prueba real y prompt]
 
 - Probado de punta a punta con Ollama + `dolphin3` local. El prompt de eventos ahora exige segunda persona con voseo, tono seco y un único ejemplo de estilo (con aviso de no copiarlo), y pide montos chicos.
