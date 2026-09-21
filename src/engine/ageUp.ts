@@ -1,3 +1,4 @@
+import { priceIndex, scaleMoney, wageIndex } from '../content/eras';
 import type { Delta, Life, StatKey } from './types';
 import { rngOf } from './rng';
 import type { Rng } from './rng';
@@ -152,7 +153,7 @@ function updateEducation(life: Life, rng: Rng): void {
     e.gpa = clamp(Math.round(e.gpa * 0.5 + target * 0.5));
   }
   if (e.enrolled === 'university') {
-    if (life.wealthClass < 3) life.money -= 4000;
+    if (life.wealthClass < 3) life.money -= scaleMoney(4000, life.year);
     if (e.gpa < 30 && rng.chance(0.3)) {
       e.enrolled = null;
       addLog(life, 'Te echaron de la universidad por bajo rendimiento.', 'bad');
@@ -176,11 +177,11 @@ function updateWork(life: Life, rng: Rng): void {
     if (career && j.performance >= 75 && j.yearsAtLevel >= 2 && j.level < career.levels.length - 1 && rng.chance(0.6)) {
       j.level++;
       j.title = career.levels[j.level].title;
-      j.salary = Math.round(career.levels[j.level].salary * (1 + j.yearsTotal * 0.01));
+      j.salary = Math.round(career.levels[j.level].salary * wageIndex(life.year) * (1 + j.yearsTotal * 0.01));
       j.yearsAtLevel = 0;
       addLog(life, `¡Te ascendieron a ${j.title}!`, 'good');
     } else {
-      j.salary = Math.round(j.salary * 1.03);
+      j.salary = Math.round(j.salary * 1.03 * (wageIndex(life.year) / wageIndex(life.year - 1)));
     }
     if (j.performance < 15 && rng.chance(0.5)) {
       addLog(life, `Te echaron de tu trabajo como ${j.title} por bajo rendimiento.`, 'bad');
@@ -193,10 +194,12 @@ function updateWork(life: Life, rng: Rng): void {
     }
   } else if (!j && life.age >= RETIRE_AGE && !life.flags.retired && life.jailYears === 0) {
     life.flags.retired = true;
-    life.pension = life.pension || 4000;
+    life.pension = life.pension || scaleMoney(4000, life.year);
     addLog(life, 'Te jubilaste. Cobrás una jubilación mínima.', 'system');
   }
   if (life.pension > 0 && life.jailYears === 0) life.money += life.pension;
+  // Los ahorros en cuenta siguen (casi) a la inflación: el dinero quieto no se evapora por la época.
+  if (life.money > 0) life.money += Math.round(life.money * (priceIndex(life.year) / priceIndex(life.year - 1) - 1) * 0.9);
 
   updateAssets(life, rng);
 
@@ -204,19 +207,20 @@ function updateWork(life: Life, rng: Rng): void {
   if (life.age >= 18 && life.jailYears === 0) {
     const familyHelps = life.age < 22 && life.wealthClass >= 2 && !life.job;
     if (!familyHelps) {
+      const px = priceIndex(life.year);
       const kids = life.people.filter((p) => p.kind === 'child' && p.alive && p.age < 18).length;
       // Gasto de estilo de vida: quien gana más, gasta más.
-      const lifestyle = life.job ? Math.round(Math.max(0, life.job.salary * TAX - 12000) * 0.6) : 0;
-      life.money -= housingCost(life) + carCost(life) + kids * 2500 + lifestyle;
+      const lifestyle = life.job ? Math.round(Math.max(0, life.job.salary * TAX - 12000 * px) * 0.6) : 0;
+      life.money -= housingCost(life) + carCost(life) + Math.round(kids * 2500 * px) + lifestyle;
     }
   }
   if (life.money < 0) life.money = Math.round(life.money * 1.08);
-  if (life.money < -20000) {
+  if (life.money < -20000 * priceIndex(life.year)) {
     life.stats.happiness = clamp(life.stats.happiness - 4);
   }
-  if (life.money < -40000) {
+  if (life.money < -40000 * priceIndex(life.year)) {
     // Quiebra: se pierde todo y se arranca con una deuda chica.
-    life.money = -5000;
+    life.money = -Math.round(5000 * priceIndex(life.year));
     life.assets = [];
     life.loan = 0;
     life.invested = 0;

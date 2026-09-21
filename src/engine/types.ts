@@ -28,7 +28,10 @@ export type Cond =
   | { trial: boolean }
   | { asset: 'house' | 'car' }
   | { invested: { gte?: number; lte?: number } }
-  | { loan: boolean };
+  | { loan: boolean }
+  | { tech: string }
+  | { law: string }
+  | { era: string };
 
 // ───────── Efectos ─────────
 export type Who = 'target' | PersonKind;
@@ -90,6 +93,8 @@ export interface Activity {
   cost?: number;
   conditions?: Cond[];
   inJail?: boolean;
+  /** Tecnología requerida (content/eras.ts). */
+  tech?: string;
   outcomes: Outcome[];
 }
 
@@ -110,6 +115,9 @@ export interface Career {
   minEdu: number;
   minSmarts?: number;
   noRecord?: boolean;
+  /** Año desde el que existe / hasta el que existe la profesión (eras). */
+  since?: number;
+  until?: number;
   levels: { title: string; salary: number }[];
 }
 

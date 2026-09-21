@@ -1,12 +1,12 @@
 import type { Life, Person } from './types';
 import { getCareer } from './registry';
-import { netWorth } from './assets';
+import { netWorth, realNetWorth } from './assets';
 
 const kidsOf = (l: Life) => l.people.filter((p) => p.kind === 'child').length;
 
 /** Puntaje de legado de una vida: qué tanto dejó. */
 export function legacyPoints(l: Life): number {
-  const nw = Math.max(0, netWorth(l));
+  const nw = Math.max(0, realNetWorth(l));
   const j = l.job;
   const c = j ? getCareer(j.careerId) : undefined;
   let pts = l.age + Math.floor(nw / 8000) + kidsOf(l) * 6 + l.edu.level * 4;

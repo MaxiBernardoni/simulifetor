@@ -144,7 +144,7 @@ describe('mundo familiar', () => {
       for (const ref of [n.fatherId, n.motherId, n.partnerId]) if (ref) expect(w.nodes[ref], `${n.id}->${ref}`).toBeTruthy();
       if (n.alive) expect(n.age, n.id).toBe(w.year - n.birthYear);
       else expect(n.deathYear, n.id).toBeDefined();
-      if (n.fatherId) expect(w.nodes[n.fatherId].gender).toBe('M');
+      if (n.fatherId) expect(w.nodes[n.fatherId], n.id).toBeDefined(); // pueden ser parejas del mismo género
     }
     // Las personas de la vida coinciden con el árbol.
     for (const p of life.people.filter((x) => x.nodeId)) {

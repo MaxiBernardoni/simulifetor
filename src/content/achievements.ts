@@ -1,6 +1,6 @@
 import type { Life } from '../engine/types';
 import { getCareer } from '../engine/registry';
-import { netWorth } from '../engine/assets';
+import { netWorth, realNetWorth } from '../engine/assets';
 
 export interface Achievement {
   id: string;
@@ -21,8 +21,8 @@ const isTop = (l: Life) => {
 export const ACHIEVEMENTS: Achievement[] = [
   { id: 'grad', title: 'Egresado/a', desc: 'Terminá la universidad.', icon: 'GraduationCap', check: (l) => !!l.flags.graduated },
   { id: 'top_job', title: 'En la cima', desc: 'Llegá al puesto más alto de una carrera.', icon: 'TrendingUp', check: isTop },
-  { id: 'saver', title: 'Ahorrista', desc: 'Juntá $100.000 de patrimonio.', icon: 'Wallet', check: (l) => netWorth(l) >= 100000 },
-  { id: 'millionaire', title: 'Millonario/a', desc: 'Llegá a $1.000.000 de patrimonio.', icon: 'Gem', check: (l) => netWorth(l) >= 1000000 },
+  { id: 'saver', title: 'Ahorrista', desc: 'Juntá $100.000 de patrimonio.', icon: 'Wallet', check: (l) => realNetWorth(l) >= 100000 },
+  { id: 'millionaire', title: 'Millonario/a', desc: 'Llegá a $1.000.000 de patrimonio.', icon: 'Gem', check: (l) => realNetWorth(l) >= 1000000 },
   { id: 'homeowner', title: 'Casa propia', desc: 'Comprá una vivienda.', icon: 'House', check: (l) => l.assets.some((a) => a.kind === 'house') },
   { id: 'investor', title: 'Inversor/a', desc: 'Invertí en la bolsa.', icon: 'TrendingUp', check: (l) => l.invested > 0 },
   { id: 'bankrupt', title: 'Todo perdido', desc: 'Declarate en quiebra.', icon: 'Skull', check: (l) => !!l.flags.bankrupt },

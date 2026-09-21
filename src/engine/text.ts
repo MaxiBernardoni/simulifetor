@@ -1,3 +1,4 @@
+import { scaleText } from '../content/eras';
 import type { Life, Person, PersonKind } from './types';
 
 export function firstAlive(life: Life, kind: PersonKind): Person | undefined {
@@ -20,7 +21,7 @@ const FALLBACK: Record<string, string> = {
 
 // Reemplaza {name}, {mother}, {partner}, {boss}, {target}... en los textos de contenido.
 export function fill(life: Life, text: string, target?: Person): string {
-  return text.replace(/\{(\w+)\}/g, (_m, key: string) => {
+  return scaleText(text, life.year).replace(/\{(\w+)\}/g, (_m, key: string) => {
     if (key === 'name') return life.name;
     if (key === 'job') return life.job?.title ?? 'tu trabajo';
     if (key === 'crime') return life.trial?.crime ?? 'un delito';

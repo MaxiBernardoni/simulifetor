@@ -1,3 +1,4 @@
+import { eraAt } from '../content/eras';
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Life, LifeSummary } from '../engine/types';
@@ -59,7 +60,7 @@ interface GameState {
   history: LifeSummary[];
   achievements: string[];
   scenarioWins: string[];
-  toast: { id: number; title: string; icon: string } | null;
+  toast: { id: number; title: string; icon: string; kicker?: string } | null;
   clearToast: () => void;
   tab: Tab;
   load: () => Promise<void>;
@@ -198,6 +199,10 @@ export const useGame = create<GameState>((set, get) => {
         toast = { id: Date.now() + achievements.length, title: a.title, icon: a.icon };
         addLog(next, `Logro desbloqueado: ${a.title}.`, 'good', 'Logro', 'Trophy');
       }
+    }
+
+    if (next.alive && eraAt(next.year).id !== eraAt(cur.year).id && next.age > 0) {
+      toast = { id: Date.now() + 555, title: `Empiezan los ${eraAt(next.year).label.toLowerCase()}`, icon: 'Globe', kicker: 'Cambio de época' };
     }
 
     let scenarioWins = get().scenarioWins;

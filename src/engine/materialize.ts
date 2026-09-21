@@ -6,7 +6,7 @@ import { addLog } from './effects';
 import { depthOf, relationLabel } from './kinship';
 import { estateOf, legacyPoints } from './dynasty';
 import { formatMoney } from './format';
-import { netWorth } from './assets';
+import { netWorth, realNetWorth } from './assets';
 import { syncLifeToWorld } from './world';
 
 const person = (n: TreeNode, kind: PersonKind, closeness: number, patch: Partial<Person> = {}): Person => ({
@@ -99,7 +99,7 @@ export function applySwitch(target: Life, prev: Life | null, wd: WorldData): voi
       target.money += share;
     }
     target.flags.heir = true;
-    if (netWorth(prev) >= 500000) target.flags.famous_family = true;
+    if (realNetWorth(prev) >= 500000) target.flags.famous_family = true;
     if (prev.flags.criminal_record || prev.flags.murderer) target.flags.infamous_family = true;
     addLog(target, `Continuás la historia de la familia ${prev.surname}. ${first} murió a los ${prev.age} años.`, 'system', `Generación ${target.generation}`, 'Crown');
     if (share > 0) addLog(target, `Heredaste ${formatMoney(share)}.`, 'good', 'Herencia', 'Coins');

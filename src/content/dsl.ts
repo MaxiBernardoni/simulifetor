@@ -30,6 +30,9 @@ export const c = {
   invested: (gte?: number, lte?: number): Cond => ({ invested: { gte, lte } }),
   loan: (): Cond => ({ loan: true }),
   single: (): Cond => ({ married: false }),
+  tech: (t: string): Cond => ({ tech: t }),
+  law: (l: string): Cond => ({ law: l }),
+  era: (e: string): Cond => ({ era: e }),
 };
 
 export const fx = {

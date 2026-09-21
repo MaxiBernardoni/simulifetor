@@ -2,6 +2,25 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Fase 4 · Eras] — la época importa (T05, hitos 1 a 3 parciales)
+
+**Nuevo**
+- **Eras** (`content/eras.ts`): función pura `eraAt(año)` con tecnología (tv, computadora, celular, internet, redes, smartphone, streaming, IA, realidad virtual, autos autónomos, longevidad), leyes con vigencia (servicio militar, pena de muerte, divorcio, drogas blandas, jornada reducida…) e índices de **precios y salarios** por año (base 1,0 en el 2000, entre 0,16 y 8). No se guarda nada: todo deriva del año calendario.
+- **Inflación**: salarios, precios de casas y autos, alquiler, gastos de estilo de vida, cuotas de universidad, costo de actividades, montos de eventos (`fx.money`) y los `$` escritos en los textos se escalan por época (`scaleMoney`, `scaleText`, redondeo legible). Los ahorros en cuenta y las inversiones siguen a la inflación (90 %) para que el dinero quieto no se evapore. Umbral de quiebra, préstamos y logros ("Millonario/a") usan **valores constantes** (`realNetWorth`) para ser justos entre épocas.
+- **Condiciones nuevas del DSL**: `c.tech()`, `c.law()`, `c.era()`.
+- **Carreras de época** (`Career.since/until`): telegrafista, telefonista, mecanógrafo/a, call center, community manager, repartidor de apps, influencer, científico/a de datos, ingeniero/a de prompts, piloto de drones, diseñador/a de realidad virtual. Programador/a existe desde 1975.
+- **Actividades por tecnología** (`Activity.tech`): ver televisión, videojuegos, redes sociales, series, citas por app, charlar con una IA, mundos de realidad virtual.
+- **48 eventos históricos** nuevos (`content/events/history.ts`) entre 1951 y 2094 (genéricos), varios con decisiones, más el sorteo del servicio militar mientras rige la ley.
+- **UI**: la época aparece junto a la ocupación ("Años 2020") y un aviso "Cambio de época" al cruzar de década.
+- Tests: `eras.test.ts` (10).
+
+**Cambios**
+- Las partidas viejas no se migran: siguen con sus montos previos y solo los sueldos/precios nuevos usan el índice.
+- Balance verificado con 600 vidas por década de nacimiento: patrimonio real mediano 160–310 mil y 10–22 % de millonarios en todas las décadas (comparable a antes).
+- `world.test.ts`: el "padre" de un nodo puede ser de género F (parejas del mismo género), el test lo asumía M.
+
+**Pendiente de T05**: efectos de leyes sobre probabilidades (p. ej. arresto por drogas) y desenlace de pena de muerte; escenas nuevas `war`/`disaster`; `npm run balance` (T01).
+
 ## [Familia viva] — árbol genealógico jugable · `32a0edb`
 
 **Nuevo**

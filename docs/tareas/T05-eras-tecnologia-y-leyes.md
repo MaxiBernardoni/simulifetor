@@ -3,7 +3,7 @@
 - **Prioridad / esfuerzo:** media-alta (Fase 4) · XL — dividir en hitos
 - **Depende de:** T01
 - **Autonomía:** ✅ segura
-- **Estado:** todo
+- **Estado:** review (hitos 1 y 2 hechos a mano en la sesión de la Fase 4; faltan: efectos de leyes sobre probabilidades, pena de muerte en juicios, escenas `war`/`disaster`, verificación con `npm run balance` de T01)
 
 ## Objetivo
 Cada vida nace en un año al azar (1950–2010) pero el mundo se comporta igual en todas las épocas: salarios y precios fijos, sin tecnología ni leyes que cambien. Queremos que **la época importe**: qué trabajos existen, qué se puede comprar, qué es legal, cuánto vale la plata y qué pasa en el mundo.

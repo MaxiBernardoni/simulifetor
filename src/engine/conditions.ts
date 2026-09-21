@@ -1,6 +1,7 @@
 import type { Cond, Life, Person } from './types';
 import type { Rng } from './rng';
 import { firstAlive } from './text';
+import { eraAt } from '../content/eras';
 
 export interface Ctx {
   target?: Person;
@@ -35,6 +36,9 @@ export function evalCond(life: Life, cond: Cond, rng: Rng, ctx: Ctx = {}): boole
   if ('asset' in cond) return life.assets.some((a) => a.kind === cond.asset);
   if ('invested' in cond) return inRange(life.invested, cond.invested);
   if ('loan' in cond) return (life.loan > 0) === cond.loan;
+  if ('tech' in cond) return eraAt(life.year).tech.has(cond.tech);
+  if ('law' in cond) return eraAt(life.year).laws.has(cond.law);
+  if ('era' in cond) return eraAt(life.year).id === cond.era;
   if ('married' in cond) {
     const partner = firstAlive(life, 'partner');
     return (!!partner?.married) === cond.married;

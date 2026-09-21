@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useGame } from '../../store/gameStore';
 import { formatMoney } from '../../engine/format';
-import { assetValue, canBuy, loanCapacity, netWorth } from '../../engine/assets';
+import { assetValue, canBuy, loanCapacity, netWorth, priceOf } from '../../engine/assets';
 import { CATALOG, INVEST_STEPS, LOAN_STEPS } from '../../content/assets';
 import { Button, Card, IconTile, Row, SectionTitle } from '../components';
 import { colors, space } from '../theme';
@@ -49,7 +49,7 @@ export function AssetsScreen() {
             <IconTile name={it.icon} color={it.kind === 'house' ? '#0E7C7B' : '#E76F51'} size={46} solid />
             <View>
               <Text style={{ color: colors.text, fontWeight: '700', fontSize: 15 }}>{it.name}</Text>
-              <Text style={{ color: colors.muted, marginTop: 2 }}>{formatMoney(it.price)}</Text>
+              <Text style={{ color: colors.muted, marginTop: 2 }}>{formatMoney(priceOf(life, it.price))}</Text>
             </View>
           </View>
           {cash && fin ? <Text style={{ color: colors.muted, fontSize: 12, marginTop: 6 }}>{cash}</Text> : null}
@@ -66,7 +66,7 @@ export function AssetsScreen() {
       <Card style={{ marginTop: space.md }}>
         <Text style={{ color: colors.muted, fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>{debt ? 'Deuda' : 'Dinero'}</Text>
         <Text style={{ color: debt ? colors.bad : colors.money, fontSize: 34, fontWeight: '800', marginTop: 4 }}>{formatMoney(life.money)}</Text>
-        {debt ? <Text style={{ color: colors.muted, marginTop: 4 }}>Las deudas crecen 8% por año. Pasados los $40.000 de deuda, quebrás.</Text> : null}
+        {debt ? <Text style={{ color: colors.muted, marginTop: 4 }}>{`Las deudas crecen 8% por año. Pasados los ${formatMoney(priceOf(life, 40000))} de deuda, quebrás.`}</Text> : null}
         <Line label="Patrimonio neto" value={formatMoney(netWorth(life))} />
       </Card>
 
@@ -106,13 +106,13 @@ export function AssetsScreen() {
         <Line label="Podés pedir hasta" value={formatMoney(capacity)} />
         <Text style={{ color: colors.muted, fontSize: 12 }}>Interés 6% anual. Se paga automáticamente el 10% por año.</Text>
         <ButtonRow>
-          {LOAN_STEPS.map((n) => (
-            <Small key={n} label={`+${formatMoney(n)}`} disabled={blocked || n > capacity} onPress={() => g.loan(n)} />
-          ))}
+          {LOAN_STEPS.map((step) => { const n = priceOf(life, step); return (
+            <Small key={step} label={`+${formatMoney(n)}`} disabled={blocked || n > capacity} onPress={() => g.loan(n)} />
+          ); })}
         </ButtonRow>
         {life.loan > 0 ? (
           <ButtonRow>
-            <Small label="Pagar $5.000" disabled={blocked || life.money < 1} onPress={() => g.repay(5000)} />
+            <Small label={`Pagar ${formatMoney(priceOf(life, 5000))}`} disabled={blocked || life.money < 1} onPress={() => g.repay(priceOf(life, 5000))} />
             <Small label="Pagar todo" disabled={blocked || life.money < 1} onPress={() => g.repay(life.loan)} />
           </ButtonRow>
         ) : null}
@@ -123,9 +123,9 @@ export function AssetsScreen() {
         <Line label="Invertido" value={formatMoney(life.invested)} />
         <Text style={{ color: colors.muted, fontSize: 12 }}>Rinde entre -25% y +40% por año. Sin garantías.</Text>
         <ButtonRow>
-          {INVEST_STEPS.map((n) => (
-            <Small key={n} label={`Invertir ${formatMoney(n)}`} disabled={blocked || life.age < 18 || life.money < n} onPress={() => g.invest(n)} />
-          ))}
+          {INVEST_STEPS.map((step) => { const n = priceOf(life, step); return (
+            <Small key={step} label={`Invertir ${formatMoney(n)}`} disabled={blocked || life.age < 18 || life.money < n} onPress={() => g.invest(n)} />
+          ); })}
         </ButtonRow>
         {life.invested > 0 ? (
           <ButtonRow>

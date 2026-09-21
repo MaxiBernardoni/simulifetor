@@ -1,3 +1,4 @@
+import { scaleText } from '../../content/eras';
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useGame } from '../../store/gameStore';
@@ -57,7 +58,7 @@ export function WorkScreen() {
           <Bar value={life.job.performance} color={life.job.performance > 60 ? colors.good : life.job.performance > 30 ? colors.warn : colors.bad} />
           <View style={{ marginTop: 12 }}>
             {jobActs.map(({ a, st }) => (
-              <Row key={a.id} icon={a.icon} tint="#0E7C7B" title={a.label} subtitle={st.reason ?? a.desc} disabled={blocked || !!st.reason} onPress={() => g.activity(a.id)} />
+              <Row key={a.id} icon={a.icon} tint="#0E7C7B" title={a.label} subtitle={st.reason ?? scaleText(a.desc, life.year)} disabled={blocked || !!st.reason} onPress={() => g.activity(a.id)} />
             ))}
             <Button label="Renunciar" variant="danger" onPress={g.quitJob} disabled={blocked} />
           </View>

@@ -9,6 +9,10 @@ import { fill } from './text';
 import { refineScene, sceneForActivity, sceneForPersonAction } from '../content/scenes';
 import { makePerson } from './people';
 import { formatMoney } from './format';
+import { hasTech, scaleMoney, wageIndex } from '../content/eras';
+
+/** Costo de una actividad/acción en el año de la vida (los montos están escritos en valores del 2000). */
+export const costOf = (life: Life, a: { cost?: number }): number => (a.cost ? scaleMoney(a.cost, life.year) : 0);
 
 export interface Status {
   visible: boolean;
@@ -22,9 +26,10 @@ export function activityStatus(life: Life, a: Activity): Status {
   if (!life.alive) return { visible: false };
   if (!a.inJail && life.jailYears > 0) return { visible: false };
   if (a.inJail && life.jailYears <= 0) return { visible: false };
+  if (a.tech && !hasTech(a.tech, life.year)) return { visible: false };
   if (!allConds(life, a.conditions, rng)) return { visible: false };
   if (life.usedThisYear.includes(a.id)) return { visible: true, reason: 'Ya lo hiciste este año' };
-  if (a.cost && life.money < a.cost) return { visible: true, reason: `Necesitás ${formatMoney(a.cost)}` };
+  if (a.cost && life.money < costOf(life, a)) return { visible: true, reason: `Necesitás ${formatMoney(costOf(life, a))}` };
   return { visible: true };
 }
 
@@ -46,7 +51,7 @@ export function runActivity(life: Life, id: string): void {
   const rng = rngOf(life);
   life.usedThisYear.push(a.id);
   const ctx = newEffectCtx();
-  if (a.cost) changeMoney(life, ctx, -a.cost);
+  if (a.cost) changeMoney(life, ctx, -costOf(life, a));
   const outcome = pickOutcome(life, a.outcomes);
   const text = fill(life, outcome.text);
   applyEffects(life, outcome.effects, ctx, rng);
@@ -59,7 +64,7 @@ export function personActionStatus(life: Life, a: PersonAction, p: Person): Stat
   if (!p.alive || !a.kinds.includes(p.kind)) return { visible: false };
   if (!allConds(life, a.conditions, rng, { target: p })) return { visible: false };
   if (life.usedThisYear.includes(`${a.id}:${p.id}`)) return { visible: true, reason: 'Ya lo hiciste este año' };
-  if (a.cost && life.money < a.cost) return { visible: true, reason: `Necesitás ${formatMoney(a.cost)}` };
+  if (a.cost && life.money < costOf(life, a)) return { visible: true, reason: `Necesitás ${formatMoney(costOf(life, a))}` };
   return { visible: true };
 }
 
@@ -72,7 +77,7 @@ export function runPersonAction(life: Life, actionId: string, personId: string):
   const rng = rngOf(life);
   life.usedThisYear.push(`${a.id}:${p.id}`);
   const ctx = newEffectCtx(p);
-  if (a.cost) changeMoney(life, ctx, -a.cost);
+  if (a.cost) changeMoney(life, ctx, -costOf(life, a));
   const outcome = pickOutcome(life, a.outcomes);
   const text = fill(life, outcome.text, p);
   applyEffects(life, outcome.effects, ctx, rng);
@@ -83,6 +88,8 @@ export function runPersonAction(life: Life, actionId: string, personId: string):
 export function isEligibleForCareer(life: Life, c: Career): boolean {
   if (life.jailYears > 0) return false;
   if (life.age < c.minAge || life.age >= 65) return false;
+  if (c.since !== undefined && life.year < c.since) return false;
+  if (c.until !== undefined && life.year > c.until) return false;
   if (life.edu.level < c.minEdu) return false;
   if (c.minSmarts && life.stats.smarts < c.minSmarts) return false;
   if (c.noRecord && life.flags.criminal_record) return false;
@@ -116,7 +123,7 @@ export function takeJob(life: Life, careerId: string): void {
     title: c.levels[0].title,
     sector: c.sector,
     level: 0,
-    salary: c.levels[0].salary,
+    salary: Math.round(c.levels[0].salary * wageIndex(life.year)),
     performance: 55,
     yearsAtLevel: 0,
     yearsTotal: 0,

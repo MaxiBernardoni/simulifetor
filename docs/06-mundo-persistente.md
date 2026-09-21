@@ -58,3 +58,8 @@ Se definen como eventos con condición `era` y efectos sobre el **estado del mun
 1. Fase 3: solo herencia + árbol genealógico + logros persistentes.
 2. Fase 4: calendario global y eventos históricos simples por era.
 3. Fase 5: NPCs persistentes y estado del mundo dinámico.
+
+
+## Eras (implementado)
+
+El año calendario ya compartido por la familia determina la época: tecnología, leyes, precios y sueldos (`content/eras.ts`, ver `docs/10`). Cada personaje del árbol vive su vida en el contexto de su propio año.

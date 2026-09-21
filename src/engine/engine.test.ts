@@ -3,6 +3,7 @@ import { ALL_EVENTS } from '../content/events';
 import { ACTIVITIES } from '../content/activities';
 import { PERSON_ACTIONS } from '../content/personActions';
 import { CAREERS } from '../content/careers';
+import { priceIndex } from '../content/eras';
 import { createLife } from './life';
 import { ageUp } from './ageUp';
 import { simulateLife } from './sim';
@@ -125,7 +126,7 @@ describe('motor', () => {
         expect(v).toBeLessThanOrEqual(100);
       }
       expect(Number.isFinite(l.money)).toBe(true);
-      expect(l.money, `seed ${s}`).toBeGreaterThan(-100000);
+      expect(l.money, `seed ${s}`).toBeGreaterThan(-100000 * priceIndex(l.year));
       totalAge += l.age;
     }
     const avg = totalAge / 300;
@@ -182,6 +183,7 @@ describe('fase 2', () => {
 
   it('comprar financiado usa entrada y préstamo', () => {
     const l = createLife(24);
+    l.year = 2000; // precios base
     l.age = 30;
     l.money = 20000;
     l.job = { careerId: 'office', title: 'Analista', sector: 'oficina', level: 1, salary: 40000, performance: 60, yearsAtLevel: 0, yearsTotal: 3, boss: 'X Y' };

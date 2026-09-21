@@ -52,6 +52,16 @@ Cada año: con probabilidad `activityChance` busca trabajo, se anota a la univer
 
 `legacy = edad + patrimonio/8.000 + 6×hijos + 4×nivel de estudios + 15 si llegó al tope de su carrera − 8 con antecedentes − 25 si homicida + 30 si superó un escenario` (mínimo 0).
 
+## Eras e inflación (`content/eras.ts`)
+
+- `eraAt(año)` → `{ id, label, tech, laws, priceIndex, wageIndex }`, puro y cacheado. Tecnologías: `TECH` (año de aparición). Leyes: `LAWS` (rango de vigencia).
+- **Índice de precios** `priceIndex(año)`: base 1,0 en 2000; puntos anclados (1950: 0,22 · 1980: 0,62 · 2010: 1,3 · 2050: 3,1 · 2120: 8) con interpolación geométrica. **Índice de salarios** = precios × factor real (0,85–1,1: crisis lo bajan, booms lo suben).
+- Todo monto escrito en el contenido está en "valores del 2000". Se escala con `scaleMoney(n, año)` (redondeo legible) en: `fx.money`, costo de actividades y acciones (`costOf`), textos (`fill` → `scaleText`), catálogo de bienes (`priceOf`), alquiler/auto/hijos/estilo de vida, universidad, jubilación mínima, umbrales de deuda/quiebra.
+- Sueldos: al conseguir trabajo y al ascender se multiplica por `wageIndex`; el aumento anual es 3 % real × la inflación del año.
+- Ahorros con saldo positivo ganan 90 % de la inflación; las inversiones suben con la inflación; las casas también.
+- Comparaciones entre épocas (logros, escenarios, legado, "familia famosa") usan `realNetWorth` = patrimonio / índice de precios.
+- Carreras: `since`/`until` (año). Actividades: `tech`. Condiciones: `c.tech`, `c.law`, `c.era`.
+
 ## Puntos de extensión frecuentes
 
 | Quiero… | Tocar |

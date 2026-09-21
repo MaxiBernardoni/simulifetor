@@ -151,3 +151,11 @@ Etiquetas con significado especial: `historical` (siempre se dispara al cumplirs
 ## Al agregar contenido
 
 1. Escribí en voseo, seco y ácido. 2. Toda decisión con riesgo real. 3. Asigná escena (`content/scenes.ts`, si no la da la etiqueta). 4. `npm run check`. 5. Actualizá el conteo en `CHANGELOG.md` si es un lote grande.
+
+
+## Eras y contenido histórico
+
+- Los eventos históricos viven en `content/events/history.ts` (helper `H(id, título, desde, hasta, texto, efectos, extra)`): `tags: ['historical']`, `once`, `weight: 1000`, condición de año. Son genéricos: nada de países, partidos ni personas reales.
+- Para contenido que depende de la época usá `c.tech('internet')`, `c.law('servicio_militar')` o `c.era('90s')`; un test verifica que un evento con `c.year` no pida tecnología que aún no existe en su rango.
+- Los montos en `fx.money(n)` y los `$` de los textos se escriben en **valores del 2000**; el motor los escala por época.
+- Carreras con `since`/`until`; actividades con `tech`.

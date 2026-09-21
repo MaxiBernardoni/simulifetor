@@ -1,5 +1,5 @@
 import type { Life } from '../engine/types';
-import { netWorth } from '../engine/assets';
+import { netWorth, realNetWorth } from '../engine/assets';
 import { formatMoney } from '../engine/format';
 
 export interface Scenario {
@@ -32,7 +32,7 @@ export const SCENARIOS: Scenario[] = [
     desc: 'Nacés en una familia humilde. Que eso no defina tu destino.',
     goal: 'Llegá a $400.000 de patrimonio antes de los 55 años.',
     startAge: 0, wealth: 1, deadlineAge: 55,
-    won: (l) => netWorth(l) >= 400000,
+    won: (l) => realNetWorth(l) >= 400000,
     progress: (l) => `Patrimonio ${formatMoney(netWorth(l))} / ${formatMoney(400000)}`,
   },
   {
@@ -41,7 +41,7 @@ export const SCENARIOS: Scenario[] = [
     goal: 'Juntá $1.000.000 de patrimonio antes de los 40.',
     startAge: 18, wealth: 2, deadlineAge: 40,
     setup: (l) => { l.money = 3000; l.edu.level = Math.max(l.edu.level, 2); },
-    won: (l) => netWorth(l) >= 1000000,
+    won: (l) => realNetWorth(l) >= 1000000,
     progress: (l) => `Patrimonio ${formatMoney(netWorth(l))} / ${formatMoney(1000000)}`,
   },
   {
@@ -58,7 +58,7 @@ export const SCENARIOS: Scenario[] = [
     desc: 'El crimen paga… si no te atrapan.',
     goal: 'Hacete de $250.000 con un pasado criminal, en libertad, antes de los 50.',
     startAge: 18, wealth: 1, deadlineAge: 50,
-    won: (l) => netWorth(l) >= 250000 && hasCrimeFlag(l) && l.jailYears === 0,
+    won: (l) => realNetWorth(l) >= 250000 && hasCrimeFlag(l) && l.jailYears === 0,
     progress: (l) => `Patrimonio ${formatMoney(netWorth(l))} / ${formatMoney(250000)} · ${hasCrimeFlag(l) ? 'con pasado criminal' : 'sin delitos aún'}`,
   },
   {

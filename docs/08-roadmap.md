@@ -21,9 +21,9 @@ Escenarios (9), 3 ranuras, copia de seguridad, puntaje de legado, eventos de din
 - 33 escenas SVG animadas por evento, animaciones en toda la UI.
 - **Árbol genealógico jugable**: familia viva (bots) y cambio de personaje entre parientes de sangre a ≤ 2 generaciones.
 
-## 🔜 Fase 4 — Mundo e historia (siguiente)
-- Calendario global y **eras**: tecnología y leyes que cambian con los años, precios/salarios por época (T05).
-- Eventos históricos más ricos y encadenados (T05).
+## 🚧 Fase 4 — Mundo e historia (en curso)
+- ✅ **Eras**: tecnología, leyes y precios/salarios por época (`content/eras.ts`), carreras y actividades de época, 48 eventos históricos, aviso de cambio de década.
+- 🔜 Resto de T05: leyes que cambian probabilidades, pena de muerte, escenas nuevas.
 - Capa opcional de **IA** con clave gratuita propia (T06).
 
 ## 🔜 Fase 5 — Profundidad

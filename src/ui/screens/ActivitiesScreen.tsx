@@ -1,3 +1,4 @@
+import { scaleText } from '../../content/eras';
 import React from 'react';
 import { ScrollView, Text } from 'react-native';
 import { useGame } from '../../store/gameStore';
@@ -40,7 +41,7 @@ export function ActivitiesScreen() {
                 icon={a.icon}
                 tint={CATEGORY_STYLE[cat.id].color}
                 title={a.label}
-                subtitle={st.reason ?? a.desc}
+                subtitle={st.reason ?? scaleText(a.desc, life.year)}
                 disabled={blocked || !!st.reason}
                 onPress={() => activity(a.id)}
               />

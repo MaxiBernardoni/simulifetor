@@ -294,4 +294,66 @@ export const ACTIVITIES: Activity[] = [
       { weight: 2, text: 'Ganaste respeto entre los presos. Nadie se mete con vos.', effects: [fx.hap(4), fx.hea(-3)] },
     ],
   },
+  // ── Según la época ──
+  {
+    id: 'tv_binge', label: 'Ver televisión', desc: 'El gran invento del siglo', icon: 'Clapperboard', category: 'ocio', tech: 'tv',
+    conditions: [c.age(5, 99)],
+    outcomes: [
+      { weight: 5, text: 'Te pasaste el año frente a la tele. Sabés todos los jingles de memoria.', effects: [fx.hap(3), fx.hea(-1)] },
+      { weight: 2, text: 'Una telenovela te tuvo llorando meses. Vale cada capítulo.', effects: [fx.hap(5)] },
+    ],
+  },
+  {
+    id: 'videogames', label: 'Videojuegos', desc: 'Una partida más y me voy a dormir', icon: 'Gamepad2', category: 'ocio', tech: 'computadora',
+    conditions: [c.age(6, 70)],
+    outcomes: [
+      { weight: 5, text: 'Jugaste hasta las 4 de la mañana durante meses. Tu récord personal es lo único que creció.', effects: [fx.hap(5), fx.hea(-2)] },
+      { weight: 2, text: 'Te volviste bueno de verdad. Un desconocido en línea te llama "leyenda".', effects: [fx.hap(6), fx.sma(1)] },
+      { weight: 1, text: 'Te obsesionaste con un juego y perdiste el año entero. Ni te acordás de cómo fue.', effects: [fx.hap(-2), fx.hea(-3)] },
+    ],
+  },
+  {
+    id: 'socials', label: 'Vivir en redes sociales', desc: 'Scrolleo infinito', icon: 'Smartphone', category: 'social', tech: 'redes',
+    conditions: [c.age(11, 85)],
+    outcomes: [
+      { weight: 4, text: 'Compartiste tu vida con desconocidos. Te dieron 200 "me gusta" y ninguna solución.', effects: [fx.hap(2)] },
+      { weight: 3, text: 'Una discusión política te dejó sin dormir y sin dos amigos.', effects: [fx.hap(-5)] },
+      { weight: 2, text: 'Un posteo tuyo se volvió viral. Tu cuarto de hora empezó y terminó en el mismo fin de semana.', effects: [fx.hap(6), fx.money(400)] },
+      { weight: 1, text: 'Te comparaste con todo el mundo durante meses. Salís hecho pomada.', effects: [fx.hap(-7), fx.loo(-1)] },
+    ],
+  },
+  {
+    id: 'stream_series', label: 'Maratonear series', desc: 'Suscripción: $150', icon: 'Clapperboard', category: 'ocio', cost: 150, tech: 'streaming',
+    conditions: [c.age(8, 99)],
+    outcomes: [
+      { weight: 5, text: 'Terminaste cuarenta series. Recordás una.', effects: [fx.hap(4), fx.hea(-1)] },
+      { weight: 2, text: 'Te spoilearon el final de la mejor serie del año. Nunca lo perdonás.', effects: [fx.hap(-2)] },
+    ],
+  },
+  {
+    id: 'app_dating', label: 'Citas por app', desc: 'Deslizá a la derecha', icon: 'Heart', category: 'social', tech: 'smartphone',
+    conditions: [c.age(18, 75), c.single()],
+    outcomes: [
+      { weight: 4, text: 'Tuviste seis citas: cuatro fueron un desastre, una un fantasma, una un milagro.', effects: [fx.hap(3), fx.add('partner', 'peer')] },
+      { weight: 4, text: 'Te dejaron en visto todo el año. Igual tu autoestima sobrevive.', effects: [fx.hap(-3)] },
+      { weight: 1, text: 'Te estafaron con una cita falsa. Perdiste plata y orgullo.', effects: [fx.money(-500), fx.hap(-5)] },
+    ],
+  },
+  {
+    id: 'chat_ai', label: 'Charlar con una IA', desc: 'Siempre tiene una respuesta', icon: 'Zap', category: 'estudio', tech: 'ia',
+    conditions: [c.age(10, 99)],
+    outcomes: [
+      { weight: 5, text: 'Le preguntaste de todo. Aprendiste bastante y dejaste de pensar bastante también.', effects: [fx.sma(3), fx.hap(1)] },
+      { weight: 2, text: 'Te pasaste el año hablándole. Es la relación más estable que tuviste.', effects: [fx.hap(3)] },
+      { weight: 1, text: 'Te inventó un dato y lo repetiste con seguridad en una reunión. Duele todavía.', effects: [fx.hap(-4)] },
+    ],
+  },
+  {
+    id: 'vr_world', label: 'Mundos de realidad virtual', desc: 'Suscripción: $300', icon: 'Rocket', category: 'ocio', cost: 300, tech: 'realidad_virtual',
+    conditions: [c.age(8, 99)],
+    outcomes: [
+      { weight: 5, text: 'Viviste medio año en un mundo virtual. Allá sos alguien.', effects: [fx.hap(6), fx.hea(-2)] },
+      { weight: 2, text: 'Te mareaste y te fuiste contra la pared del living. El casco sobrevivió.', effects: [fx.hea(-3), fx.hap(1)] },
+    ],
+  },
 ];

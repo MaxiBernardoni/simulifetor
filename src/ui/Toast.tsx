@@ -34,7 +34,7 @@ export function AchievementToast() {
     <Animated.View pointerEvents="none" style={[s.wrap, { top: insets.top + 8, transform: [{ translateY: y }] }]}>
       <IconTile name={toast.icon} color="#E9A23B" size={44} solid />
       <View style={{ flex: 1 }}>
-        <Text style={s.kicker}>Logro desbloqueado</Text>
+        <Text style={s.kicker}>{toast.kicker ?? 'Logro desbloqueado'}</Text>
         <Text style={s.title}>{toast.title}</Text>
       </View>
     </Animated.View>

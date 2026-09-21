@@ -1,3 +1,4 @@
+import { eraAt } from '../../content/eras';
 import React, { useMemo } from 'react';
 import { Animated, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -84,7 +85,7 @@ export function LifeScreen() {
             {life.name} {life.surname}
           </Text>
           <Text style={s.job} numberOfLines={1}>
-            {occupation(life)}
+            {occupation(life)} · {eraAt(life.year).label}
           </Text>
         </View>
         <Animated.View style={[s.moneyPill, debt && { backgroundColor: '#FBE3E5' }, bump]}>

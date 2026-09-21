@@ -1,6 +1,7 @@
 import type { Delta, Effect, Life, LogEntry, Person, StatKey, Tone } from './types';
 import type { Rng } from './rng';
 import { firstAlive } from './text';
+import { scaleMoney } from '../content/eras';
 import { spawnPerson } from './people';
 
 export interface EffectCtx {
@@ -69,7 +70,7 @@ function sendToJail(life: Life, ctx: EffectCtx, years: number): void {
 
 export function applyEffect(life: Life, e: Effect, ctx: EffectCtx, rng: Rng): void {
   if ('stat' in e) return changeStat(life, ctx, e.stat, e.add);
-  if ('money' in e) return changeMoney(life, ctx, e.money);
+  if ('money' in e) return changeMoney(life, ctx, scaleMoney(e.money, life.year));
   if ('moneyPct' in e) return changeMoney(life, ctx, Math.round(life.money * e.moneyPct));
   if ('setFlag' in e) {
     life.flags[e.setFlag] = true;
