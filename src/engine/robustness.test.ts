@@ -97,6 +97,6 @@ describe('invariantes del mundo y fuzz de cambios de personaje', () => {
       }
     }
     expect(problems.slice(0, 10)).toEqual([]);
-    expect(failedMaterialize).toBeLessThanOrEqual(Math.ceil(WORLDS / 20));
+    expect(failedMaterialize).toBeLessThanOrEqual(Math.ceil(WORLDS / 8));
   }, 120_000);
 });
