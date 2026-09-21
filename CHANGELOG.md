@@ -2,6 +2,14 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [T17 · Categorías, eventos, íconos e infidelidad]
+
+- **Acciones por categoría** en la ficha de cada persona: Amistad, Humor y bromas, Amor y seducción, Pareja y compromiso, Peleas y molestias, Plata, Paces y distancia. Acciones nuevas: chiste, broma pesada, molestar, tregua y "Pedirle que sean pareja".
+- **15 eventos nuevos** de amistad (cumpleaños, se fue de boca, un amigo en crisis, una locura), amor (una mirada distinta, celos, aniversario, rutina, mensaje del ex) y enemistad (chismes, cruce incómodo, tregua, zancadilla, hermanos peleados).
+- **Íconos y colores:** amistad con los dos amigos abrazados en verde (barra verde o amarilla), enemistad con espadas rojas y barra roja; amor con barra rosa clarito y corazón. La "mala onda" empieza ahora en amistad negativa.
+- **Infidelidad y varios amoríos:** los gestos románticos con otra persona dejan rastro y un amorío fuerte suma sospecha cada año; la pareja puede enterarse y hay que decidir (negar, pedir perdón, admitirlo), con riesgo de ruptura o divorcio. Un amorío puede pasar a ser la pareja oficial.
+- Los bots no eligen acciones hostiles ni coquetean con terceros. 10 tests nuevos (232 en total).
+
 ## [T17 · Amistad y amor (hitos 1–3)]
 
 - **Doble medidor por persona:** amistad (−100 a 100; por debajo de −30 es "mala onda") y amor (0–100, oculto hasta que una acción lo desbloquea). `SCHEMA_VERSION` 5: las partidas viejas migran solas (la cercanía pasa a amistad; la pareja arranca con amor).

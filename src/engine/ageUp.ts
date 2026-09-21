@@ -3,8 +3,8 @@ import type { Delta, Life, StatKey } from './types';
 import { rngOf } from './rng';
 import type { Rng } from './rng';
 import { addLog, killLife } from './effects';
-import { runYearEvents } from './events';
-import { getCareer } from './registry';
+import { fireEvent, runYearEvents } from './events';
+import { getCareer, getEvent } from './registry';
 import { firstAlive } from './text';
 import { formatMoney } from './format';
 import { carCost, housingCost, updateAssets } from './assets';
@@ -105,6 +105,19 @@ function agePeople(life: Life, rng: Rng): void {
       }
       addLog(life, was ? `${first} pidió el divorcio. Se acabó.` : `${first} te dejó. Ya no había nada que salvar.`, 'bad', 'Ruptura');
     }
+  }
+  // Infidelidad: los rastros y los amoríos fuertes levantan sospechas y, a veces, la pareja se entera.
+  const partner = firstAlive(life, 'partner');
+  if (partner && !partner.frozen && life.alive) {
+    const lovers = life.people.filter((x) => x.alive && x !== partner && (x.romance ?? 0) >= 40).length;
+    let suspicion = (partner.suspicion ?? 0) + lovers * 6;
+    if (suspicion >= 20 && rng.chance(Math.min(0.9, (suspicion / 100) * 0.7))) {
+      suspicion = 0;
+      const ev = getEvent('love.cheat_discovered');
+      if (ev) fireEvent(life, ev, partner);
+    }
+    // Mientras siga el amorío la sospecha no se apaga; sin amorío, se olvida de a poco.
+    partner.suspicion = lovers ? suspicion : Math.max(0, suspicion - 8);
   }
   // Los hijos que se fueron a vivir solos: se quedan en la lista.
 }

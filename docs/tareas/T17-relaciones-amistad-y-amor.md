@@ -3,7 +3,7 @@
 - **Prioridad / esfuerzo:** alta / XL (dividir en hitos)
 - **Depende de:** —
 - **Autonomía:** ⚠️ cambia el esquema de `Person` y las reglas de pareja; revisar antes de unir
-- **Estado:** wip (hitos 1, 2 y 3 hechos; faltan 4–6)
+- **Estado:** review (hitos 1–5 hechos; queda el balance fino del hito 6)
 
 ## Objetivo
 Reemplazar el único medidor de cercanía por dos, al estilo Los Sims 4: **amistad** (siempre visible) y **amor** (oculto hasta que una acción lo desbloquea). Si la amistad cae mucho pasa a negativo y la persona se vuelve **mala onda** (enemigo). Permite varios amoríos a la vez y la posibilidad de que la pareja oficial se entere y acuse de infidelidad.
@@ -50,7 +50,8 @@ Reemplazar el único medidor de cercanía por dos, al estilo Los Sims 4: **amist
 - ✅ **Hito 1 · Modelo y migración** (21/09/2026): `friendship` (−100..100) y `romance?`; `SCHEMA_VERSION` 5; migración de partidas y de las vidas de los bots; condiciones `targetFriendship`/`targetRomance`; efectos `friendship`/`romance` (el amor exige adultos).
 - ✅ **Hito 2 · UI:** barra de amistad y, si está desbloqueada, barra de amor (en la lista y en la ficha); "Mala onda" por debajo de −30; los resultados muestran chips de amistad y amor.
 - ✅ **Hito 3 · Acciones por niveles y rotación anual:** 6 amistosas y 8 románticas nuevas (`rotate: true`), con reacciones buenas/malas que mueven las barras cantidades distintas; 60 % de oferta anual determinista; también con familia adulta.
-- ⏳ **Hito 4 · Varios amoríos** con la pareja oficial (pasar un amorío a pareja, reemplazarla).
-- ⏳ **Hito 5 · Infidelidad:** rastro, descubrimiento, consecuencias y reacción del tercero (hoy las acciones románticas con terceros no tienen consecuencias con la pareja).
-- ⏳ **Hito 6 · Balance** con perfiles "familia" y "crimen"; eventos de hostilidad para la "mala onda" (hoy solo se le ocultan los gestos amistosos).
+- ✅ **Hito 4 · Varios amoríos:** cualquier persona adulta con amor desbloqueado es un amorío; la acción "Pedirle que sean pareja" (amor y amistad ≥ 60) lo convierte en pareja y la anterior pasa a ser ex.
+- ✅ **Hito 5 · Infidelidad:** `Person.suspicion` de la pareja. Los gestos románticos con otra persona suman "rastro" (`risk` de la acción: coquetear 6 … pasar la noche 35); mientras haya un amorío con amor ≥ 40 suma 6 por año y no se olvida (sin amorío baja 8 por año). Con sospecha ≥ 20 hay `sospecha × 0,7` de probabilidad anual de que se entere y se dispara `love.cheat_discovered` (3 decisiones; consecuencias: pelea, ruptura o divorcio con pérdida del 25 %). Pendiente: que el tercero también reaccione.
+- ✅ **Extra (pedido de Max):** las acciones se agrupan por categoría en la ficha (Amistad, Humor y bromas, Amor y seducción, Pareja y compromiso, Peleas y molestias, Plata, Paces y distancia; `ACTION_CATEGORY` en `personActions.ts`); 15 eventos de amistad, amor y enemistad (`content/events/bonds.ts`); íconos de la barra: amigos abrazados en verde (`ui/FriendIcon.tsx`), espadas en rojo si es enemistad, y barra de amor rosa clarito con corazón. La "mala onda" ahora empieza en amistad **negativa** (antes < −30).
+- ⏳ **Hito 6 · Balance fino:** los bots no eligen acciones hostiles ni coquetean con terceros (`BOT_AVOIDS`); las bandas de `docs/10` se mantienen. Falta un perfil de bot que use el amor y la infidelidad para medir su efecto.
 

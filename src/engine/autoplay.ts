@@ -16,6 +16,9 @@ import {
 import { buyAsset, canBuy, investMoney, loanCapacity, sellAsset, takeLoan, withdrawInvestments } from './assets';
 import { CATALOG } from '../content/assets';
 
+/** Acciones hostiles que el bot nunca elige al azar. */
+const BOT_AVOIDS = new Set(['annoy', 'prank', 'jealous_scene', 'roast']);
+
 export interface AutoOpts {
   /** Edad hasta la que juega (por defecto, hasta la muerte). */
   untilAge?: number;
@@ -115,6 +118,8 @@ export function autoPlay(life: Life, opts: AutoOpts): void {
         if (p.length) {
           const person = bot.pick(p);
           const pa = allPersonActions().filter((a) => {
+            // El bot no molesta ni coquetea con terceros: esas acciones son decisiones del jugador.
+            if (BOT_AVOIDS.has(a.id) || (a.risk && person.kind !== 'partner')) return false;
             const s = personActionStatus(life, a, person);
             return s.visible && !s.reason;
           });

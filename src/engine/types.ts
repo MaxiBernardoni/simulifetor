@@ -111,6 +111,8 @@ export interface PersonAction {
   conditions?: Cond[];
   /** Rota: cada año solo se ofrece una parte al azar (determinista) de las que ya están desbloqueadas. */
   rotate?: boolean;
+  /** Cuánto "rastro" deja con la pareja oficial si la persona objetivo es otra (infidelidad). */
+  risk?: number;
   outcomes: Outcome[];
 }
 
@@ -135,10 +137,12 @@ export interface Person {
   gender: Gender;
   age: number;
   alive: boolean;
-  /** Amistad: de -100 a 100. Por debajo de -30 es "mala onda". */
+  /** Amistad: de -100 a 100. Por debajo de 0 es enemistad ("mala onda"). */
   friendship: number;
   /** Amor: 0 a 100. `undefined` = todavía bloqueado (se desbloquea con acciones románticas). */
   romance?: number;
+  /** Solo la pareja: cuánto sospecha de una infidelidad (0–100). Sube con los amoríos y baja con el tiempo. */
+  suspicion?: number;
   married?: boolean;
   /** Aspecto propio (hijos heredan rasgos). Si falta, se deriva del id. */
   look?: Look;

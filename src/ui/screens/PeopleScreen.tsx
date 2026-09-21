@@ -5,6 +5,8 @@ import { personActionStatus } from '../../engine/actions';
 import { allPersonActions } from '../../engine/registry';
 import type { Person, PersonKind } from '../../engine/types';
 import { isBadVibes } from '../../engine/people';
+import { ACTION_CATEGORIES, ACTION_CATEGORY } from '../../content/personActions';
+import { FriendIcon } from '../FriendIcon';
 import { Bar, PersonAvatar, Row, SectionTitle } from '../components';
 import { Icon } from '../Icon';
 import { colors, radius, space } from '../theme';
@@ -27,10 +29,17 @@ const LABEL: Record<PersonKind, string> = {
   ex: 'Ex',
 };
 
-const LOVE = '#E0517A';
+// Barra de amor rosa clarito con un corazón; la de amistad va en verde o amarillo, y roja si es enemistad.
+const LOVE_BAR = '#F7B6CB';
+const LOVE_ICON = '#EC6E96';
 
-/** Color de la amistad: verde alta, ámbar media, rojo baja o negativa ("mala onda"). */
-const friendColor = (f: number) => (f > 60 ? colors.good : f > 30 ? colors.warn : colors.bad);
+/** Color de la barra de amistad: verde (50+), amarillo (0–49) y rojo si es negativa (enemistad). */
+const friendColor = (f: number) => (f >= 50 ? colors.good : f >= 0 ? colors.warn : colors.bad);
+
+/** Ícono de la amistad: los dos amigos abrazados en verde; si es enemistad, otro ícono en rojo. */
+function FriendshipIcon({ friendship }: { friendship: number }) {
+  return friendship < 0 ? <Icon name="Swords" size={22} color={colors.bad} /> : <FriendIcon size={24} color={colors.good} />;
+}
 
 export function PeopleScreen() {
   const life = useGame((st) => st.life)!;
@@ -64,7 +73,7 @@ export function PeopleScreen() {
                     p.alive ? (
                       <View style={{ width: 54, gap: 4 }}>
                         <Bar value={Math.abs(p.friendship)} color={friendColor(p.friendship)} height={6} />
-                        {p.romance !== undefined ? <Bar value={p.romance} color={LOVE} height={6} /> : null}
+                        {p.romance !== undefined ? <Bar value={p.romance} color={LOVE_BAR} height={6} /> : null}
                       </View>
                     ) : undefined
                   }
@@ -88,7 +97,7 @@ export function PeopleScreen() {
                       {kindLabel(person)} · {person.age} años
                     </Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}>
-                      <Icon name="Handshake" size={14} color={friendColor(person.friendship)} />
+                      <FriendshipIcon friendship={person.friendship} />
                       <View style={{ flex: 1 }}>
                         <Bar value={Math.abs(person.friendship)} color={friendColor(person.friendship)} height={8} />
                       </View>
@@ -98,32 +107,44 @@ export function PeopleScreen() {
                     </View>
                     {person.romance !== undefined ? (
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}>
-                        <Icon name="Heart" size={14} color={LOVE} />
+                        <Icon name="Heart" size={18} color={LOVE_ICON} />
                         <View style={{ flex: 1 }}>
-                          <Bar value={person.romance} color={LOVE} height={8} />
+                          <Bar value={person.romance} color={LOVE_BAR} height={8} />
                         </View>
-                        <Text style={{ color: LOVE, fontWeight: '800' }}>{person.romance}</Text>
+                        <Text style={{ color: LOVE_ICON, fontWeight: '800' }}>{person.romance}</Text>
                       </View>
                     ) : null}
                   </View>
                 </View>
-                <ScrollView style={{ maxHeight: 380, marginTop: 12 }}>
-                  {allPersonActions()
-                    .map((a) => ({ a, st: personActionStatus(life, a, person) }))
-                    .filter((x) => x.st.visible)
-                    .map(({ a, st }) => (
-                      <Row
-                        key={a.id}
-                        icon={a.icon}
-                        title={a.label}
-                        subtitle={st.reason}
-                        disabled={blocked || !!st.reason}
-                        onPress={() => {
-                          setSelected(null);
-                          doAction(a.id, person.id);
-                        }}
-                      />
-                    ))}
+                <ScrollView style={{ maxHeight: 400, marginTop: 12 }}>
+                  {ACTION_CATEGORIES.map((cat) => {
+                    const items = allPersonActions()
+                      .filter((a) => ACTION_CATEGORY[a.id] === cat.id)
+                      .map((a) => ({ a, st: personActionStatus(life, a, person) }))
+                      .filter((x) => x.st.visible);
+                    if (!items.length) return null;
+                    return (
+                      <View key={cat.id}>
+                        <View style={s.catHead}>
+                          <Icon name={cat.icon} size={14} color={cat.color} />
+                          <Text style={[s.catTitle, { color: cat.color }]}>{cat.label}</Text>
+                        </View>
+                        {items.map(({ a, st }) => (
+                          <Row
+                            key={a.id}
+                            icon={a.icon}
+                            title={a.label}
+                            subtitle={st.reason}
+                            disabled={blocked || !!st.reason}
+                            onPress={() => {
+                              setSelected(null);
+                              doAction(a.id, person.id);
+                            }}
+                          />
+                        ))}
+                      </View>
+                    );
+                  })}
                 </ScrollView>
                 <Pressable onPress={() => setSelected(null)} style={s.close}>
                   <Icon name="X" size={18} color={colors.muted} />
@@ -150,5 +171,7 @@ const s = StyleSheet.create({
   },
   title: { color: colors.text, fontSize: 20, fontWeight: '800' },
   sub: { color: colors.muted, marginTop: 2 },
+  catHead: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10, marginBottom: 2 },
+  catTitle: { fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.6 },
   close: { flexDirection: 'row', gap: 6, alignItems: 'center', justifyContent: 'center', paddingTop: 14 },
 });

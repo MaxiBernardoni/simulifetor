@@ -45,3 +45,8 @@
 ## Gesto de volver (deslizar)
 
 `ui/SwipeBack.tsx` envuelve las pantallas con botón de volver (creación de vida, pantallas del Menú y el árbol tras la muerte): deslizá hacia la derecha **desde el borde izquierdo** (primeros 32 px) y la pantalla sigue al dedo; si pasás un tercio del ancho o hacés un gesto rápido, vuelve; si no, rebota. Usa `PanResponder` en modo *capture* para ganarle a los scrolls horizontales (el árbol). Las pantallas abiertas desde el Menú (árbol, partidas, copia, IA, ayuda) ahora vuelven al Menú y no a la vida; el resto vuelve a la vida.
+
+## Relaciones (amistad y amor)
+
+- Ficha de persona: barra de **amistad** con el ícono de los dos amigos abrazados en verde (barra verde con 50 o más, amarilla de 0 a 49); si la amistad es negativa (enemistad / "mala onda") la barra pasa a rojo y el ícono a unas espadas rojas. La barra de **amor** es rosa clarito con un corazón al lado y solo aparece cuando está desbloqueada.
+- Las acciones se agrupan por categoría con un encabezado de color; las categorías vacías no se muestran.

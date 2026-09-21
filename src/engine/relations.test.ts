@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { PERSON_ACTIONS } from '../content/personActions';
+import { ACTION_CATEGORIES, ACTION_CATEGORY, PERSON_ACTIONS } from '../content/personActions';
+import { BONDS } from '../content/events/bonds';
+import { ageUp } from './ageUp';
+import { isEligible, resolveChoice } from './events';
 import { createLife, migrateLife } from './life';
 import { offeredThisYear, personActionStatus, runPersonAction } from './actions';
 import { applyEffect, newEffectCtx, toneOf } from './effects';
@@ -213,5 +216,152 @@ describe('el resultado muestra cuánto cambiaron las barras', () => {
     const c2 = newEffectCtx(p);
     applyEffect(life, { relation: { who: 'target', friendship: -500 } }, c2, rngOf(life));
     expect(c2.deltas).toEqual([{ key: 'friendship', amount: -160 }]);
+  });
+});
+
+describe('categorías de acciones', () => {
+  it('toda acción tiene una categoría que existe', () => {
+    const ids = new Set(ACTION_CATEGORIES.map((c) => c.id));
+    for (const a of PERSON_ACTIONS) expect(ids.has(ACTION_CATEGORY[a.id]), `${a.id} sin categoría`).toBe(true);
+    for (const id of Object.keys(ACTION_CATEGORY))
+      expect(
+        PERSON_ACTIONS.some((a) => a.id === id),
+        `categoría de ${id} sin acción`,
+      ).toBe(true);
+  });
+});
+
+describe('infidelidad', () => {
+  function withPartner(seed: number) {
+    const { life, p } = adultWith('friend', { friendship: 70, romance: 40 });
+    life.rng = seed * 104729;
+    life.money = 100000;
+    const partner: Person = {
+      id: 'pp',
+      kind: 'partner',
+      name: 'Julia Roca',
+      gender: 'F',
+      age: 30,
+      alive: true,
+      friendship: 70,
+      romance: 70,
+    };
+    life.people.push(partner);
+    return { life, p, partner };
+  }
+
+  it('un gesto romántico con otra persona deja rastro en la pareja; con la propia pareja, no', () => {
+    const { life, p, partner } = withPartner(1);
+    while (!shown(life, 'kiss', p)) life.year++;
+    runPersonAction(life, 'kiss', 'x1');
+    expect(partner.suspicion ?? 0).toBeGreaterThanOrEqual(22);
+    const b = withPartner(2);
+    while (!shown(b.life, 'kiss', b.partner)) b.life.year++;
+    runPersonAction(b.life, 'kiss', 'pp');
+    expect(b.partner.suspicion ?? 0).toBe(0);
+  });
+
+  it('con mucha sospecha la pareja se termina enterando y hay que decidir; sin sospecha nunca', () => {
+    let found = 0;
+    let clean = 0;
+    for (let seed = 1; seed <= 30; seed++) {
+      const a = withPartner(seed);
+      a.partner.suspicion = 100;
+      ageUp(a.life);
+      if (a.life.pending.some((x) => x.kind === 'choice' && x.title === 'Te descubrieron')) found++;
+      const b = adultWith('friend');
+      b.life.people.push({ id: 'pp', kind: 'partner', name: 'Julia Roca', gender: 'F', age: 30, alive: true, friendship: 70, romance: 70 });
+      b.life.rng = seed * 7;
+      ageUp(b.life);
+      if (b.life.pending.some((x) => x.title === 'Te descubrieron')) clean++;
+    }
+    expect(found).toBeGreaterThan(10);
+    expect(clean).toBe(0);
+  });
+
+  it('el evento de descubrimiento nunca sale al azar y cada decisión tiene consecuencias válidas', () => {
+    const ev = BONDS.find((e) => e.id === 'love.cheat_discovered')!;
+    const l0 = withPartner(3).life;
+    expect(isEligible(l0, ev)).toBe(false);
+    for (let seed = 1; seed <= 40; seed++) {
+      for (let choice = 0; choice < 3; choice++) {
+        const { life, partner } = withPartner(seed);
+        if (seed % 2) partner.married = true;
+        life.pending.push({ kind: 'choice', eventId: ev.id, title: ev.title, text: ev.text, targetId: partner.id });
+        resolveChoice(life, choice);
+        expect(checkLife(life)).toEqual([]);
+        expect(life.pending[0]?.kind).toBe('result');
+      }
+    }
+  });
+
+  it('un amorío con mucho amor sube la sospecha año a año', () => {
+    const { life, partner } = (() => {
+      const w = withPartner(5);
+      w.p.romance = 80;
+      return w;
+    })();
+    ageUp(life);
+    expect(partner.suspicion ?? 0).toBeGreaterThan(0);
+  });
+});
+
+describe('varios amoríos y pareja oficial', () => {
+  it('pedirle a un amorío que sea pareja lo convierte en pareja y la anterior pasa a ser ex', () => {
+    let done = 0;
+    for (let seed = 1; seed <= 30; seed++) {
+      const { life, p } = adultWith('friend', { friendship: 80, romance: 80 });
+      life.rng = seed * 31;
+      life.people.push({ id: 'old', kind: 'partner', name: 'Marta Sol', gender: 'F', age: 33, alive: true, friendship: 50, romance: 50 });
+      while (!shown(life, 'make_official', p)) life.year++;
+      runPersonAction(life, 'make_official', 'x1');
+      expect(checkLife(life)).toEqual([]);
+      if (p.kind === 'partner') {
+        done++;
+        expect(life.people.find((x) => x.id === 'old')!.kind).toBe('ex');
+      }
+    }
+    expect(done).toBeGreaterThan(10);
+  });
+});
+
+describe('eventos de amistad, amor y enemistad', () => {
+  const ev = (id: string) => BONDS.find((e) => e.id === id)!;
+
+  it('hay eventos de las tres cosas y todos mueven las barras', () => {
+    expect(BONDS.filter((e) => e.id.startsWith('bond.friend')).length).toBeGreaterThanOrEqual(4);
+    expect(
+      BONDS.filter((e) =>
+        ['bond.slow_burn', 'bond.lover_jealous', 'bond.partner_anniversary', 'bond.partner_stress', 'bond.ex_texts'].includes(e.id),
+      ).length,
+    ).toBe(5);
+    expect(BONDS.filter((e) => e.id.startsWith('bond.enemy') || e.id === 'bond.sibling_feud').length).toBeGreaterThanOrEqual(4);
+    for (const e of BONDS) expect(JSON.stringify(e)).toMatch(/"relation"/);
+  });
+
+  it('los de enemistad solo salen con amistad negativa', () => {
+    for (const id of ['bond.enemy_rumors', 'bond.enemy_street', 'bond.enemy_truce', 'bond.enemy_sabotage']) {
+      const good = adultWith('friend', { friendship: 50 });
+      expect(isEligible(good.life, ev(id)), `${id} con amistad positiva`).toBe(false);
+      const bad = adultWith('friend', { friendship: -10 });
+      expect(isEligible(bad.life, ev(id)), `${id} con enemistad`).toBe(true);
+    }
+    const sib = adultWith('sibling', { friendship: -20 });
+    expect(isEligible(sib.life, ev('bond.sibling_feud'))).toBe(true);
+  });
+
+  it('los de amor piden adultos y amor desbloqueado cuando corresponde', () => {
+    const kid = adultWith('friend', { friendship: 80, age: 16 });
+    expect(isEligible(kid.life, ev('bond.slow_burn'))).toBe(false);
+    const ok = adultWith('friend', { friendship: 80 });
+    expect(isEligible(ok.life, ev('bond.slow_burn'))).toBe(true);
+    expect(isEligible(ok.life, ev('bond.lover_jealous'))).toBe(false);
+    ok.p.romance = 50;
+    expect(isEligible(ok.life, ev('bond.lover_jealous'))).toBe(true);
+  });
+
+  it('la mala onda empieza en amistad negativa', () => {
+    expect(isBadVibes({ friendship: 0 })).toBe(false);
+    expect(isBadVibes({ friendship: -1 })).toBe(true);
   });
 });

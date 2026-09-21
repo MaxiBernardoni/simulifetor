@@ -58,6 +58,5 @@ export function inheritLook(parent: Look, gender: Gender, rng: Rng): Look {
 }
 
 export const clampFriendship = (n: number): number => Math.max(-100, Math.min(100, n));
-/** Por debajo de este valor de amistad la persona es "mala onda". */
-export const BAD_VIBES = -30;
-export const isBadVibes = (p: { friendship: number }): boolean => p.friendship < BAD_VIBES;
+/** Con amistad negativa la persona es enemiga ("mala onda"). */
+export const isBadVibes = (p: { friendship: number }): boolean => p.friendship < 0;

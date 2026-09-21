@@ -5,7 +5,7 @@ import { addLog, applyEffects, changeMoney, newEffectCtx, toneOf } from './effec
 import type { EffectCtx } from './effects';
 import { allActivities, allCareers, allPersonActions, getCareer, getEvent } from './registry';
 import { pickOutcome, fireEvent } from './events';
-import { fill } from './text';
+import { fill, firstAlive } from './text';
 import { refineScene, sceneForActivity, sceneForPersonAction } from '../content/scenes';
 import { makePerson } from './people';
 import { formatMoney } from './format';
@@ -107,6 +107,9 @@ export function runPersonAction(life: Life, actionId: string, personId: string):
   const outcome = pickOutcome(life, a.outcomes);
   const text = fill(life, outcome.text, p);
   applyEffects(life, outcome.effects, ctx, rng);
+  // Un gesto romántico con otra persona deja rastro con la pareja oficial.
+  const partner = firstAlive(life, 'partner');
+  if (a.risk && partner && partner !== p) partner.suspicion = Math.min(100, (partner.suspicion ?? 0) + a.risk);
   finish(life, a.label, text, ctx, a.icon, sceneForPersonAction(a.id), p.id);
 }
 

@@ -138,6 +138,13 @@ Se importan desde `src/content/dsl.ts`: `c` (condiciones) y `fx` (efectos).
 
 `hap/hea/sma/loo(n)` (stats), `money(n)`, `moneyPct(p)`, `flag(f)` / `unflag(f)`, `add(kind, 'baby'|'peer'|'young')` (persona nueva), `close(who, n)` (amistad; `who` = `'target'` o un tipo), `love(who, n)` (amor; lo desbloquea si es positivo), `bond(who, amistad, amor)` (ambos a la vez), `becomes(who, kind)`, `marry()`, `remove(who)`, `perf(n)`, `gpa(n)`, `raise(mult)`, `fired()`, `jail(min, max)`, `parole(años)`, `arrest(crimen, min, max)`, `sentence('full'|'half'|'double'|'probation'|'none')`, `loseAsset('house'|'car')`, `invest(n)`, `die(causa)`, `log(texto)`, `trigger(idEvento)`.
 
+## Acciones con personas: categorías, niveles y rotación
+
+- Cada `PersonAction` pertenece a una categoría (`ACTION_CATEGORY` en `content/personActions.ts`; hay un test que exige que todas tengan una): amistad, humor, amor, pareja, conflicto, plata, paz. La ficha de la persona las agrupa con su encabezado.
+- `rotate: true`: cada año solo se ofrece una parte (60 %) de la acción; `risk: n`: rastro de infidelidad con la pareja oficial si la persona objetivo es otra.
+- Niveles: las acciones se desbloquean con `c.tClose(n)` (amistad) y `c.tLove(n)` (amor). Cada resultado usa `fx.close`, `fx.love` o `fx.bond` con cantidades distintas según la reacción de la otra persona.
+- Eventos de amistad, amor y enemistad con una persona: `content/events/bonds.ts` (los de enemistad usan `c.tClose(undefined, -1)`).
+
 ## Campos de `GameEvent`
 
 `id` (único, `categoria.nombre`), `title`, `text` (admite placeholders), `tags`, `weight` (default 10), `cooldown` (años, default 4), `once`, `target` (`PersonKind`: elige a alguien que cumpla las condiciones y `{target}` es esa persona), `conditions`, `effects` (sin decisiones) o `choices` (`label`, `conditions?`, `outcomes[{ weight?, text, effects? }]`).

@@ -10,6 +10,7 @@ import { CRIME } from './crime';
 import { HISTORICAL, RANDOM, OLD } from './misc';
 import { COURT } from './court';
 import { RELATIONSHIPS } from './relationships';
+import { BONDS } from './bonds';
 import { CAREER, MONEY_EXTRA } from './career';
 import { DYNASTY } from './dynasty';
 import { HISTORY, HISTORY_LAWS } from './history';
@@ -30,6 +31,7 @@ export const ALL_EVENTS: GameEvent[] = [
   ...OLD,
   ...COURT,
   ...RELATIONSHIPS,
+  ...BONDS,
   ...CAREER,
   ...MONEY_EXTRA,
   ...DYNASTY,

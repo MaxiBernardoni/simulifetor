@@ -128,6 +128,9 @@ const PERSON_SCENE: Record<string, string> = {
   propose: 'wedding', have_baby: 'baby', break_up: 'breakup', reconnect: 'love', party_friend: 'party', play: 'playground',
   scold: 'family_home', hug: 'love', apologize: 'friends', give_money: 'money_win', advice: 'family_home', cheat: 'street_crime',
   divorce: 'breakup', cut_off: 'breakup', help_study: 'study',
+  flirt: 'love', love_letter: 'love', confess: 'love', date: 'love', romantic_surprise: 'love', kiss: 'love', lover_night: 'love',
+  make_official: 'love', jealous_scene: 'fight', annoy: 'fight', defend: 'fight', trip: 'travel', cook_dinner: 'family_home',
+  make_peace: 'friends',
 };
 
 export function sceneForPersonAction(id: string): string {
