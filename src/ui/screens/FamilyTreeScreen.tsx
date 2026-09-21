@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useGame } from '../../store/gameStore';
 import type { TreeNode, World, WorldData } from '../../engine/world';
-import { buildForest, canSwitchTo, relationLabel } from '../../engine/kinship';
+import { buildForest, canSwitchTo, relationLabel, SWITCH_COOLDOWN_YEARS } from '../../engine/kinship';
 import type { ForestUnit } from '../../engine/kinship';
 import { formatMoney } from '../../engine/format';
 import { Avatar } from '../Avatar';
@@ -17,18 +17,20 @@ const NODE_H = 108; // alto aproximado de avatar + textos
 const LINE = '#6B7480';
 const LW = 2;
 
-type Status = 'me' | 'ok' | 'locked' | 'dead';
+type Status = 'me' | 'ok' | 'wait' | 'locked' | 'dead';
 const CLASS_LABEL = { 1: 'Humilde', 2: 'Clase media', 3: 'Acomodada' } as const;
 
 function statusOf(w: World, curId: string, n: TreeNode): Status {
   if (n.id === curId) return 'me';
   if (!n.alive) return 'dead';
-  return canSwitchTo(w, curId, n.id).ok ? 'ok' : 'locked';
+  const c = canSwitchTo(w, curId, n.id);
+  return c.ok ? 'ok' : c.temporary ? 'wait' : 'locked';
 }
 
 const RING_STYLE: Record<Status, { color: string; width: number; dashed?: boolean }> = {
   me: { color: colors.accent, width: 4 },
   ok: { color: '#2A9D6F', width: 3 },
+  wait: { color: '#E9A23B', width: 3, dashed: true },
   locked: { color: '#A8A08F', width: 2, dashed: true },
   dead: { color: '#9AA0A6', width: 2 },
 };
@@ -39,18 +41,20 @@ function NodeView({
   curId,
   linked,
   onPress,
+  match,
 }: {
   node: TreeNode;
   w: World;
   curId: string;
   linked?: boolean;
   onPress: (id: string) => void;
+  match?: (n: TreeNode, st: Status) => boolean;
 }) {
   const st = statusOf(w, curId, node);
   const ring = RING_STYLE[st];
   const rel = relationLabel(w, curId, node.id);
   return (
-    <Pressable onPress={() => onPress(node.id)} style={s.node}>
+    <Pressable onPress={() => onPress(node.id)} style={[s.node, match && !match(node, st) && { opacity: 0.25 }]}>
       <View>
         <View
           style={[
@@ -105,12 +109,14 @@ function Unit({
   curId,
   isChild,
   onPress,
+  match,
 }: {
   u: ForestUnit;
   w: World;
   curId: string;
   isChild: boolean;
   onPress: (id: string) => void;
+  match?: (n: TreeNode, st: Status) => boolean;
 }) {
   const hasKids = u.children.length > 0;
   const couple = !!u.partner;
@@ -135,8 +141,8 @@ function Unit({
             }}
           />
         ) : null}
-        <NodeView node={u.head} w={w} curId={curId} onPress={onPress} />
-        {u.partner ? <NodeView node={u.partner} w={w} curId={curId} linked={u.partnerLinked} onPress={onPress} /> : null}
+        <NodeView node={u.head} w={w} curId={curId} onPress={onPress} match={match} />
+        {u.partner ? <NodeView node={u.partner} w={w} curId={curId} linked={u.partnerLinked} onPress={onPress} match={match} /> : null}
       </View>
       {u.hiddenChildren > 0 ? <Text style={s.hint}>Sus hijos están en otra rama</Text> : null}
       {hasKids ? (
@@ -155,7 +161,7 @@ function Unit({
                     <View style={{ position: 'absolute', top: 0, left: '50%', width: '50%', height: LW, backgroundColor: LINE }} />
                   ) : null}
                   <View style={{ width: LW, height: 16, backgroundColor: LINE }} />
-                  <Unit u={c} w={w} curId={curId} isChild onPress={onPress} />
+                  <Unit u={c} w={w} curId={curId} isChild onPress={onPress} match={match} />
                 </View>
               );
             })}
@@ -187,7 +193,7 @@ function NodeSheet({ id, wd, onClose }: { id: string | null; wd: WorldData; onCl
     else onClose();
   };
 
-  const tone = st === 'ok' ? '#2A9D6F' : st === 'me' ? colors.accent : colors.muted;
+  const tone = st === 'ok' ? '#2A9D6F' : st === 'me' ? colors.accent : st === 'wait' ? '#B77A12' : colors.muted;
   return (
     <Modal transparent animationType="slide" visible onRequestClose={onClose}>
       <Pressable style={s.backdrop} onPress={onClose}>
@@ -239,7 +245,7 @@ function NodeSheet({ id, wd, onClose }: { id: string | null; wd: WorldData; onCl
           </View>
 
           <View style={[s.note, { borderColor: tone + '66', backgroundColor: tone + '14' }]}>
-            <Icon name={st === 'ok' ? 'CircleCheck' : st === 'me' ? 'Star' : 'Lock'} size={18} color={tone} />
+            <Icon name={st === 'ok' ? 'CircleCheck' : st === 'me' ? 'Star' : st === 'wait' ? 'Hourglass' : 'Lock'} size={18} color={tone} />
             <Text style={{ flex: 1, color: colors.text, fontSize: 13, lineHeight: 18 }}>
               {st === 'me'
                 ? 'Este es tu personaje actual.'
@@ -279,6 +285,10 @@ export function FamilyTreeScreen() {
   const life = useGame((st) => st.life);
   const wd = useGame((st) => st.world);
   const [selected, setSelected] = useState<string | null>(null);
+  const [tab, setTab] = useState<'tree' | 'news'>('tree');
+  const [query, setQuery] = useState('');
+  const [onlyPlayable, setOnlyPlayable] = useState(false);
+  const markNewsRead = useGame((st) => st.markNewsRead);
   if (!life || !wd) return <Text style={{ padding: space.lg, color: colors.muted }}>Todavía no hay árbol.</Text>;
 
   const w = wd.world;
@@ -286,11 +296,56 @@ export function FamilyTreeScreen() {
   const total = Object.keys(w.nodes).length;
   const alive = Object.values(w.nodes).filter((n) => n.alive).length;
   const bots = Object.keys(wd.lives).length;
+  const q = query.trim().toLowerCase();
+  const match =
+    q || onlyPlayable
+      ? (n: TreeNode, st: Status) =>
+          (!q || `${n.name} ${n.surname}`.toLowerCase().includes(q)) && (!onlyPlayable || st === 'ok' || st === 'wait' || st === 'me')
+      : undefined;
+  const news = (w.news ?? []).slice().reverse();
+  const unread = (w.news ?? []).filter((n) => n.id > (w.newsSeen ?? 0)).length;
+
+  if (tab === 'news') {
+    return (
+      <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: 60 }}>
+        <TabBar tab={tab} unread={0} onChange={setTab} />
+        <Text style={s.sub}>Lo que pasó en la familia mientras vivías tu vida.</Text>
+        {news.length === 0 ? (
+          <Text style={[s.sub, { marginTop: space.lg }]}>
+            Todavía no hay novedades. Cada año que pasa aparecen nacimientos, casamientos y despedidas.
+          </Text>
+        ) : null}
+        {news.map((n) => (
+          <View key={n.id} style={s.newsRow}>
+            <Icon
+              name={n.kind === 'birth' ? 'Baby' : n.kind === 'death' ? 'Ghost' : n.kind === 'wedding' ? 'Heart' : 'HeartCrack'}
+              size={20}
+              color={n.kind === 'death' ? '#6B7480' : n.kind === 'birth' ? '#2A9D6F' : '#E0517A'}
+            />
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: colors.text, fontSize: 14, lineHeight: 19 }}>{n.text}</Text>
+              <Text style={s.sub}>
+                {n.year === w.year ? 'Este año' : `Hace ${w.year - n.year} ${w.year - n.year === 1 ? 'año' : 'años'}`}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+    );
+  }
 
   return (
     <>
       <ScrollView contentContainerStyle={{ paddingVertical: space.lg, paddingBottom: 60 }}>
         <View style={{ paddingHorizontal: space.lg }}>
+          <TabBar
+            tab={tab}
+            unread={unread}
+            onChange={(t) => {
+              setTab(t);
+              if (t === 'news') markNewsRead();
+            }}
+          />
           <Text style={s.title}>Familia {w.surname}</Text>
           <Text style={s.sub}>
             {total} personas · {alive} vivas · {bots} {bots === 1 ? 'personaje con vida propia' : 'personajes con vida propia'} · año{' '}
@@ -301,11 +356,25 @@ export function FamilyTreeScreen() {
             <Text style={{ flex: 1, color: colors.text, fontSize: 13, lineHeight: 18 }}>
               Solo podés vivir la vida de parientes de <Text style={{ fontWeight: '800' }}>sangre a hasta 2 generaciones</Text> de distancia
               (padres, abuelos, hermanos, hijos, nietos, tíos, sobrinos y primos). Los demás aparecen en el árbol pero están bloqueados.
+              Entre un cambio y otro hay que esperar {SWITCH_COOLDOWN_YEARS} años (salvo que tu personaje muera).
             </Text>
           </View>
+          <TextInput
+            style={s.search}
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Buscar por nombre…"
+            placeholderTextColor={colors.muted}
+            autoCorrect={false}
+          />
+          <Pressable onPress={() => setOnlyPlayable((v) => !v)} style={s.filter}>
+            <Icon name={onlyPlayable ? 'CircleCheck' : 'Circle'} size={18} color={onlyPlayable ? '#2A9D6F' : colors.muted} />
+            <Text style={{ color: colors.text, fontSize: 13 }}>Resaltar solo a quienes puedo jugar</Text>
+          </Pressable>
           <View style={s.legend}>
             <Legend color={colors.accent} label="Vos" />
             <Legend color="#2A9D6F" label="Podés jugar" />
+            <Legend color="#E9A23B" label="Esperando (enfriamiento)" dashed />
             <Legend color="#A8A08F" label="Bloqueado" dashed />
             <Legend color="#9AA0A6" label="Fallecido" />
           </View>
@@ -319,7 +388,7 @@ export function FamilyTreeScreen() {
               </SectionTitle>
             </View>
             <Branch>
-              <Unit u={u} w={w} curId={w.currentId} isChild={false} onPress={setSelected} />
+              <Unit u={u} w={w} curId={w.currentId} isChild={false} onPress={setSelected} match={match} />
             </Branch>
           </View>
         ))}
@@ -327,6 +396,23 @@ export function FamilyTreeScreen() {
       </ScrollView>
       <NodeSheet id={selected} wd={wd} onClose={() => setSelected(null)} />
     </>
+  );
+}
+
+function TabBar({ tab, unread, onChange }: { tab: 'tree' | 'news'; unread: number; onChange: (t: 'tree' | 'news') => void }) {
+  return (
+    <View style={{ flexDirection: 'row', gap: 8, marginBottom: space.md }}>
+      {(['tree', 'news'] as const).map((t) => (
+        <Pressable key={t} onPress={() => onChange(t)} style={[s.tab, tab === t && s.tabOn]}>
+          <Text style={[s.tabText, tab === t && { color: '#fff' }]}>{t === 'tree' ? 'Árbol' : 'Novedades'}</Text>
+          {t === 'news' && unread > 0 ? (
+            <View style={s.unread}>
+              <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{unread}</Text>
+            </View>
+          ) : null}
+        </Pressable>
+      ))}
+    </View>
   );
 }
 
@@ -370,6 +456,48 @@ const s = StyleSheet.create({
     marginTop: space.md,
     alignItems: 'flex-start',
   },
+  tab: {
+    flexDirection: 'row',
+    gap: 6,
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+    borderRadius: radius.md,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  tabOn: { backgroundColor: colors.accent, borderColor: colors.accent },
+  tabText: { color: colors.muted, fontWeight: '800', fontSize: 13 },
+  unread: {
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#E76F51',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  newsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'flex-start',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  search: {
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderWidth: 1,
+    borderRadius: radius.md,
+    color: colors.text,
+    fontSize: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    marginTop: space.md,
+  },
+  filter: { flexDirection: 'row', gap: 8, alignItems: 'center', marginTop: 10 },
   legend: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: space.md },
   node: { width: NW, alignItems: 'center' },
   ring: { width: RING, height: RING, borderRadius: RING / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' },

@@ -7,7 +7,10 @@ export interface FetchResponseLike {
   text(): Promise<string>;
 }
 
-export type FetchLike = (url: string, init: { method: string; headers: Record<string, string>; body: string; signal?: AbortSignal }) => Promise<FetchResponseLike>;
+export type FetchLike = (
+  url: string,
+  init: { method: string; headers: Record<string, string>; body: string; signal?: AbortSignal },
+) => Promise<FetchResponseLike>;
 
 export interface PostOpts {
   timeoutMs?: number;
@@ -32,7 +35,12 @@ export async function postJson(url: string, headers: Record<string, string>, bod
       ctrl.abort();
     }, timeoutMs);
     try {
-      const res = await fetchImpl(url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body), signal: ctrl.signal });
+      const res = await fetchImpl(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify(body),
+        signal: ctrl.signal,
+      });
       if (res.ok) {
         try {
           return await res.json();

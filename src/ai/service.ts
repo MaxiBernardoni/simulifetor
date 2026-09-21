@@ -54,7 +54,14 @@ export async function generateEvents(
 const narrationCache = new Map<string, string>();
 
 /** Reescribe el texto de un evento con el contexto de la vida. Devuelve null si tarda, falla o no pasa el filtro. */
-export async function narrate(provider: AIProvider, apiKey: string, eventId: string, text: string, ctx: string, timeoutMs = 3000): Promise<string | null> {
+export async function narrate(
+  provider: AIProvider,
+  apiKey: string,
+  eventId: string,
+  text: string,
+  ctx: string,
+  timeoutMs = 3000,
+): Promise<string | null> {
   const key = `${eventId}|${ctx}`;
   const cached = narrationCache.get(key);
   if (cached) return cached;

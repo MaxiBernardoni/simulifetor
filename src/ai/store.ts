@@ -99,7 +99,13 @@ export const useAI = create<AIState>((set, get) => {
         const kind = (e as { kind?: string }).kind;
         set({
           status:
-            kind === 'auth' ? 'La clave fue rechazada.' : kind === 'quota' ? 'Sin cuota por ahora (límite gratuito). Probá más tarde.' : kind === 'timeout' ? 'Tardó demasiado.' : 'No se pudo conectar.',
+            kind === 'auth'
+              ? 'La clave fue rechazada.'
+              : kind === 'quota'
+                ? 'Sin cuota por ahora (límite gratuito). Probá más tarde.'
+                : kind === 'timeout'
+                  ? 'Tardó demasiado.'
+                  : 'No se pudo conectar.',
         });
       } finally {
         set({ busy: false });
@@ -120,7 +126,12 @@ export const useAI = create<AIState>((set, get) => {
         pool = [...pool, ...res.added].slice(-POOL_MAX);
         if (!mock) sessionGenerated += res.added.length + res.rejected.length;
         const audit = [...get().audit, ...res.rejected].slice(-AUDIT_MAX);
-        set({ audit, status: res.error ? `Se detuvo: ${res.error.message}.` : `Listo: ${res.added.length} nuevo(s), ${res.rejected.length} rechazado(s).` });
+        set({
+          audit,
+          status: res.error
+            ? `Se detuvo: ${res.error.message}.`
+            : `Listo: ${res.added.length} nuevo(s), ${res.rejected.length} rechazado(s).`,
+        });
         publishPool();
         await persist();
       } finally {

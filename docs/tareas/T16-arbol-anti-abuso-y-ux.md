@@ -3,7 +3,7 @@
 - **Prioridad / esfuerzo:** media-alta · L
 - **Depende de:** —
 - **Autonomía:** ⚠️ hay una decisión de diseño (enfriamiento); la tarea trae un valor por defecto configurable para que Max lo ajuste a la mañana
-- **Estado:** todo
+- **Estado:** review (hechos: A anti-abuso completo, B novedades con pestaña e insignia, C búsqueda y resaltado de jugables; **pendiente**: zoom con pellizco, "Centrar en mí", colapsar ramas, memoizar `buildForest`)
 
 ## Objetivo
 La regla "solo parientes de sangre a ≤ 2 generaciones" se mide desde el personaje **actual**, así que saltando de pariente en pariente se puede llegar más lejos que el límite (encadenamiento). Además el árbol crece con las generaciones y necesita mejor navegación, y el jugador no se entera de lo que pasa con los familiares que no controla.

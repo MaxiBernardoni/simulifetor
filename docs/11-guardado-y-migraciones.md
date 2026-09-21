@@ -52,3 +52,8 @@
 ## Datos de la IA opcional
 
 `vidasim.ai.v1` (AsyncStorage): `{ config: { enabled, provider, narrator }, pool: GameEvent[], audit: [] }`. Es independiente del esquema de la partida y **no** entra en la copia de seguridad. La clave de API vive en `expo-secure-store` (`vidasim_ai_key`; en web, `vidasim.ai.key.web`) y nunca se exporta.
+
+
+## Campos opcionales del `World` (T16)
+
+`anchorId`, `lastSwitchYear`, `switchesInGeneration`, `news`, `newsSeq`, `newsSeen`. Todos opcionales: un mundo guardado sin ellos se comporta como "sin historial" (sin enfriamiento, sin novedades). No hizo falta subir `SCHEMA_VERSION`.

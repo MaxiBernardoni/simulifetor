@@ -56,12 +56,28 @@ export function bloodDistance(w: World, a: string, b: string): number | null {
 
 export const MAX_SWITCH_DISTANCE = 2;
 
+// ── Anti-abuso de los cambios de personaje (T16). Poné un valor en 0 para desactivar la regla. ──
+/** Años de juego que tienen que pasar entre dos cambios voluntarios. */
+export const SWITCH_COOLDOWN_YEARS = 5;
+/** Máximo de cambios voluntarios mientras dura una generación (la muerte siempre permite continuar). */
+export const MAX_SWITCHES_PER_GENERATION = 3;
+
 export interface SwitchCheck {
   ok: boolean;
   reason?: string;
+  /** El bloqueo pasa solo con el tiempo (enfriamiento). */
+  temporary?: boolean;
 }
 
-/** Regla anti-abuso: solo se puede vivir la vida de parientes de sangre a hasta 2 generaciones de distancia. */
+/**
+ * Regla anti-abuso: solo se puede vivir la vida de parientes de sangre vivos a hasta 2 generaciones de distancia.
+ * Mientras el personaje actual siga vivo (cambio voluntario) además rigen:
+ * - la distancia se mide también desde el personaje ancla (`w.anchorId`: con el que arrancó la ranura o el que
+ *   tomaste después de una muerte), así los saltos encadenados no alejan más de 2 generaciones;
+ * - un enfriamiento de `SWITCH_COOLDOWN_YEARS` años entre cambios;
+ * - un tope de `MAX_SWITCHES_PER_GENERATION` cambios por generación.
+ * Si el actual murió, ninguna de las tres aplica.
+ */
 export function canSwitchTo(w: World, fromId: string, toId: string): SwitchCheck {
   const to = w.nodes[toId];
   if (!to) return { ok: false, reason: 'No existe.' };
@@ -70,6 +86,33 @@ export function canSwitchTo(w: World, fromId: string, toId: string): SwitchCheck
   const d = bloodDistance(w, fromId, toId);
   if (d === null) return { ok: false, reason: 'No es pariente de sangre (es familia política).' };
   if (d > MAX_SWITCH_DISTANCE) return { ok: false, reason: 'Está a más de 2 generaciones de distancia: no comparten abuelos.' };
+
+  if (w.nodes[fromId]?.alive) {
+    const anchor = w.anchorId ?? fromId;
+    if (anchor !== fromId && w.nodes[anchor]) {
+      const da = bloodDistance(w, anchor, toId);
+      if (da === null || da > MAX_SWITCH_DISTANCE) {
+        return { ok: false, reason: 'Se aleja demasiado de tu línea familiar de origen. Se destraba cuando tu personaje actual muera.' };
+      }
+    }
+    if (SWITCH_COOLDOWN_YEARS > 0 && w.lastSwitchYear !== undefined) {
+      const left = SWITCH_COOLDOWN_YEARS - (w.year - w.lastSwitchYear);
+      if (left > 0) {
+        return {
+          ok: false,
+          temporary: true,
+          reason: `Tenés que esperar ${left} ${left === 1 ? 'año' : 'años'} más para volver a cambiar de personaje.`,
+        };
+      }
+    }
+    const gen = depthOf(w, fromId);
+    if (MAX_SWITCHES_PER_GENERATION > 0 && (w.switchesInGeneration?.[gen] ?? 0) >= MAX_SWITCHES_PER_GENERATION) {
+      return {
+        ok: false,
+        reason: 'Ya cambiaste de personaje demasiadas veces en esta generación. Se destraba cuando tu personaje actual muera.',
+      };
+    }
+  }
   return { ok: true };
 }
 

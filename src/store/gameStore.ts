@@ -63,6 +63,7 @@ interface GameState {
   newLife: (opts?: CreateOpts) => void;
   /** Pasa a vivir la vida de otro familiar. Devuelve un mensaje si no se pudo. */
   switchCharacter: (nodeId: string) => string | null;
+  markNewsRead: () => void;
   switchSlot: (i: number) => void;
   deleteSlot: (i: number) => void;
   exportData: () => string;
@@ -330,6 +331,20 @@ export const useGame = create<GameState>((set, get) => {
       const sid = get().creating?.scenarioId;
       const life = (sid ? createScenarioLife(sid, opts) : null) ?? createLife(undefined, opts);
       applyLife(life);
+    },
+
+    markNewsRead: () => {
+      const s = get();
+      const wd = s.world;
+      if (!wd?.world.news?.length) return;
+      const last = wd.world.news[wd.world.news.length - 1].id;
+      if (wd.world.newsSeen === last) return;
+      wd.world.newsSeen = last;
+      const nwd = { world: wd.world, lives: wd.lives };
+      const worlds = s.worlds.slice();
+      worlds[s.activeSlot] = nwd;
+      set({ world: nwd, worlds });
+      void saveWorld(s.activeSlot, nwd);
     },
 
     switchCharacter: (nodeId) => {

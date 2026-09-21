@@ -25,7 +25,13 @@ export function sampleEventJson(n: number): string {
     maxAge: 62,
     weight: 3,
     choices: [
-      { label: 'Ponerte a buscar otro trabajo', outcomes: [{ weight: 5, text: 'Mandaste diez currículums. Te llamaron de uno.', effects: { happiness: 2, money: -100 } }, { weight: 2, text: 'Perdiste el mes y el rumor era falso.', effects: { happiness: -3 } }] },
+      {
+        label: 'Ponerte a buscar otro trabajo',
+        outcomes: [
+          { weight: 5, text: 'Mandaste diez currículums. Te llamaron de uno.', effects: { happiness: 2, money: -100 } },
+          { weight: 2, text: 'Perdiste el mes y el rumor era falso.', effects: { happiness: -3 } },
+        ],
+      },
       { label: 'Ignorarlo', outcomes: [{ weight: 1, text: 'Nada pasó. Como casi siempre.', effects: { happiness: 1 } }] },
     ],
   });

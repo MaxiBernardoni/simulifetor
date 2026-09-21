@@ -69,10 +69,24 @@ describe('validador de eventos de IA', () => {
     ['efecto no permitido (arrest)', mut((o) => (o.choices[0].outcomes[0].effects.arrest = 5))],
     ['efecto no permitido (setFlag)', mut((o) => (o.choices[0].outcomes[0].effects.setFlag = 'x'))],
     ['efectos acumulados enormes', mut((o) => (o.choices[0].outcomes[0].effects = { happiness: 15, health: 15, smarts: 15, looks: 15 }))],
-    ['más de tres resultados', mut((o) => (o.choices[0].outcomes = [o.choices[0].outcomes[0], o.choices[0].outcomes[0], o.choices[0].outcomes[0], o.choices[0].outcomes[0]]))],
+    [
+      'más de tres resultados',
+      mut(
+        (o) =>
+          (o.choices[0].outcomes = [
+            o.choices[0].outcomes[0],
+            o.choices[0].outcomes[0],
+            o.choices[0].outcomes[0],
+            o.choices[0].outcomes[0],
+          ]),
+      ),
+    ],
     ['resultado sin texto', mut((o) => delete o.choices[0].outcomes[0].text)],
     ['sexo con un menor', mut((o) => (o.text = 'Un adolescente de 15 años tiene sexo con un compañero en la escuela.'))],
-    ['contenido sexual en evento para menores', mut((o) => ((o.minAge = 10), (o.maxAge = 16), (o.text = 'Tu compañero te muestra imágenes de sexo en el recreo del colegio.')))],
+    [
+      'contenido sexual en evento para menores',
+      mut((o) => ((o.minAge = 10), (o.maxAge = 16), (o.text = 'Tu compañero te muestra imágenes de sexo en el recreo del colegio.'))),
+    ],
     ['pedofilia', mut((o) => (o.text = 'Aparece una historia de pedofilia en tu barrio que nadie quiere contar.'))],
     ['suicidio', mut((o) => (o.text = 'Pensás en el suicidio cada vez que volvés solo a casa de la oficina.'))],
     ['quitarse la vida en una opción', mut((o) => (o.choices[0].label = 'Quitarse la vida'))],
@@ -92,7 +106,13 @@ describe('validador de eventos de IA', () => {
     expect(first.ok).toBe(true);
     if (!first.ok) return;
     expect(validateAiEvent(sampleEventJson(3), new Set([first.event.id])).ok).toBe(false);
-    expect(validateAiEvent(mut((o) => (o.text = 'Otro texto totalmente distinto para el mismo título de antes.')), new Set(), new Set(['rumor en la oficina 1'])).ok).toBe(false);
+    expect(
+      validateAiEvent(
+        mut((o) => (o.text = 'Otro texto totalmente distinto para el mismo título de antes.')),
+        new Set(),
+        new Set(['rumor en la oficina 1']),
+      ).ok,
+    ).toBe(false);
   });
 
   it('un evento validado no puede matar ni mover más de lo permitido', () => {
@@ -155,16 +175,28 @@ describe('generación con proveedor simulado', () => {
     const original = 'Tu jefe te pide que trabajes el fin de semana sin pagarte nada.';
     expect(await narrate(createMock([new AIError('timeout', 't')]), 'k', 'e1', original, 'ctx')).toBeNull();
     expect(await narrate(createMock(['{"x":1}']), 'k', 'e2', original, 'ctx')).toBeNull();
-    expect(await narrate(createMock(['Mirá este enlace http://malo.example que te va a gustar mucho']), 'k', 'e3', original, 'ctx')).toBeNull();
+    expect(
+      await narrate(createMock(['Mirá este enlace http://malo.example que te va a gustar mucho']), 'k', 'e3', original, 'ctx'),
+    ).toBeNull();
     expect(await narrate(createMock(['ok']), 'k', 'e4', original, 'ctx')).toBeNull();
-    const good = await narrate(createMock(['Tu jefe, con su sonrisa de siempre, te pide que trabajes el sábado gratis.']), 'k', 'e5', original, 'ctx');
+    const good = await narrate(
+      createMock(['Tu jefe, con su sonrisa de siempre, te pide que trabajes el sábado gratis.']),
+      'k',
+      'e5',
+      original,
+      'ctx',
+    );
     expect(good).toContain('sábado');
   });
 });
 
 describe('proveedores HTTP (fetch simulado, sin red)', () => {
-  const ok = (data: unknown): FetchLike => async () => ({ ok: true, status: 200, json: async () => data, text: async () => JSON.stringify(data) });
-  const status = (n: number): FetchLike => async () => ({ ok: false, status: n, json: async () => ({}), text: async () => '' });
+  const ok =
+    (data: unknown): FetchLike =>
+    async () => ({ ok: true, status: 200, json: async () => data, text: async () => JSON.stringify(data) });
+  const status =
+    (n: number): FetchLike =>
+    async () => ({ ok: false, status: n, json: async () => ({}), text: async () => '' });
 
   it('Gemini y Groq extraen el texto de la respuesta', async () => {
     const g = createGemini(ok({ candidates: [{ content: { parts: [{ text: 'hola' }] } }] }));
@@ -177,14 +209,18 @@ describe('proveedores HTTP (fetch simulado, sin red)', () => {
     await expect(createGroq(status(401)).generate('p', 'k')).rejects.toMatchObject({ kind: 'auth' });
     await expect(createGroq(status(429)).generate('p', 'k')).rejects.toMatchObject({ kind: 'quota' });
     await expect(createGroq(ok({ choices: [] })).generate('p', 'k')).rejects.toMatchObject({ kind: 'bad-response' });
-    await expect(createGemini(ok({ promptFeedback: { blockReason: 'SAFETY' } })).generate('p', 'k')).rejects.toMatchObject({ kind: 'filtered' });
+    await expect(createGemini(ok({ promptFeedback: { blockReason: 'SAFETY' } })).generate('p', 'k')).rejects.toMatchObject({
+      kind: 'filtered',
+    });
   });
 
   it('reintenta una vez ante un 500 y luego tiene éxito', async () => {
     let calls = 0;
     const f: FetchLike = async () => {
       calls++;
-      return calls === 1 ? { ok: false, status: 500, json: async () => ({}), text: async () => '' } : { ok: true, status: 200, json: async () => ({ x: 1 }), text: async () => '' };
+      return calls === 1
+        ? { ok: false, status: 500, json: async () => ({}), text: async () => '' }
+        : { ok: true, status: 200, json: async () => ({ x: 1 }), text: async () => '' };
     };
     expect(await postJson('u', {}, {}, { fetchImpl: f })).toEqual({ x: 1 });
     expect(calls).toBe(2);

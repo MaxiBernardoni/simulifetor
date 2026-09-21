@@ -74,7 +74,11 @@ function hash(s: string): string {
 }
 
 /** Convierte la respuesta de la IA en un GameEvent seguro, o explica por qué se rechaza. */
-export function validateAiEvent(raw: unknown, existingIds: Set<string> = new Set(), existingTitles: Set<string> = new Set()): ValidationResult {
+export function validateAiEvent(
+  raw: unknown,
+  existingIds: Set<string> = new Set(),
+  existingTitles: Set<string> = new Set(),
+): ValidationResult {
   let data: unknown = raw;
   if (typeof raw === 'string') {
     try {

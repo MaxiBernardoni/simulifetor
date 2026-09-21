@@ -2,6 +2,14 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Árbol: anti-abuso y novedades] — T16 (parcial)
+
+- **Anti-abuso**: la distancia de sangre también se mide desde el personaje ancla (los saltos encadenados ya no te alejan de tu línea), enfriamiento de 5 años entre cambios y máximo 3 cambios por generación. La muerte del personaje actual anula todo. Los motivos se muestran en la ficha de cada persona (los bloqueos temporales, en ámbar). Valores configurables en `engine/kinship.ts`.
+- **Novedades de la familia**: nacimientos, muertes, casamientos y separaciones (`engine/news.ts`) en una pestaña nueva del árbol, con contador de no leídas en el Menú.
+- **Árbol**: búsqueda por nombre y resaltado de "los que puedo jugar".
+- `performSwitch` registra los cambios; campos nuevos y opcionales en `World` (sin subir el esquema).
+- Pendiente: zoom con pellizco, "Centrar en mí", colapsar ramas.
+
 ## [Balance] — T01
 
 - `npm run balance -- --n=500 --profile=normal|crimen|familia|pasivo [--json] [--out]`: informe de esperanza de vida, causas de muerte, patrimonio, % de quiebras/millonarias/antecedentes/casadas/con hijos, uso de cada evento (dominantes y muertos) y rendimiento (`engine/balance.ts`, `scripts/balance.ts`). Informes en `docs/balance/`.

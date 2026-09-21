@@ -15,6 +15,8 @@ export function MoreScreen() {
   const wipe = useGame((st) => st.wipe);
   const setTab = useGame((st) => st.setTab);
   const wins = useGame((st) => st.scenarioWins);
+  const world = useGame((st) => st.world);
+  const unreadNews = (world?.world.news ?? []).filter((n) => n.id > (world?.world.newsSeen ?? 0)).length;
   const [gallery, setGallery] = useState(false);
 
   const confirmNew = () => {
@@ -35,7 +37,12 @@ export function MoreScreen() {
       <View style={{ gap: 10, marginTop: space.md }}>
         <Button label="Nueva vida" icon="Baby" onPress={confirmNew} />
         <Button label="Partidas guardadas" icon="Library" variant="ghost" onPress={() => setTab('slots')} />
-        <Button label="Árbol genealógico" icon="Users" variant="ghost" onPress={() => setTab('tree')} />
+        <Button
+          label={unreadNews > 0 ? `Árbol genealógico (${unreadNews} novedades)` : 'Árbol genealógico'}
+          icon="Users"
+          variant="ghost"
+          onPress={() => setTab('tree')}
+        />
         <Button label="IA (opcional)" icon="Bot" variant="ghost" onPress={() => setTab('ai')} />
         <Button label="Copia de seguridad" icon="Upload" variant="ghost" onPress={() => setTab('backup')} />
         <Button label="Borrar todos los datos" variant="danger" onPress={confirmWipe} />

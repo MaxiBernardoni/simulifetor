@@ -48,6 +48,12 @@ Cada año: con probabilidad `activityChance` busca trabajo, se anota a la univer
 - **Herencia** (`applySwitch`): solo si murió el personaje anterior: hijo 85 % del patrimonio a heredar si es el único (60 % si hay hermanos), otro pariente 15 %; patrimonio a heredar = 80 % del neto (20 % de impuesto de sucesión). Marca `heir` y, si corresponde, `famous_family` (neto ≥ $500.000) o `infamous_family` (antecedentes/homicidio).
 - **Materialización**: crea la vida con padres y hermanos reales "congelados" (`frozen`), simula el pasado con `autoPlay` (sin pareja ni hijos propios), y al terminar reemplaza los inventados por los reales del árbol; reintenta hasta 10 veces si muere en la simulación.
 
+### Anti-abuso del cambio de personaje y novedades (T16)
+
+- `canSwitchTo` exige siempre: pariente de sangre vivo a ≤ 2 generaciones **del personaje actual**. Con el actual vivo (cambio voluntario) exige además: ≤ 2 generaciones del **ancla** (`World.anchorId`), `SWITCH_COOLDOWN_YEARS` (5) años desde `World.lastSwitchYear` y menos de `MAX_SWITCHES_PER_GENERATION` (3) cambios en la generación (`World.switchesInGeneration`). Si el actual murió no aplica nada de esto; quien lo reemplaza pasa a ser el ancla y arranca un enfriamiento nuevo.
+- `performSwitch` (`engine/switch.ts`) registra el cambio. `SwitchCheck.temporary` marca los bloqueos que se van con el tiempo (la UI los pinta ámbar).
+- **Novedades** (`engine/news.ts`): al avanzar un año se compara una foto de los nodos y se escriben nacimientos, muertes, casamientos/parejas nuevas y separaciones en `World.news` (máx. 60, ids crecientes; `newsSeen` guarda la última leída).
+
 ## Legado (`dynasty.ts`)
 
 `legacy = edad + patrimonio/8.000 + 6×hijos + 4×nivel de estudios + 15 si llegó al tope de su carrera − 8 con antecedentes − 25 si homicida + 30 si superó un escenario` (mínimo 0).

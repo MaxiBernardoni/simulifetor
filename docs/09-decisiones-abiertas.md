@@ -27,7 +27,7 @@
 ## Abiertas
 
 - **Nombre** del juego (provisorio: VidaSim).
-- **Abuso por saltos encadenados**: la regla de 2 generaciones se mide desde el personaje actual, así que saltando de pariente en pariente se puede llegar poco a poco más lejos. Opciones: enfriamiento (un cambio cada N años), límite de cambios por generación, o medir desde el primer personaje. Ver T16.
+- **Abuso por saltos encadenados** — ✅ **resuelto (T16)**: la distancia también se mide desde el personaje ancla (arranque de la ranura o quien tomaste tras una muerte), hay un enfriamiento de **5 años** entre cambios y un tope de **3 cambios por generación**. Todo se anula cuando el personaje actual muere. Valores en `engine/kinship.ts` (`SWITCH_COOLDOWN_YEARS`, `MAX_SWITCHES_PER_GENERATION`; en 0 se desactivan). Ajustalos si te resultan muy duros o muy blandos.
 - **Instalación permanente en el iPhone**: PWA (gratis) vs. cuenta de Apple Developer. Ver T13.
 - **Dificultad**: hoy una sola ("realista con caos"). ¿Modos fácil/difícil?
 - **Dinero y época**: no hay inflación ni escalas por época todavía (salarios y precios son fijos). Ver T05.

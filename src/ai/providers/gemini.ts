@@ -16,7 +16,10 @@ export function createGemini(fetchImpl?: FetchLike): AIProvider {
         { 'x-goog-api-key': apiKey },
         { contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 1, responseMimeType: 'text/plain' } },
         { ...opts, fetchImpl },
-      )) as { candidates?: { content?: { parts?: { text?: string }[] }; finishReason?: string }[]; promptFeedback?: { blockReason?: string } };
+      )) as {
+        candidates?: { content?: { parts?: { text?: string }[] }; finishReason?: string }[];
+        promptFeedback?: { blockReason?: string };
+      };
       if (data.promptFeedback?.blockReason) throw new AIError('filtered', 'el proveedor bloqueó el pedido');
       const cand = data.candidates?.[0];
       if (cand?.finishReason === 'SAFETY') throw new AIError('filtered', 'el proveedor bloqueó la respuesta');

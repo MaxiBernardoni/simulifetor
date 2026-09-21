@@ -21,7 +21,11 @@ export async function loadAIData(): Promise<AIData> {
     const raw = await AsyncStorage.getItem(DATA_KEY);
     if (raw) {
       const d = JSON.parse(raw) as Partial<AIData>;
-      return { config: { ...DEFAULT_AI_CONFIG, ...(d.config ?? {}) }, pool: Array.isArray(d.pool) ? d.pool : [], audit: Array.isArray(d.audit) ? d.audit : [] };
+      return {
+        config: { ...DEFAULT_AI_CONFIG, ...(d.config ?? {}) },
+        pool: Array.isArray(d.pool) ? d.pool : [],
+        audit: Array.isArray(d.audit) ? d.audit : [],
+      };
     }
   } catch {
     // datos ilegibles: se arranca limpio

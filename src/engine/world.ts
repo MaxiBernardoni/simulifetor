@@ -8,6 +8,7 @@ import { deriveLook } from './looks';
 import { hairStylesFor } from '../content/look';
 import { netWorth } from './assets';
 import { autoPlay } from './autoplay';
+import { recordNews, snapshotWorld } from './news';
 
 /** Una persona del árbol genealógico. Puede tener una vida completa o simularse de forma liviana. */
 export interface TreeNode {
@@ -36,6 +37,14 @@ export interface TreeNode {
   full?: boolean;
 }
 
+export interface NewsItem {
+  id: number;
+  year: number;
+  kind: 'birth' | 'death' | 'wedding' | 'split';
+  text: string;
+  nodeId?: string;
+}
+
 export interface World {
   familyId: string;
   surname: string;
@@ -45,6 +54,17 @@ export interface World {
   seq: number;
   rng: number;
   nodes: Record<string, TreeNode>;
+  /** Personaje desde el que se mide la deriva de los cambios voluntarios (se reinicia cuando alguien muere). */
+  anchorId?: string;
+  /** Año del último cambio de personaje (enfriamiento). */
+  lastSwitchYear?: number;
+  /** Cuántos cambios voluntarios hubo por generación (número de generación → cantidad). */
+  switchesInGeneration?: Record<number, number>;
+  /** Novedades de la familia (máx. 60). */
+  news?: NewsItem[];
+  newsSeq?: number;
+  /** Id de la última novedad leída. */
+  newsSeen?: number;
 }
 
 /** El mundo más las vidas completas de quienes ya jugaste (menos la actual, que vive en el store). */
@@ -468,6 +488,7 @@ export function advanceWorld(wd: WorldData, current: Life): { died: Life[] } {
   const w = wd.world;
   const died: Life[] = [];
   const rng = wrng(w);
+  const before = snapshotWorld(w);
   // Los recién llegados (bebés, parejas nuevas) se registran DESPUÉS de avanzar el año, para que no envejezcan de más.
   while (w.year < current.year) {
     w.year++;
@@ -478,6 +499,7 @@ export function advanceWorld(wd: WorldData, current: Life): { died: Life[] } {
       else liteYear(w, node, rng);
     }
   }
+  recordNews(w, before);
   for (const l of [current, ...Object.values(wd.lives)]) {
     syncLifeToWorld(w, l);
     syncWorldToLife(w, l);
