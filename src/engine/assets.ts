@@ -55,7 +55,7 @@ export function buyAsset(life: Life, catalogId: string, financed: boolean): void
     value: item.price,
     boughtYear: life.year,
   });
-  addLog(life, `Compraste: ${item.name} por ${formatMoney(item.price)}${financed ? ' (financiado)' : ''}.`, 'good', 'Compra');
+  addLog(life, `Compraste: ${item.name} por ${formatMoney(item.price)}${financed ? ' (financiado)' : ''}.`, 'good', 'Compra', 'House');
 }
 
 export function sellAsset(life: Life, assetId: string): void {
@@ -64,14 +64,14 @@ export function sellAsset(life: Life, assetId: string): void {
   const a = life.assets[i];
   life.assets.splice(i, 1);
   life.money += a.value;
-  addLog(life, `Vendiste ${a.name.toLowerCase()} por ${formatMoney(a.value)}.`, 'neutral', 'Venta');
+  addLog(life, `Vendiste ${a.name.toLowerCase()} por ${formatMoney(a.value)}.`, 'neutral', 'Venta', 'Coins');
 }
 
 export function takeLoan(life: Life, amount: number): void {
   if (life.pending.length || amount > loanCapacity(life)) return;
   life.loan += amount;
   life.money += amount;
-  addLog(life, `Pediste un préstamo de ${formatMoney(amount)}.`, 'neutral', 'Banco');
+  addLog(life, `Pediste un préstamo de ${formatMoney(amount)}.`, 'neutral', 'Banco', 'Landmark');
 }
 
 export function repayLoan(life: Life, amount: number): void {
@@ -79,7 +79,7 @@ export function repayLoan(life: Life, amount: number): void {
   if (pay <= 0 || life.pending.length) return;
   life.loan -= pay;
   life.money -= pay;
-  addLog(life, `Devolviste ${formatMoney(pay)} del préstamo.`, 'neutral', 'Banco');
+  addLog(life, `Devolviste ${formatMoney(pay)} del préstamo.`, 'neutral', 'Banco', 'Landmark');
 }
 
 export function investMoney(life: Life, amount: number): void {
@@ -106,7 +106,7 @@ export function updateAssets(life: Life, rng: Rng): void {
     const delta = Math.round(life.invested * r);
     life.invested += delta;
     if (Math.abs(r) >= 0.14) {
-      addLog(life, r > 0 ? `Tus inversiones subieron ${formatMoney(delta)}.` : `Tus inversiones cayeron ${formatMoney(-delta)}.`, r > 0 ? 'good' : 'bad', 'Inversiones');
+      addLog(life, r > 0 ? `Tus inversiones subieron ${formatMoney(delta)}.` : `Tus inversiones cayeron ${formatMoney(-delta)}.`, r > 0 ? 'good' : 'bad', 'Inversiones', 'TrendingUp');
     }
   }
   if (life.loan > 0) {
@@ -114,7 +114,7 @@ export function updateAssets(life: Life, rng: Rng): void {
     const pay = Math.min(life.loan, Math.max(1500, Math.round(life.loan * 0.1)));
     life.loan -= pay;
     life.money -= pay;
-    if (life.loan === 0) addLog(life, 'Terminaste de pagar tu préstamo.', 'good', 'Banco');
+    if (life.loan === 0) addLog(life, 'Terminaste de pagar tu préstamo.', 'good', 'Banco', 'Landmark');
   }
 }
 

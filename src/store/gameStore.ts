@@ -95,7 +95,7 @@ export const useGame = create<GameState>((set, get) => {
     for (const a of ACHIEVEMENTS) {
       if (!achievements.includes(a.id) && a.check(next)) {
         achievements = [...achievements, a.id];
-        addLog(next, `Logro desbloqueado: ${a.title}.`, 'good', 'Logro');
+        addLog(next, `Logro desbloqueado: ${a.title}.`, 'good', 'Logro', 'Trophy');
       }
     }
     set({ life: next, history, achievements });

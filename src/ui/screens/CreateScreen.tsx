@@ -58,7 +58,7 @@ export function CreateScreen() {
 
         <Button label="Aleatorio" icon="Dices" variant="ghost" onPress={randomize} />
 
-        <SectionTitle>Nombre</SectionTitle>
+        <SectionTitle icon="IdCard" color="#0E7C7B">Nombre</SectionTitle>
         <TextInput
           style={s.input}
           value={name}
@@ -78,7 +78,7 @@ export function CreateScreen() {
           autoCapitalize="words"
         />
 
-        <SectionTitle>Género</SectionTitle>
+        <SectionTitle icon="Users" color="#9B5DE5">Género</SectionTitle>
         <View style={{ flexDirection: 'row', gap: 10 }}>
           {(['M', 'F'] as Gender[]).map((g) => (
             <Pressable key={g} onPress={() => setGender(g)} style={[s.choice, s.half, gender === g && s.choiceOn]}>
@@ -87,13 +87,13 @@ export function CreateScreen() {
           ))}
         </View>
 
-        <SectionTitle>Color de piel · {SKIN_NAMES[look.skin]}</SectionTitle>
+        <SectionTitle icon="Palette" color="#E76F51">Color de piel · {SKIN_NAMES[look.skin]}</SectionTitle>
         <Swatches palette={SKIN_TONES} value={look.skin} onChange={(i) => set({ skin: i })} names={SKIN_NAMES} />
 
-        <SectionTitle>Color de ojos · {EYE_NAMES[look.eyes]}</SectionTitle>
+        <SectionTitle icon="Eye" color="#3A86B4">Color de ojos · {EYE_NAMES[look.eyes]}</SectionTitle>
         <Swatches palette={EYE_COLORS} value={look.eyes} onChange={(i) => set({ eyes: i })} names={EYE_NAMES} />
 
-        <SectionTitle>Peinado</SectionTitle>
+        <SectionTitle icon="Scissors" color="#E0517A">Peinado</SectionTitle>
         <View style={s.chipRow}>
           {HAIR_STYLES.map((n, i) => (
             <Pressable key={n} onPress={() => set({ hairStyle: i })} style={[s.choice, s.chip, look.hairStyle === i && s.choiceOn]}>
@@ -102,7 +102,7 @@ export function CreateScreen() {
           ))}
         </View>
 
-        <SectionTitle>Color de pelo</SectionTitle>
+        <SectionTitle icon="Droplet" color="#E9A23B">Color de pelo</SectionTitle>
         <Swatches palette={HAIR_COLORS} value={look.hairColor} onChange={(i) => set({ hairColor: i })} />
 
         <View style={{ marginTop: space.xl, gap: 10 }}>

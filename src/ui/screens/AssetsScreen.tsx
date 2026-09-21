@@ -4,7 +4,7 @@ import { useGame } from '../../store/gameStore';
 import { formatMoney } from '../../engine/format';
 import { assetValue, canBuy, loanCapacity, netWorth } from '../../engine/assets';
 import { CATALOG, INVEST_STEPS, LOAN_STEPS } from '../../content/assets';
-import { Button, Card, Row, SectionTitle } from '../components';
+import { Button, Card, IconTile, Row, SectionTitle } from '../components';
 import { colors, space } from '../theme';
 
 const CLASS = { 1: 'Humilde', 2: 'Clase media', 3: 'Acomodada' } as const;
@@ -45,8 +45,13 @@ export function AssetsScreen() {
       const fin = canBuy(life, it.id, true);
       return (
         <Card key={it.id} style={{ marginBottom: 8 }}>
-          <Text style={{ color: colors.text, fontWeight: '700', fontSize: 15 }}>{it.name}</Text>
-          <Text style={{ color: colors.muted, marginTop: 2 }}>{formatMoney(it.price)}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <IconTile name={it.icon} color={it.kind === 'house' ? '#0E7C7B' : '#E76F51'} size={46} solid />
+            <View>
+              <Text style={{ color: colors.text, fontWeight: '700', fontSize: 15 }}>{it.name}</Text>
+              <Text style={{ color: colors.muted, marginTop: 2 }}>{formatMoney(it.price)}</Text>
+            </View>
+          </View>
           {cash && fin ? <Text style={{ color: colors.muted, fontSize: 12, marginTop: 6 }}>{cash}</Text> : null}
           <ButtonRow>
             <Small label="Comprar" variant="primary" disabled={blocked || !!cash} onPress={() => g.buy(it.id, false)} />
@@ -65,21 +70,22 @@ export function AssetsScreen() {
         <Line label="Patrimonio neto" value={formatMoney(netWorth(life))} />
       </Card>
 
-      <SectionTitle>Ingresos</SectionTitle>
+      <SectionTitle icon="Banknote" color="#2A9D6F">Ingresos</SectionTitle>
       <Card>
         <Line label="Sueldo bruto" value={life.job ? formatMoney(life.job.salary) : '—'} />
         <Line label="Jubilación" value={life.pension ? formatMoney(life.pension) : '—'} />
         <Line label="Impuestos" value="20%" />
       </Card>
 
-      <SectionTitle>Mis bienes · {formatMoney(assetValue(life))}</SectionTitle>
+      <SectionTitle icon="Gem" color="#E9A23B">Mis bienes · {formatMoney(assetValue(life))}</SectionTitle>
       {life.assets.length === 0 ? (
         <Text style={{ color: colors.muted }}>No tenés propiedades ni autos. Pagás alquiler ($7.000 por año).</Text>
       ) : (
         life.assets.map((a) => (
           <Row
             key={a.id}
-            icon={a.kind === 'house' ? 'House' : 'Zap'}
+            icon={a.kind === 'house' ? 'House' : 'Car'}
+            tint={a.kind === 'house' ? '#0E7C7B' : '#E76F51'}
             title={a.name}
             subtitle={`Vale ${formatMoney(a.value)} · comprado en ${a.boughtYear}`}
             disabled={blocked}
@@ -89,12 +95,12 @@ export function AssetsScreen() {
         ))
       )}
 
-      <SectionTitle>Vivienda</SectionTitle>
+      <SectionTitle icon="House" color="#0E7C7B">Vivienda</SectionTitle>
       {shop(houses)}
-      <SectionTitle>Autos</SectionTitle>
+      <SectionTitle icon="Car" color="#E76F51">Autos</SectionTitle>
       {shop(cars)}
 
-      <SectionTitle>Banco</SectionTitle>
+      <SectionTitle icon="Landmark" color="#3A86B4">Banco</SectionTitle>
       <Card>
         <Line label="Préstamo actual" value={formatMoney(life.loan)} color={life.loan > 0 ? colors.warn : undefined} />
         <Line label="Podés pedir hasta" value={formatMoney(capacity)} />
@@ -112,7 +118,7 @@ export function AssetsScreen() {
         ) : null}
       </Card>
 
-      <SectionTitle>Inversiones</SectionTitle>
+      <SectionTitle icon="TrendingUp" color="#9B5DE5">Inversiones</SectionTitle>
       <Card>
         <Line label="Invertido" value={formatMoney(life.invested)} />
         <Text style={{ color: colors.muted, fontSize: 12 }}>Rinde entre -25% y +40% por año. Sin garantías.</Text>
@@ -128,7 +134,7 @@ export function AssetsScreen() {
         ) : null}
       </Card>
 
-      <SectionTitle>Perfil</SectionTitle>
+      <SectionTitle icon="IdCard" color="#7A7466">Perfil</SectionTitle>
       <Card>
         <Line label="Origen familiar" value={CLASS[life.wealthClass]} />
         <Line label="Antecedentes penales" value={life.flags.criminal_record ? 'Sí' : 'No'} color={life.flags.criminal_record ? colors.bad : undefined} />

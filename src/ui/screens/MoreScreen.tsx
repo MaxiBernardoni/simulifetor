@@ -33,13 +33,13 @@ export function MoreScreen() {
         <Button label="Borrar todos los datos" variant="danger" onPress={confirmWipe} />
       </View>
 
-      <SectionTitle>Logros · {unlocked.length}/{ACHIEVEMENTS.length}</SectionTitle>
+      <SectionTitle icon="Trophy" color="#E9A23B">Logros · {unlocked.length}/{ACHIEVEMENTS.length}</SectionTitle>
       {ACHIEVEMENTS.map((a) => {
         const done = unlocked.includes(a.id);
-        return <Row key={a.id} icon={done ? a.icon : 'Lock'} title={done ? a.title : '???'} subtitle={a.desc} disabled={!done} />;
+        return <Row key={a.id} icon={done ? a.icon : 'Lock'} tint={done ? '#E9A23B' : '#9AA0A6'} title={done ? a.title : '???'} subtitle={a.desc} disabled={!done} />;
       })}
 
-      <SectionTitle>Vidas anteriores</SectionTitle>
+      <SectionTitle icon="Ghost" color="#5B6572">Vidas anteriores</SectionTitle>
       {history.length === 0 ? (
         <Text style={{ color: colors.muted }}>Todavía no moriste. Todo a su tiempo.</Text>
       ) : (

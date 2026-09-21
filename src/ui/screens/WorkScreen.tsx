@@ -22,7 +22,7 @@ export function WorkScreen() {
   return (
     <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: 40 }}>
 
-      <SectionTitle>Educación</SectionTitle>
+      <SectionTitle icon="GraduationCap" color="#3A86B4">Educación</SectionTitle>
       <Card>
         <Text style={{ color: colors.text, fontSize: 16, fontWeight: '700' }}>{EDU[life.edu.level]}</Text>
         {life.edu.enrolled ? (
@@ -46,7 +46,7 @@ export function WorkScreen() {
         </View>
       </Card>
 
-      <SectionTitle>Trabajo</SectionTitle>
+      <SectionTitle icon="BriefcaseBusiness" color="#0E7C7B">Trabajo</SectionTitle>
       {life.job ? (
         <Card>
           <Text style={{ color: colors.text, fontSize: 18, fontWeight: '800' }}>{life.job.title}</Text>
@@ -57,7 +57,7 @@ export function WorkScreen() {
           <Bar value={life.job.performance} color={life.job.performance > 60 ? colors.good : life.job.performance > 30 ? colors.warn : colors.bad} />
           <View style={{ marginTop: 12 }}>
             {jobActs.map(({ a, st }) => (
-              <Row key={a.id} icon={a.icon} title={a.label} subtitle={st.reason ?? a.desc} disabled={blocked || !!st.reason} onPress={() => g.activity(a.id)} />
+              <Row key={a.id} icon={a.icon} tint="#0E7C7B" title={a.label} subtitle={st.reason ?? a.desc} disabled={blocked || !!st.reason} onPress={() => g.activity(a.id)} />
             ))}
             <Button label="Renunciar" variant="danger" onPress={g.quitJob} disabled={blocked} />
           </View>
@@ -81,14 +81,15 @@ export function WorkScreen() {
 
       {life.offers.length > 0 ? (
         <>
-          <SectionTitle>Ofertas disponibles</SectionTitle>
+          <SectionTitle icon="Handshake" color="#2A9D6F">Ofertas disponibles</SectionTitle>
           {life.offers.map((id) => {
             const c = getCareer(id);
             if (!c) return null;
             return (
               <Row
                 key={id}
-                icon="Briefcase"
+                icon="BriefcaseBusiness"
+                tint="#2A9D6F"
                 title={c.levels[0].title}
                 subtitle={`${c.sector} · ${formatMoney(c.levels[0].salary)} por año`}
                 disabled={blocked}

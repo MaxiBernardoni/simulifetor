@@ -1,7 +1,8 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { ViewStyle } from 'react-native';
-import type { Delta, StatKey } from '../engine/types';
+import type { Delta, Life, Look, Person, StatKey } from '../engine/types';
+import { Avatar } from './Avatar';
 import { formatMoney } from '../engine/format';
 import { colors, radius, space, barColor } from './theme';
 import { Icon } from './Icon';
@@ -18,8 +19,26 @@ export function Card({ children, style }: { children: React.ReactNode; style?: V
   return <View style={[s.card, style]}>{children}</View>;
 }
 
-export function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <Text style={s.sectionTitle}>{children}</Text>;
+export function SectionTitle({ children, icon, color }: { children: React.ReactNode; icon?: string; color?: string }) {
+  if (!icon) return <Text style={s.sectionTitle}>{children}</Text>;
+  const c = color ?? colors.accent;
+  return (
+    <View style={s.sectionRow}>
+      <View style={[s.sectionIcon, { backgroundColor: c + '22' }]}>
+        <Icon name={icon} size={16} color={c} />
+      </View>
+      <Text style={[s.sectionTitle, { marginTop: 0, marginBottom: 0, color: c }]}>{children}</Text>
+    </View>
+  );
+}
+
+/** Ficha cuadrada con ícono y color de fondo suave. */
+export function IconTile({ name, color = colors.accent, size = 40, solid }: { name: string; color?: string; size?: number; solid?: boolean }) {
+  return (
+    <View style={{ width: size, height: size, borderRadius: size * 0.3, backgroundColor: solid ? color : color + '22', alignItems: 'center', justifyContent: 'center' }}>
+      <Icon name={name} size={Math.round(size * 0.52)} color={solid ? '#fff' : color} />
+    </View>
+  );
 }
 
 export function Button({
@@ -32,10 +51,10 @@ export function Button({
   label: string;
   onPress: () => void;
   disabled?: boolean;
-  variant?: 'primary' | 'ghost' | 'danger';
+  variant?: 'primary' | 'ghost' | 'danger' | 'coral';
   icon?: string;
 }) {
-  const bg = variant === 'primary' ? colors.accent : variant === 'danger' ? colors.bad : colors.surface2;
+  const bg = variant === 'primary' ? colors.accent : variant === 'danger' ? colors.bad : variant === 'coral' ? colors.ageButton : colors.surface2;
   return (
     <Pressable
       onPress={onPress}
@@ -99,6 +118,8 @@ export function Row({
   onPress,
   disabled,
   right,
+  tint,
+  avatar,
 }: {
   icon?: string;
   title: string;
@@ -106,14 +127,12 @@ export function Row({
   onPress?: () => void;
   disabled?: boolean;
   right?: React.ReactNode;
+  tint?: string;
+  avatar?: React.ReactNode;
 }) {
   return (
     <Pressable onPress={onPress} disabled={disabled || !onPress} style={({ pressed }) => [s.row, { opacity: disabled ? 0.45 : pressed ? 0.75 : 1 }]}>
-      {icon ? (
-        <View style={s.rowIcon}>
-          <Icon name={icon} size={20} color={colors.text} />
-        </View>
-      ) : null}
+      {avatar ?? (icon ? <IconTile name={icon} color={tint ?? colors.accent} size={42} /> : null)}
       <View style={{ flex: 1 }}>
         <Text style={s.rowTitle}>{title}</Text>
         {subtitle ? <Text style={s.rowSub}>{subtitle}</Text> : null}
@@ -125,6 +144,8 @@ export function Row({
 
 const s = StyleSheet.create({
   card: { backgroundColor: colors.surface, borderRadius: radius.md, padding: space.lg, borderWidth: 1, borderColor: colors.border },
+  sectionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: space.lg, marginBottom: space.sm },
+  sectionIcon: { width: 26, height: 26, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   sectionTitle: { color: colors.muted, fontSize: 12, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', marginTop: space.lg, marginBottom: space.sm },
   btn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, paddingHorizontal: 18, borderRadius: radius.md },
   btnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
@@ -222,3 +243,92 @@ const ls = StyleSheet.create({
   fill: { height: 10, borderRadius: 6 },
   pct: { width: 34, textAlign: 'right', color: colors.text, fontWeight: '800', fontSize: 16 },
 });
+
+// ───────── Extras visuales ─────────
+function hash(str: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
+  return h >>> 0;
+}
+
+/** Aspecto determinístico para una persona, según su id, género y edad. Los familiares comparten tono de piel. */
+export function lookForPerson(p: Person, life: Life): Look {
+  const h = hash(p.id);
+  const family = p.kind === 'mother' || p.kind === 'father' || p.kind === 'sibling' || p.kind === 'child';
+  const styles = p.age < 12 ? [0, 5, 6] : p.gender === 'F' ? [1, 1, 5, 6, 2, 0] : [0, 0, 3, 4, 7, 0];
+  return {
+    skin: family ? life.look.skin : h % 6,
+    eyes: (h >> 4) % 6,
+    hairStyle: styles[(h >> 7) % styles.length],
+    hairColor: p.age >= 65 ? 6 : [0, 1, 2, 3, 4, 5, 7, 1, 0, 2][(h >> 11) % 10],
+  };
+}
+
+export function PersonAvatar({ person, life, size = 44 }: { person: Person; life: Life; size?: number }) {
+  return (
+    <View style={{ opacity: person.alive ? 1 : 0.45 }}>
+      <Avatar look={lookForPerson(person, life)} size={size} />
+    </View>
+  );
+}
+
+/** Insignias de estado del personaje (pareja, hijos, casa, cárcel…). */
+export function statusBadges(life: Life): { icon: string; color: string; label: string }[] {
+  const out: { icon: string; color: string; label: string }[] = [];
+  const partner = life.people.find((p) => p.alive && p.kind === 'partner');
+  const kids = life.people.filter((p) => p.kind === 'child' && p.alive).length;
+  if (life.jailYears > 0) out.push({ icon: 'Lock', color: '#5B6572', label: 'Preso' });
+  if (life.flags.fugitive) out.push({ icon: 'Siren', color: '#D64550', label: 'Prófugo' });
+  if (partner) out.push({ icon: partner.married ? 'Gem' : 'Heart', color: '#E0517A', label: partner.married ? 'Casado/a' : 'Pareja' });
+  if (kids > 0) out.push({ icon: 'Baby', color: '#F4A261', label: `${kids}` });
+  if (life.edu.level >= 3) out.push({ icon: 'GraduationCap', color: '#3A86B4', label: 'Título' });
+  else if (life.edu.enrolled) out.push({ icon: 'School', color: '#3A86B4', label: 'Estudia' });
+  if (life.assets.some((a) => a.kind === 'house')) out.push({ icon: 'House', color: '#2A9D6F', label: 'Casa' });
+  if (life.assets.some((a) => a.kind === 'car')) out.push({ icon: 'Car', color: '#2A9D6F', label: 'Auto' });
+  if (life.invested > 0) out.push({ icon: 'TrendingUp', color: '#2A9D6F', label: 'Inversor' });
+  if (life.loan > 0) out.push({ icon: 'Landmark', color: '#E9A23B', label: 'Deuda' });
+  if (life.flags.pet) out.push({ icon: 'PawPrint', color: '#F4A261', label: 'Mascota' });
+  if (life.flags.chronic) out.push({ icon: 'HeartPulse', color: '#D64550', label: 'Crónica' });
+  if (life.flags.substance) out.push({ icon: 'Pill', color: '#9B5DE5', label: 'Adicción' });
+  if (life.flags.criminal_record && life.jailYears === 0) out.push({ icon: 'Scale', color: '#7A5C2E', label: 'Antecedentes' });
+  return out;
+}
+
+export function StatusBadges({ life }: { life: Life }) {
+  const list = statusBadges(life);
+  if (!list.length) return null;
+  return (
+    <View style={sb.row}>
+      {list.map((b) => (
+        <View key={b.icon + b.label} style={[sb.chip, { backgroundColor: b.color + '1F' }]}>
+          <Icon name={b.icon} size={14} color={b.color} />
+          <Text style={[sb.text, { color: b.color }]}>{b.label}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+const sb = StyleSheet.create({
+  row: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.infoBar, borderBottomWidth: 1, borderBottomColor: colors.border },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 },
+  text: { fontSize: 12, fontWeight: '700' },
+});
+
+const PATTERN = ['Heart', 'Coins', 'GraduationCap', 'Sparkles', 'Baby', 'Briefcase', 'Star', 'Music'];
+
+/** Fondo decorativo con íconos muy tenues. */
+export function IconPattern() {
+  const items: React.ReactNode[] = [];
+  for (let r = 0; r < 9; r++) {
+    for (let c2 = 0; c2 < 5; c2++) {
+      const name = PATTERN[(r * 5 + c2 * 3) % PATTERN.length];
+      items.push(
+        <View key={`${r}-${c2}`} style={{ position: 'absolute', top: r * 96 + (c2 % 2) * 40, left: c2 * 78 + (r % 2) * 30, transform: [{ rotate: `${((r * 7 + c2 * 13) % 5) * 10 - 20}deg` }], opacity: 0.06 }}>
+          <Icon name={name} size={34} color={colors.nameBlue} />
+        </View>,
+      );
+    }
+  }
+  return <View pointerEvents="none" style={StyleSheet.absoluteFill}>{items}</View>;
+}

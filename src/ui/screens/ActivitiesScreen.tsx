@@ -4,6 +4,7 @@ import { useGame } from '../../store/gameStore';
 import { activityStatus } from '../../engine/actions';
 import { allActivities } from '../../engine/registry';
 import { Row, SectionTitle } from '../components';
+import { CATEGORY_STYLE } from '../../content/icons';
 import { colors, space } from '../theme';
 import type { Activity } from '../../engine/types';
 
@@ -32,11 +33,12 @@ export function ActivitiesScreen() {
         if (!items.length) return null;
         return (
           <React.Fragment key={cat.id}>
-            <SectionTitle>{cat.label}</SectionTitle>
+            <SectionTitle icon={CATEGORY_STYLE[cat.id].icon} color={CATEGORY_STYLE[cat.id].color}>{cat.label}</SectionTitle>
             {items.map(({ a, st }) => (
               <Row
                 key={a.id}
                 icon={a.icon}
+                tint={CATEGORY_STYLE[cat.id].color}
                 title={a.label}
                 subtitle={st.reason ?? a.desc}
                 disabled={blocked || !!st.reason}

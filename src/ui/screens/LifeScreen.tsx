@@ -4,7 +4,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGame } from '../../store/gameStore';
 import type { Life, LogEntry, StatKey } from '../../engine/types';
 import { formatMoney } from '../../engine/format';
-import { CircleButton, DeltaChips, Header, LifeStat } from '../components';
+import { CircleButton, DeltaChips, Header, IconPattern, IconTile, LifeStat, StatusBadges } from '../components';
+import { styleForText, TONE_STYLE } from '../../content/icons';
 import { Avatar } from '../Avatar';
 import { Icon } from '../Icon';
 import { colors, space } from '../theme';
@@ -87,6 +88,10 @@ export function LifeScreen() {
         </View>
       </View>
 
+      <StatusBadges life={life} />
+
+      <View style={s.feedWrap}>
+      <IconPattern />
       <FlatList
         style={s.feed}
         contentContainerStyle={{ padding: space.lg, paddingBottom: 30 }}
@@ -101,15 +106,23 @@ export function LifeScreen() {
               <Text style={s.ageYear}>{item.year}</Text>
               <View style={s.ageLine} />
             </View>
-            {item.entries.map((e, i) => (
-              <Text key={i} style={s.entry}>
-                {e.title ? <Text style={s.entryTitle}>{e.title}: </Text> : null}
-                {e.text}
-              </Text>
-            ))}
+            {item.entries.map((e, i) => {
+              const st = e.icon ? { icon: e.icon, color: TONE_STYLE[e.tone].color } : styleForText(e.text, e.tone);
+              const color = e.tone === 'good' ? colors.good : e.tone === 'bad' ? colors.bad : st.color;
+              return (
+                <View key={i} style={s.entryRow}>
+                  <IconTile name={st.icon} color={color} size={34} />
+                  <Text style={s.entry}>
+                    {e.title ? <Text style={s.entryTitle}>{e.title}: </Text> : null}
+                    {e.text}
+                  </Text>
+                </View>
+              );
+            })}
           </View>
         )}
       />
+      </View>
 
       <View style={s.navBar}>
         <NavItem icon="BriefcaseBusiness" label="Ocupación" onPress={() => setTab('work')} />
@@ -144,12 +157,14 @@ const s = StyleSheet.create({
   moneyPill: { alignItems: 'flex-end', backgroundColor: '#E1F2E9', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 },
   money: { color: colors.money, fontSize: 19, fontWeight: '800' },
   moneyLabel: { color: colors.muted, fontSize: 11 },
+  feedWrap: { flex: 1 },
   feed: { flex: 1 },
+  entryRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', marginTop: 8 },
   ageRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 2 },
   ageHead: { color: colors.nameBlue, fontWeight: '800', fontSize: 18 },
   ageYear: { color: colors.muted, fontSize: 14, fontWeight: '600' },
   ageLine: { flex: 1, height: 1, backgroundColor: colors.border },
-  entry: { color: '#4A5158', fontSize: 17, lineHeight: 24, marginTop: 2 },
+  entry: { flex: 1, color: '#4A5158', fontSize: 16, lineHeight: 23, paddingTop: 1 },
   entryTitle: { color: '#3B4250', fontWeight: '700' },
   navBar: { flexDirection: 'row', backgroundColor: colors.nav, alignItems: 'flex-end', paddingTop: 12, paddingBottom: 10, borderTopLeftRadius: 22, borderTopRightRadius: 22 },
   navItem: { flex: 1, alignItems: 'center', gap: 4 },

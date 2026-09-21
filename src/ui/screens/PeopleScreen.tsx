@@ -4,16 +4,16 @@ import { useGame } from '../../store/gameStore';
 import { personActionStatus } from '../../engine/actions';
 import { allPersonActions } from '../../engine/registry';
 import type { Person, PersonKind } from '../../engine/types';
-import { Bar, Row, SectionTitle } from '../components';
+import { Bar, PersonAvatar, Row, SectionTitle } from '../components';
 import { Icon } from '../Icon';
 import { colors, radius, space } from '../theme';
 
-const GROUPS: { title: string; kinds: PersonKind[] }[] = [
-  { title: 'Familia', kinds: ['mother', 'father', 'sibling'] },
-  { title: 'Pareja', kinds: ['partner'] },
-  { title: 'Hijos', kinds: ['child'] },
-  { title: 'Amigos', kinds: ['friend'] },
-  { title: 'Ex parejas', kinds: ['ex'] },
+const GROUPS: { title: string; kinds: PersonKind[]; icon: string; color: string }[] = [
+  { title: 'Familia', kinds: ['mother', 'father', 'sibling'], icon: 'House', color: '#E9A23B' },
+  { title: 'Pareja', kinds: ['partner'], icon: 'Heart', color: '#E0517A' },
+  { title: 'Hijos', kinds: ['child'], icon: 'Baby', color: '#F4A261' },
+  { title: 'Amigos', kinds: ['friend'], icon: 'Handshake', color: '#9B5DE5' },
+  { title: 'Ex parejas', kinds: ['ex'], icon: 'HeartCrack', color: '#7A7466' },
 ];
 
 const LABEL: Record<PersonKind, string> = {
@@ -37,11 +37,11 @@ export function PeopleScreen() {
           if (!list.length) return null;
           return (
             <React.Fragment key={g.title}>
-              <SectionTitle>{g.title}</SectionTitle>
+              <SectionTitle icon={g.icon} color={g.color}>{g.title}</SectionTitle>
               {list.map((p) => (
                 <Row
                   key={p.id}
-                  icon={p.alive ? (p.kind === 'partner' ? 'Heart' : 'Users') : 'Ghost'}
+                  avatar={<PersonAvatar person={p} life={life} size={46} />}
                   title={p.name}
                   subtitle={`${kindLabel(p)} · ${p.age} años${p.alive ? '' : ' · Fallecido/a'}`}
                   disabled={!p.alive}
@@ -65,10 +65,22 @@ export function PeopleScreen() {
           <Pressable style={s.sheet} onPress={() => undefined}>
             {person ? (
               <>
-                <Text style={s.title}>{person.name}</Text>
-                <Text style={s.sub}>
-                  {kindLabel(person)} · {person.age} años · Relación {person.closeness}/100
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                  <PersonAvatar person={person} life={life} size={60} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={s.title}>{person.name}</Text>
+                    <Text style={s.sub}>
+                      {kindLabel(person)} · {person.age} años
+                    </Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}>
+                      <Icon name="Heart" size={14} color={colors.bad} />
+                      <View style={{ flex: 1 }}>
+                        <Bar value={person.closeness} color={person.closeness > 60 ? colors.good : person.closeness > 30 ? colors.warn : colors.bad} height={8} />
+                      </View>
+                      <Text style={{ color: colors.text, fontWeight: '800' }}>{person.closeness}</Text>
+                    </View>
+                  </View>
+                </View>
                 <ScrollView style={{ maxHeight: 380, marginTop: 12 }}>
                   {allPersonActions()
                     .map((a) => ({ a, st: personActionStatus(life, a, person) }))

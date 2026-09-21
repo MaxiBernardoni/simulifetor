@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useGame } from '../../store/gameStore';
 import { formatMoney } from '../../engine/format';
-import { Button, Card } from '../components';
+import { Button, Card, IconTile } from '../components';
 import { Avatar } from '../Avatar';
 import { colors, space } from '../theme';
 
@@ -28,10 +28,10 @@ export function DeathScreen() {
       </View>
 
       <Card style={{ marginTop: space.xl }}>
-        <Line label="Patrimonio final" value={formatMoney(life.money)} />
-        <Line label="Última ocupación" value={life.job?.title ?? (life.flags.retired ? 'Jubilado/a' : 'Sin trabajo')} />
-        <Line label="Hijos" value={String(children.length)} />
-        <Line label="Antecedentes" value={life.flags.criminal_record ? 'Sí' : 'Ninguno'} />
+        <Line icon="Coins" color="#2A9D6F" label="Patrimonio final" value={formatMoney(life.money)} />
+        <Line icon="BriefcaseBusiness" color="#0E7C7B" label="Última ocupación" value={life.job?.title ?? (life.flags.retired ? 'Jubilado/a' : 'Sin trabajo')} />
+        <Line icon="Baby" color="#F4A261" label="Hijos" value={String(children.length)} />
+        <Line icon="Scale" color="#7A5C2E" label="Antecedentes" value={life.flags.criminal_record ? 'Sí' : 'Ninguno'} />
       </Card>
 
       {last.length ? (
@@ -53,10 +53,11 @@ export function DeathScreen() {
   );
 }
 
-function Line({ label, value }: { label: string; value: string }) {
+function Line({ label, value, icon, color }: { label: string; value: string; icon: string; color: string }) {
   return (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 }}>
-      <Text style={{ color: colors.muted }}>{label}</Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6 }}>
+      <IconTile name={icon} color={color} size={34} />
+      <Text style={{ color: colors.muted, flex: 1 }}>{label}</Text>
       <Text style={{ color: colors.text, fontWeight: '700' }}>{value}</Text>
     </View>
   );

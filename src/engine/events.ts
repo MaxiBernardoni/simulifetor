@@ -5,6 +5,7 @@ import { addLog, applyEffects, newEffectCtx, toneOf } from './effects';
 import type { EffectCtx } from './effects';
 import { allEvents, getEvent } from './registry';
 import { fill } from './text';
+import { styleForTags } from '../content/icons';
 
 const DEFAULT_COOLDOWN = 4;
 
@@ -51,13 +52,14 @@ export function fireEvent(life: Life, ev: GameEvent, target?: Person): void {
       title: fill(life, ev.title, target),
       text: fill(life, ev.text, target),
       targetId: target?.id,
+      icon: styleForTags(ev.tags).icon,
     });
     return;
   }
   const ctx = newEffectCtx(target);
   const text = fill(life, ev.text, target);
   applyEffects(life, ev.effects, ctx, rng);
-  addLog(life, text, toneOf(ctx.deltas), fill(life, ev.title, target));
+  addLog(life, text, toneOf(ctx.deltas), fill(life, ev.title, target), styleForTags(ev.tags).icon);
   flushCtx(life, ctx);
   runTriggers(life, ctx);
 }
@@ -96,9 +98,10 @@ export function resolveChoice(life: Life, index: number): void {
   const text = fill(life, outcome.text, target);
   applyEffects(life, outcome.effects, ctx, rng);
   const title = fill(life, ev.title, target);
-  addLog(life, text, toneOf(ctx.deltas), title);
+  const icon = styleForTags(ev.tags).icon;
+  addLog(life, text, toneOf(ctx.deltas), title, icon);
   flushCtx(life, ctx);
-  life.pending.unshift({ kind: 'result', title, text, deltas: ctx.deltas });
+  life.pending.unshift({ kind: 'result', title, text, deltas: ctx.deltas, icon });
   runTriggers(life, ctx);
 }
 

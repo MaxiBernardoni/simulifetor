@@ -150,6 +150,7 @@ export interface LogEntry {
   text: string;
   tone: Tone;
   title?: string;
+  icon?: string;
 }
 
 export interface Delta {
@@ -164,8 +165,9 @@ export type Prompt =
       title: string;
       text: string;
       targetId?: string;
+      icon?: string;
     }
-  | { kind: 'result'; title: string; text: string; deltas: Delta[] };
+  | { kind: 'result'; title: string; text: string; deltas: Delta[]; icon?: string };
 
 export interface Asset {
   id: string;

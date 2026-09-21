@@ -27,10 +27,10 @@ export function activityStatus(life: Life, a: Activity): Status {
   return { visible: true };
 }
 
-function finish(life: Life, title: string, text: string, ctx: EffectCtx): void {
-  addLog(life, text, toneOf(ctx.deltas), title);
+function finish(life: Life, title: string, text: string, ctx: EffectCtx, icon?: string): void {
+  addLog(life, text, toneOf(ctx.deltas), title, icon);
   for (const l of ctx.logs) addLog(life, l, 'neutral');
-  life.pending.unshift({ kind: 'result', title, text, deltas: ctx.deltas });
+  life.pending.unshift({ kind: 'result', title, text, deltas: ctx.deltas, icon });
   for (const id of ctx.triggers) {
     const ev = getEvent(id);
     if (ev && life.alive) fireEvent(life, ev);
@@ -49,7 +49,7 @@ export function runActivity(life: Life, id: string): void {
   const outcome = pickOutcome(life, a.outcomes);
   const text = fill(life, outcome.text);
   applyEffects(life, outcome.effects, ctx, rng);
-  finish(life, a.label, text, ctx);
+  finish(life, a.label, text, ctx, a.icon);
 }
 
 // ───────── Acciones sobre personas ─────────
@@ -75,7 +75,7 @@ export function runPersonAction(life: Life, actionId: string, personId: string):
   const outcome = pickOutcome(life, a.outcomes);
   const text = fill(life, outcome.text, p);
   applyEffects(life, outcome.effects, ctx, rng);
-  finish(life, a.label, text, ctx);
+  finish(life, a.label, text, ctx, a.icon);
 }
 
 // ───────── Trabajo ─────────

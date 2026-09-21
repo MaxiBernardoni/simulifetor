@@ -19,9 +19,10 @@ export const newEffectCtx = (target?: Person): EffectCtx => ({
 
 const clamp = (n: number, lo = 0, hi = 100) => Math.max(lo, Math.min(hi, n));
 
-export function addLog(life: Life, text: string, tone: Tone = 'neutral', title?: string): void {
+export function addLog(life: Life, text: string, tone: Tone = 'neutral', title?: string, icon?: string): void {
   const entry: LogEntry = { age: life.age, year: life.year, text, tone };
   if (title) entry.title = title;
+  if (icon) entry.icon = icon;
   life.log.push(entry);
 }
 
@@ -30,7 +31,7 @@ export function killLife(life: Life, cause: string): void {
   life.alive = false;
   life.cause = cause;
   life.jailYears = 0;
-  addLog(life, `Moriste a los ${life.age} años. Causa: ${cause}.`, 'bad');
+  addLog(life, `Moriste a los ${life.age} años. Causa: ${cause}.`, 'bad', undefined, 'Ghost');
 }
 
 export function addDelta(ctx: EffectCtx, key: Delta['key'], amount: number): void {
