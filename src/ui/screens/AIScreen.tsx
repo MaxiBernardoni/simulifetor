@@ -99,13 +99,19 @@ export function AIScreen() {
       ) : null}
 
       <SectionTitle icon="KeyRound" color="#E9A23B">
-        Clave
+        {own ? 'Clave (no hace falta con Ollama)' : 'Clave'}
       </SectionTitle>
       <TextInput
         style={s.input}
         value={key}
         onChangeText={setKey}
-        placeholder={ai.hasKey ? 'Clave guardada (pegá otra para reemplazarla)' : 'Pegá tu clave acá'}
+        placeholder={
+          ai.hasKey
+            ? 'Clave guardada (pegá otra para reemplazarla)'
+            : own
+              ? 'Dejala vacía si usás Ollama o un modelo local'
+              : 'Pegá tu clave acá'
+        }
         placeholderTextColor={colors.muted}
         secureTextEntry
         autoCapitalize="none"
