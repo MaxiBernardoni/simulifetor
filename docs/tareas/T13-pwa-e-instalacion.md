@@ -3,7 +3,7 @@
 - **Prioridad / esfuerzo:** baja-media · M
 - **Depende de:** T12 (ajustes, tema) recomendable
 - **Autonomía:** ✅ segura **si no se despliega nada**: la tarea prepara todo; publicar es decisión de Max
-- **Estado:** todo
+- **Estado:** parcial (hecho: build, manifiesto, plantilla iOS, guía `docs/13-instalacion.md`; pendiente: service worker offline, ícono propio, medir el tamaño de guardado)
 
 ## Objetivo
 Hoy el juego solo se abre con Expo Go (PC y celular en la misma red). Preparar una **PWA instalable**: se exporta como sitio estático, se abre en Safari y se agrega a la pantalla de inicio, funcionando **offline**. Dejar además documentadas las alternativas (cuenta de Apple Developer / EAS) para decidir después. `docs/09` tiene la decisión abierta.

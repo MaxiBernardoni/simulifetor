@@ -41,7 +41,8 @@
     "format:check": "prettier --check src/engine src/store src/ui App.tsx",
     "icons": "node scripts/gen-icons.mjs",
     "check:all": "npm run lint && npm run format:check && npm run typecheck && npm test",
-    "balance": "tsx scripts/balance.ts"
+    "balance": "tsx scripts/balance.ts",
+    "build:web": "expo export --platform web"
   },
   "private": true
 }

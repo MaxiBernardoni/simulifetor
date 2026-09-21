@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Publicación web]
+
+- `npm run build:web` exporta el sitio estático (`dist/`), con `public/index.html` (metadatos para iPhone), manifiesto y ícono de inicio. Verificado servido como estático y sin errores de consola. Guía en `docs/13-instalacion.md` (Cloudflare Pages / Netlify / Vercel, instalar en el iPhone y advertencias).
+
 ## [Arreglo] materializar personajes
 
 - Al pasar a vivir la vida de un pariente, un evento del pasado simulado podía quitar a un hermano o padre de su lista y la vida quedaba con una familia incompleta (causa del test intermitente `materializar a un hermano`). Ahora los familiares reales del árbol se reponen siempre.

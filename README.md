@@ -60,3 +60,5 @@ Para agregar contenido, editá los archivos de `src/content` (ver `docs/04-conte
 **Familia viva**: árbol genealógico jugable donde cada persona vive su propia vida (bots) y podés cambiar a parientes de sangre hasta 2 generaciones de distancia. **Fase 3 (dinastía y modos) completa**: al morir podés **continuar con un hijo o hermano** (hereda apellido, parte del patrimonio y la fama o infamia de la familia; su pasado se simula automáticamente), **árbol genealógico** con puntaje de legado, **9 escenarios** con objetivo y tiempo límite (Del barro al éxito, Millonario joven, Vida ejemplar, Rey del hampa, Volver a empezar, Centenario, Familia numerosa, Cerebro brillante, Hogar dulce hogar), **3 ranuras de partida** y **copia de seguridad** exportable/importable. Además: ilustraciones por evento (33 escenas SVG) y animaciones.
 
 Próximo: Fase 4 (mundo e historia: calendario global, tecnología y leyes que cambian, capa opcional de IA), ver `docs/08-roadmap.md`.
+
+- [`docs/13-instalacion.md`](docs/13-instalacion.md): publicarlo online gratis e instalarlo en el iPhone.

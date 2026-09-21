@@ -1,0 +1,11 @@
+{
+  "name": "VidaSim",
+  "short_name": "VidaSim",
+  "description": "Simulador de vida en texto",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBF7F0",
+  "theme_color": "#0E7C7B",
+  "icons": [{ "src": "/apple-touch-icon.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" }]
+}
