@@ -9,7 +9,6 @@ export const GEMINI_MODEL = 'gemini-2.0-flash';
 export function createGemini(fetchImpl?: FetchLike): AIProvider {
   return {
     id: 'gemini',
-    label: 'Google Gemini',
     async generate(prompt, apiKey, opts) {
       const data = (await postJson(
         `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,

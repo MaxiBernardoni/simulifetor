@@ -2,15 +2,10 @@
 
 export type ProviderId = 'gemini' | 'groq';
 
-export interface GenerateOpts {
-  timeoutMs?: number;
-}
-
 /** Un proveedor de texto. `generate` devuelve el texto crudo o lanza AIError. */
 export interface AIProvider {
   id: ProviderId | 'mock';
-  label: string;
-  generate(prompt: string, apiKey: string, opts?: GenerateOpts): Promise<string>;
+  generate(prompt: string, apiKey: string, opts?: { timeoutMs?: number }): Promise<string>;
 }
 
 export type AIErrorKind = 'network' | 'timeout' | 'quota' | 'auth' | 'filtered' | 'bad-response';

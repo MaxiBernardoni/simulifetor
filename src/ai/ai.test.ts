@@ -227,7 +227,7 @@ describe('proveedores HTTP (fetch simulado, sin red)', () => {
 
   it('un pedido que no responde termina en timeout', async () => {
     const hang: FetchLike = (_u, init) => new Promise((_res, rej) => init.signal?.addEventListener('abort', () => rej(new Error('abort'))));
-    await expect(postJson('u', {}, {}, { fetchImpl: hang, timeoutMs: 20, retries: 0 })).rejects.toMatchObject({ kind: 'timeout' });
+    await expect(postJson('u', {}, {}, { fetchImpl: hang, timeoutMs: 20 })).rejects.toMatchObject({ kind: 'timeout' });
   });
 
   it('la clave viaja en el encabezado, nunca en el cuerpo', async () => {

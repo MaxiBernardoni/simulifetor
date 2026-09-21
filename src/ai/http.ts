@@ -14,17 +14,19 @@ export type FetchLike = (
 
 export interface PostOpts {
   timeoutMs?: number;
-  retries?: number;
   fetchImpl?: FetchLike;
 }
+
+/** Reintentos ante fallas de red o 5xx. */
+const RETRIES = 1;
 
 const defaultFetch: FetchLike = (url, init) => fetch(url, init) as unknown as Promise<FetchResponseLike>;
 
 /** POST JSON con timeout y un reintento ante fallas de red o 5xx. Traduce los errores a AIError. */
 export async function postJson(url: string, headers: Record<string, string>, body: unknown, opts: PostOpts = {}): Promise<unknown> {
-  const { timeoutMs = 8000, retries = 1, fetchImpl = defaultFetch } = opts;
+  const { timeoutMs = 8000, fetchImpl = defaultFetch } = opts;
   let last: AIError = new AIError('network', 'sin conexión');
-  for (let attempt = 0; attempt <= retries; attempt++) {
+  for (let attempt = 0; attempt <= RETRIES; attempt++) {
     const ctrl = new AbortController();
     let timedOut = false;
     const timer = setTimeout(() => {
@@ -61,7 +63,7 @@ export async function postJson(url: string, headers: Record<string, string>, bod
         throw e;
       }
       last = timedOut ? new AIError('timeout', 'tardó demasiado') : new AIError('network', 'sin conexión');
-      if (timedOut && attempt >= retries) throw last;
+      if (timedOut && attempt >= RETRIES) throw last;
     } finally {
       clearTimeout(timer);
     }

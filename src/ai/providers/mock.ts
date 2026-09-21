@@ -5,7 +5,6 @@ export function createMock(responses: (string | Error)[]): AIProvider {
   let i = 0;
   return {
     id: 'mock',
-    label: 'Simulado',
     async generate() {
       const r = responses[i % responses.length];
       i++;

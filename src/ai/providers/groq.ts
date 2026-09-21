@@ -8,7 +8,6 @@ export const GROQ_MODEL = 'llama-3.3-70b-versatile';
 export function createGroq(fetchImpl?: FetchLike): AIProvider {
   return {
     id: 'groq',
-    label: 'Groq',
     async generate(prompt, apiKey, opts) {
       const data = (await postJson(
         'https://api.groq.com/openai/v1/chat/completions',

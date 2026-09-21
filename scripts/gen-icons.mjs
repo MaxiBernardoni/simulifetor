@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 // Íconos usados por el código sin literal `icon: '…'` / `name="…"` (agregalos acá si hiciera falta).
-export const EXTRA_ICONS = ['Circle', 'Camera', 'Medal', 'Music', 'TreePalm'];
+const EXTRA_ICONS = ['Circle', 'Camera', 'Medal', 'Music', 'TreePalm'];
 
 const PATTERNS = [
   /icon:\s*'([A-Za-z0-9]+)'/g,
@@ -42,7 +42,8 @@ function walk(dir, acc = []) {
 }
 
 /** Devuelve { ok, missing } comprobando la existencia de cada ícono en lucide-react-native. */
-export function checkIcons(names, lucideDir = join(ROOT, 'node_modules/lucide-react-native/dist/esm/icons')) {
+export function checkIcons(names) {
+  const lucideDir = join(ROOT, 'node_modules/lucide-react-native/dist/esm/icons');
   const ok = [];
   const missing = [];
   for (const n of [...names].sort()) (existsSync(join(lucideDir, `${kebab(n)}.mjs`)) ? ok : missing).push(n);

@@ -72,13 +72,9 @@ export const hasLaw = (law: string, year: number): boolean => {
   return !!r && year >= r[0] && (r[1] === null || year <= r[1]);
 };
 
-/** Década de una época: 40s (todo lo anterior a 1950), 50s … 90s, 2000s, 2010s… */
-function decadeOf(year: number): number {
-  return Math.max(1940, Math.floor(year / 10) * 10);
-}
-
 export function eraAt(year: number): Era {
-  const d = decadeOf(year);
+  // Década: 40s (todo lo anterior a 1950), 50s … 90s, 2000s, 2010s…
+  const d = Math.max(1940, Math.floor(year / 10) * 10);
   const short = d < 2000 ? String(d % 100) : String(d);
   return {
     id: `${short}s`,
