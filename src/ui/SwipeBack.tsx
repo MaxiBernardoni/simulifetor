@@ -3,6 +3,9 @@ import { Animated, PanResponder, StyleSheet, useWindowDimensions, View } from 'r
 import { NATIVE } from './anim';
 import { colors } from './theme';
 
+/** Verdadero justo después de volver con el gesto: la pantalla de destino aparece de una, sin fundido (ya hubo animación). */
+export const swipe = { justBack: false };
+
 const EDGE = 32; // el gesto solo arranca cerca del borde izquierdo (no pisa los scrolls horizontales)
 
 /** Deslizá desde el borde izquierdo hacia la derecha para volver atrás: la pantalla sigue al dedo, como en Instagram. */
@@ -21,8 +24,10 @@ export function SwipeBack({ onBack, children }: { onBack: () => void; children: 
       onPanResponderRelease: (_e, g) => {
         if (g.dx > width * 0.33 || g.vx > 0.6) {
           Animated.timing(x, { toValue: width, duration: 160, useNativeDriver: NATIVE }).start(() => {
+            swipe.justBack = true;
             back.current();
-            x.setValue(0);
+            // Esperamos a que la pantalla nueva esté dibujada antes de traer la página a su lugar.
+            requestAnimationFrame(() => requestAnimationFrame(() => x.setValue(0)));
           });
         } else reset();
       },
@@ -40,12 +45,12 @@ export function SwipeBack({ onBack, children }: { onBack: () => void; children: 
 }
 
 const s = StyleSheet.create({
-  behind: { flex: 1, backgroundColor: '#0B1F24' },
+  behind: { flex: 1, backgroundColor: colors.surface2 },
   page: {
     flex: 1,
     backgroundColor: colors.bg,
     shadowColor: '#000',
-    shadowOpacity: 0.35,
+    shadowOpacity: 0.18,
     shadowRadius: 10,
     shadowOffset: { width: -4, height: 0 },
     elevation: 8,

@@ -3,6 +3,7 @@
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
 ## [Gesto de volver]
+- **Ajuste de fluidez**: el fondo que queda detrás al deslizar ya no es oscuro (era el "pantallazo negro"), la pantalla de destino aparece de una (sin el fundido desde transparente, `FadeIn` con `duration=0` arranca visible) y la página vuelve a su lugar recién cuando la nueva ya está dibujada.
 
 - Deslizar desde el borde izquierdo vuelve a la pantalla anterior (estilo Instagram), con animación que sigue al dedo (`ui/SwipeBack.tsx`). Las pantallas del Menú ahora vuelven al Menú, no a la vida. Verificado en el navegador con arrastre desde el borde; **sin probar en un iPhone real**.
 

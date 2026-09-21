@@ -25,7 +25,7 @@ import { BackupScreen } from './src/ui/screens/BackupScreen';
 import { AIScreen } from './src/ui/screens/AIScreen';
 import { HelpScreen } from './src/ui/screens/HelpScreen';
 import { TutorialScreen } from './src/ui/screens/TutorialScreen';
-import { SwipeBack } from './src/ui/SwipeBack';
+import { SwipeBack, swipe } from './src/ui/SwipeBack';
 import { useAI } from './src/ai/store';
 import { getScenario } from './src/content/scenarios';
 
@@ -59,6 +59,10 @@ function Main() {
   useEffect(() => {
     void load().then(() => useAI.getState().load());
   }, [load]);
+
+  useEffect(() => {
+    swipe.justBack = false;
+  }, [tab, creating]);
 
   if (!ready) {
     return (
@@ -120,7 +124,7 @@ function Main() {
       ) : (
         <SwipeBack onBack={goBack}>
           <Header title={TITLES[tab]} onBack={goBack} />
-          <FadeIn key={tab} from={18} duration={260} style={{ flex: 1 }}>
+          <FadeIn key={tab} from={swipe.justBack ? 0 : 18} duration={swipe.justBack ? 0 : 260} style={{ flex: 1 }}>
             {tab === 'activities' && <ActivitiesScreen />}
             {tab === 'work' && <WorkScreen />}
             {tab === 'people' && <PeopleScreen />}

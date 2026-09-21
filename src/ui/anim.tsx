@@ -18,8 +18,10 @@ export function FadeIn({
   duration = 380,
   from = 14,
 }: Base & { delay?: number; duration?: number; from?: number }) {
-  const v = useRef(new Animated.Value(0)).current;
+  // Con duration 0 aparece ya visible (sin el cuadro inicial transparente).
+  const v = useRef(new Animated.Value(duration === 0 ? 1 : 0)).current;
   useEffect(() => {
+    if (duration === 0) return;
     Animated.timing(v, { toValue: 1, duration, delay, easing: Easing.out(Easing.cubic), useNativeDriver: NATIVE }).start();
   }, [v, delay, duration]);
   return (
