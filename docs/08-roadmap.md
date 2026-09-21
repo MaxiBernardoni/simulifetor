@@ -1,6 +1,6 @@
 # 08 · Roadmap
 
-Estado al **20/09/2026**: fases 0–3 y el árbol genealógico jugable están hechos. El detalle de cada entrega está en `CHANGELOG.md`; el backlog pendiente, con especificaciones completas, en `docs/tareas/`.
+Estado al **21/09/2026**: fases 0–3, el árbol genealógico jugable y la Fase 4 (eras, IA opcional) están hechos; además T01, T02, T14 (parcial), T15 y T16 (parcial). Ver `docs/tareas/reportes/2026-09-21.md`. El detalle de cada entrega está en `CHANGELOG.md`; el backlog pendiente, con especificaciones completas, en `docs/tareas/`.
 
 ## ✅ Fase 0 — Diseño
 Documentación, decisiones de stack y alcance.

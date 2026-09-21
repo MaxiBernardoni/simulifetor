@@ -19,7 +19,7 @@ Cada archivo `Txx-*.md` es una tarea **autocontenida**: objetivo, contexto (arch
 | 3 | [T01](T01-herramienta-de-balance.md) | Herramienta de balance (`npm run balance`) y calibración | L | T02 | ✅ segura | review |
 | 4 | [T03](T03-contenido-masivo.md) | +250 eventos, +30 actividades, +10 carreras (por lotes) | XL | T01 | ✅ segura (contenido) | todo |
 | 5 | [T16](T16-arbol-anti-abuso-y-ux.md) | Árbol: enfriamiento anti-abuso, zoom/pan, novedades de la familia | L | — | ⚠️ revisar decisión | parcial (ver T16) |
-| 6 | [T04](T04-salud-y-adicciones.md) | Enfermedades y adicciones detalladas | XL | T02 | ✅ segura | todo |
+| 6 | [T04](T04-salud-y-adicciones.md) | Enfermedades y adicciones detalladas | XL | T02 | ✅ segura | todo (diseño relevado, sin código) |
 | 7 | [T05](T05-eras-tecnologia-y-leyes.md) | Eras: tecnología, leyes, inflación y eventos históricos | XL | T01 | ✅ segura | review (ver T05) |
 | 8 | [T15](T15-onboarding-y-ayuda.md) | Tutorial inicial y pantalla "Cómo se juega" | M | — | ✅ segura | review |
 | 9 | [T09](T09-sonidos-de-interfaz.md) | Sonidos de interfaz sintetizados | M | T14 | ✅ segura | todo |
@@ -48,3 +48,8 @@ Esfuerzo: S ≈ 1 h · M ≈ 2–3 h · L ≈ 4–6 h · XL ≈ 1 noche completa
 ## Plantilla para tareas nuevas
 
 Ver [`_plantilla.md`](_plantilla.md).
+
+
+## Última sesión
+
+Ver [`reportes/2026-09-21.md`](reportes/2026-09-21.md): qué se hizo, bugs corregidos, decisiones pendientes y próximo paso.

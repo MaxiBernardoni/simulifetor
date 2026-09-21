@@ -5,6 +5,10 @@
 - **Autonomía:** ✅ segura
 - **Estado:** todo
 
+## Progreso
+
+Sin código todavía. Ya se relevó dónde engancharse: `ageUp.ts` (`driftStats`, `checkMortality` con el factor de salud), flags `chronic`/`substance`/`drinker`/`smoker` (en `content/events/health.ts`, `crime.ts`, `teen.ts`, `activities.ts`, `ageUp.ts:128`, `ui/components.tsx#statusBadges`, `AssetsScreen`). Nota para quien la retome: `Outcome.conditions` (T05) permite variar resultados por condición; el multiplicador de mortalidad debe pasar por `checkMortality` y validarse con `npm run balance` (banda de esperanza de vida 70–79).
+
 ## Objetivo
 La salud hoy es un número (0–100) con flags sueltos (`chronic`, `substance`, `drinker`, `smoker`). Falta el sistema que BitLife-like promete: **enfermedades con nombre, síntomas, tratamientos y consecuencias**, y **adicciones con niveles y rehabilitación**. Debe sentirse cruel, divertido y con decisiones.
 
