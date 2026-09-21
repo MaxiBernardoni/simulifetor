@@ -146,7 +146,7 @@ Etiquetas con significado especial: `historical` (siempre se dispara al cumplirs
 
 ## Placeholders de texto
 
-`{name}` (vos), `{mother} {father} {sibling} {friend} {partner} {ex} {child}` (primero vivo de ese tipo), `{boss}`, `{job}`, `{crime}` (durante un juicio), `{target}` (persona objetivo).
+`{name}` (vos), `{mother} {father} {sibling} {friend} {partner} {ex} {child}` (primero vivo de ese tipo), `{boss}`, `{job}`, `{crime}` (durante un juicio), `{target}` (persona objetivo). Las personas se rellenan con su relación la primera vez que aparecen en un texto ("Marcos (tu amigo)", "Ricardo (tu jefe)"; `relationLabel` en `engine/text.ts`); si el texto ya dice la relación ("Tu madre {mother}") va solo el nombre. No hace falta aclararla a mano.
 
 ## Al agregar contenido
 

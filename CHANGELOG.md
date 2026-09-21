@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Textos: relación con cada persona]
+
+- Al nombrar a alguien en un texto (eventos, resultados, acciones con personas) la primera vez aparece qué es del jugador: "Marcos (tu amigo)", "Ricardo (tu jefe)", "Sofía (tu esposa)". Se omite si el texto ya lo dice o si ya se nombró antes en el mismo texto. 1 test nuevo (207).
+
 ## [IA: sin montos escritos en los textos]
 
 - Un evento generado decía "cobrás 1.200 dólares" y el juego pagaba $1.550: el monto real se ajusta por época pero la IA escribía la cifra fija. Ahora se rechazan los textos de la IA con montos ("$500", "1.200 dólares", "300 pesos") y el prompt pide describirlos sin cifras; al cargar se limpian los eventos guardados que los tengan. 2 tests nuevos (206).
