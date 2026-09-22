@@ -2,9 +2,13 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Deploy: corrección — Workers Builds ignora el build.command de wrangler.jsonc]
+
+- El intento anterior (`build.command` en `wrangler.jsonc`) no arregla el deploy automático: Cloudflare documenta que **Workers Builds ignora a propósito** los "Custom Builds" del archivo de configuración. El arreglo real es manual y va en el panel: *Settings → Builds → Deploy command* → `npm run deploy:web` (en vez de `npx wrangler deploy`). Ver `docs/13-instalacion.md`. `build.command` se deja igual, porque sí sirve para probar en seco en local con `wrangler deploy --dry-run`.
+
 ## [Deploy: arregla el build automático de Cloudflare]
 
-- Con el repo conectado por Git (Workers Builds), Cloudflare corría `npx wrangler deploy` directo, sin generar antes `dist/`, y el deploy fallaba (`El directorio "dist" no existe`). `wrangler.jsonc` ahora tiene `build.command: "npm run build:web"`: Wrangler genera `dist/` solo antes de desplegar. Verificado con `npx wrangler deploy --dry-run` (corre el build, exporta y no publica nada).
+- Con el repo conectado por Git (Workers Builds), Cloudflare corría `npx wrangler deploy` directo, sin generar antes `dist/`, y el deploy fallaba (`El directorio "dist" no existe`). `wrangler.jsonc` ahora tiene `build.command: "npm run build:web"`: Wrangler genera `dist/` solo antes de desplegar. Verificado con `npx wrangler deploy --dry-run` (corre el build, exporta y no publica nada). **Corregido más abajo: esto no alcanza para el deploy automático.**
 
 ## [T17 · La IA sincronizada con amistad, amor y enemistad]
 

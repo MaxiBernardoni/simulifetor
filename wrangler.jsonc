@@ -1,7 +1,8 @@
 {
   // Sitio estático en Cloudflare (Workers Static Assets). Deploy manual: npm run build:web && npx wrangler deploy
-  // Con el repo conectado por Git (Workers Builds), Cloudflare corre "npx wrangler deploy" directo, sin build previo:
-  // por eso "build.command" hace que Wrangler genere "dist" solo antes de desplegar (ver docs/13-instalacion.md).
+  // "build.command" sirve para "wrangler deploy --dry-run" en local, pero Workers Builds (el deploy automático al
+  // hacer git push) IGNORA este campo a propósito (documentado por Cloudflare): ahí el "Deploy command" del panel
+  // tiene que ser "npm run deploy:web" en vez de "npx wrangler deploy" (ver docs/13-instalacion.md).
   "name": "vidasim",
   "compatibility_date": "2026-09-21",
   "build": {

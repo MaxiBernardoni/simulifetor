@@ -8,7 +8,15 @@ El repo ya trae `wrangler.jsonc`. Una sola vez: `npx wrangler login` (abre el na
 
 ## Deploy automático (Workers Builds, repo conectado por Git)
 
-Si conectaste el repo a un proyecto de **Workers** en el dashboard de Cloudflare (*Workers & Pages* → tu Worker → *Settings* → *Builds*), cada `git push` a `main` dispara un deploy solo: Cloudflare clona el repo, instala dependencias y corre `npx wrangler deploy` directo (sin un paso de "build" propio como en Pages). Por eso `wrangler.jsonc` tiene `build.command: "npm run build:web"`: es Wrangler mismo el que genera `dist/` antes de desplegar (`[custom build] Running: npm run build:web` en el log). Sin esa línea, el deploy falla con `El directorio "dist" no existe`. Se puede probar en seco y sin publicar nada con `npx wrangler deploy --dry-run`.
+Si conectaste el repo a un proyecto de **Workers** en el dashboard de Cloudflare (*Workers & Pages* → tu Worker → *Settings* → *Builds*), cada `git push` a `main` dispara un deploy solo. Ese sistema (**Workers Builds**) tiene dos pasos configurables por separado en el panel: **Build command** (opcional) y **Deploy command** (por defecto `npx wrangler deploy`). Cloudflare avisa explícitamente que **ignora** el `build.command` de `wrangler.jsonc`, así que ponerlo ahí (como hace este repo, para `wrangler deploy --dry-run` en local) no alcanza para el deploy automático: sin un build antes, `wrangler deploy` falla con `El directorio "dist" no existe`.
+
+**Arreglo (una sola vez, en el panel):** *Workers & Pages* → tu Worker → *Settings* → *Builds* → editar **Deploy command** y poner:
+```
+npm run deploy:web
+```
+(reemplaza el `npx wrangler deploy` por defecto; ese script ya hace `npm run build:web && wrangler deploy`, con lo cual no hace falta tocar el campo *Build command*). Guardar aplica desde el próximo build.
+
+Para probar el build en seco sin publicar nada: `npx wrangler deploy --dry-run` (usa el `build.command` de `wrangler.jsonc`, que sí corre en local).
 
 ## Opción por Git: Cloudflare Pages (o Netlify / Vercel)
 
