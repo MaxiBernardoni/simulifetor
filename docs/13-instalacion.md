@@ -6,6 +6,10 @@ VidaSim se exporta como **sitio estático** (`npm run build:web` → carpeta `di
 
 El repo ya trae `wrangler.jsonc`. Una sola vez: `npx wrangler login` (abre el navegador para autorizar). Después, cada vez que quieras publicar: `npm run deploy:web`. Queda en `https://vidasim.<tu-subdominio>.workers.dev`.
 
+## Deploy automático (Workers Builds, repo conectado por Git)
+
+Si conectaste el repo a un proyecto de **Workers** en el dashboard de Cloudflare (*Workers & Pages* → tu Worker → *Settings* → *Builds*), cada `git push` a `main` dispara un deploy solo: Cloudflare clona el repo, instala dependencias y corre `npx wrangler deploy` directo (sin un paso de "build" propio como en Pages). Por eso `wrangler.jsonc` tiene `build.command: "npm run build:web"`: es Wrangler mismo el que genera `dist/` antes de desplegar (`[custom build] Running: npm run build:web` en el log). Sin esa línea, el deploy falla con `El directorio "dist" no existe`. Se puede probar en seco y sin publicar nada con `npx wrangler deploy --dry-run`.
+
 ## Opción por Git: Cloudflare Pages (o Netlify / Vercel)
 
 Las tres son gratis para uso personal, dan HTTPS (obligatorio) y se actualizan solas con cada `git push`.

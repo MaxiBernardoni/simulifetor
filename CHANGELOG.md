@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [Deploy: arregla el build automático de Cloudflare]
+
+- Con el repo conectado por Git (Workers Builds), Cloudflare corría `npx wrangler deploy` directo, sin generar antes `dist/`, y el deploy fallaba (`El directorio "dist" no existe`). `wrangler.jsonc` ahora tiene `build.command: "npm run build:web"`: Wrangler genera `dist/` solo antes de desplegar. Verificado con `npx wrangler deploy --dry-run` (corre el build, exporta y no publica nada).
+
 ## [T17 · La IA sincronizada con amistad, amor y enemistad]
 
 - **Eventos generados por la IA** pueden involucrar a una persona (`"person"`: madre, padre, hermano/a, amigo/a, pareja, hijo/a o ex), nombrada siempre con el placeholder `{target}` (nunca un nombre inventado); se rechazan si falta. Igual que el contenido escrito a mano, nunca se ofrecen con un enemigo. Sus resultados pueden sumar o restar amistad (y amor, sobre todo con la pareja).
