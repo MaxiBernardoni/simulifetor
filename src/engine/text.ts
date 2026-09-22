@@ -1,8 +1,15 @@
 import { scaleText } from '../content/eras';
 import type { Life, Person, PersonKind } from './types';
 
+/**
+ * La persona viva de ese tipo. Con varios amigos, hermanos o hijos se elige a quien mejor se lleva con el jugador:
+ * así "{friend}" en un evento nunca es un enemigo si hay un amigo de verdad.
+ */
 export function firstAlive(life: Life, kind: PersonKind): Person | undefined {
-  return life.people.find((p) => p.kind === kind && p.alive);
+  if (kind !== 'friend' && kind !== 'sibling' && kind !== 'child') return life.people.find((p) => p.kind === kind && p.alive);
+  let best: Person | undefined;
+  for (const p of life.people) if (p.kind === kind && p.alive && (!best || p.friendship > best.friendship)) best = p;
+  return best;
 }
 
 const first = (name: string) => name.split(' ')[0];

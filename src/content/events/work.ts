@@ -27,8 +27,8 @@ export const WORK: GameEvent[] = [
     text: 'Un/a compañero/a de trabajo te tira los perros de forma nada sutil, después de la reunión.',
     choices: [
       { label: 'Aceptar', outcomes: [
-        { weight: 5, text: 'Tuvieron un romance secreto. Adrenalina pura.', effects: [fx.hap(6), fx.perf(-3)] },
-        { weight: 3, text: 'Los descubrieron. RRHH los citó a los dos. Papelón.', effects: [fx.hap(-6), fx.perf(-12), fx.close('partner', -25)] },
+        { weight: 5, text: 'Tuvieron un romance secreto. Adrenalina pura.', effects: [fx.hap(6), fx.perf(-3), fx.suspect(15)] },
+        { weight: 3, text: 'Los descubrieron. RRHH los citó a los dos. Papelón.', effects: [fx.hap(-6), fx.perf(-12), fx.bond('partner', -25, -25)] },
       ] },
       { label: 'Rechazar con cortesía', outcomes: [
         { weight: 1, text: 'Lo/a rechazaste. El clima laboral se puso raro por semanas.', effects: [fx.hap(-1)] },

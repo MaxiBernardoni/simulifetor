@@ -147,6 +147,7 @@ Se importan desde `src/content/dsl.ts`: `c` (condiciones) y `fx` (efectos).
 - Al agregar una acción: elegí su categoría en el grupo, condiciones con `c.tClose` / `c.tLove` (amistad y amor) y `c.tAge`, resultados con cambios distintos de amistad y amor según la reacción, sin `c.chance` (la oferta no debe gastar azar) y sin montos escritos a mano.
 - Niveles: las acciones se desbloquean con `c.tClose(n)` (amistad) y `c.tLove(n)` (amor). Cada resultado usa `fx.close`, `fx.love` o `fx.bond` con cantidades distintas según la reacción de la otra persona.
 - Eventos de amistad, amor y enemistad con una persona: `content/events/bonds.ts` (los de enemistad usan `c.tClose(undefined, -1)`).
+- **Reglas para los eventos con personas (todos, viejos y nuevos):** los que suponen una buena relación piden amistad (`c.tClose(20)`…) para que no salgan con un enemigo; los de pareja piden amor (`c.tLove`) y usan `fx.bond` en lugar de `fx.close` (un test recorre todos los eventos y falla si un cambio de amistad con la pareja no mueve también el amor); los que implican un engaño suman `fx.suspect(n)` (sospecha de la pareja, ver `docs/10`). `{friend}`, `{sibling}` y `{child}` en un texto son la persona de ese tipo con mejor amistad.
 
 ## Campos de `GameEvent`
 

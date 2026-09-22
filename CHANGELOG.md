@@ -2,6 +2,12 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [T17 · Eventos viejos sincronizados con amistad y amor]
+
+- **Enemistad:** los eventos que suponen una buena relación (un amigo que pide ayuda, casamientos, fianza, visita a tu mamá, operación de tu papá) ya no salen con un enemigo; los chismes del ex solo si no se llevan bien.
+- **Amor:** los eventos de pareja (celos, sorpresa, ascenso, enfermedad, mudarse juntos, aniversario, propuesta, infidelidad) piden amor y mueven la barra de amor además de la de amistad. Nuevo efecto `suspect`: la tentación, el romance de oficina, la aventura y "Engañar a tu pareja" dejan rastro de infidelidad.
+- **`{friend}`** en los textos es ahora el amigo con mejor amistad, no un enemigo. 7 tests nuevos (254 en total); uno recorre todos los eventos y exige que los cambios con la pareja muevan también el amor.
+
 ## [T17 · 12 acciones o más por categoría, tope de 6 y variación anual]
 
 - **Catálogo ampliado:** cada categoría tiene ahora 12 o más acciones (unas 100 en total): 3 de amistad, 9 de humor, 7 de amor, 7 de pareja, 9 de conflicto, 10 de plata y 8 de paz nuevas.

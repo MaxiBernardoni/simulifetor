@@ -58,6 +58,8 @@ export const fx = {
   becomes: (who: 'target' | 'lover' | PersonKind, kind: PersonKind): Effect => ({
     relation: { who, becomes: kind },
   }),
+  /** Sube la sospecha de infidelidad de la pareja oficial. */
+  suspect: (n: number): Effect => ({ suspect: n }),
   marry: (): Effect => ({ relation: { who: 'partner', married: true } }),
   perf: (n: number): Effect => ({ performance: n }),
   gpa: (n: number): Effect => ({ gpa: n }),

@@ -80,7 +80,7 @@ export const ACTIVITIES: Activity[] = [
     id: 'hookup', label: 'Buscar una aventura', desc: 'Sin compromiso', icon: 'Flame', category: 'social', cost: 100,
     conditions: [c.age(18, 75)],
     outcomes: [
-      { weight: 5, text: 'Conociste a alguien. Fue una noche memorable y una mañana incómoda.', effects: [fx.hap(6), fx.loo(1)] },
+      { weight: 5, text: 'Conociste a alguien. Fue una noche memorable y una mañana incómoda.', effects: [fx.hap(6), fx.loo(1), fx.suspect(15)] },
       { weight: 3, text: 'Rechazo tras rechazo. Pagaste tres tragos para nada.', effects: [fx.hap(-3), fx.money(-100)] },
       { weight: 1, text: 'Resultó que tu aventura tenía un regalito: una infección.', effects: [fx.hap(-2), fx.hea(-8), fx.money(-400)] },
       { weight: 1, text: 'La aventura se convirtió en algo más serio.', effects: [fx.hap(5), fx.add('partner')] },

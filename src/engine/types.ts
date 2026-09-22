@@ -47,6 +47,8 @@ export type Effect =
   | { clearFlag: string }
   | { addPerson: { kind: PersonKind; age?: 'baby' | 'peer' | 'young' } }
   | { relation: { who: Who; friendship?: number; romance?: number; becomes?: PersonKind; married?: boolean; remove?: boolean } }
+  /** Suma sospecha de infidelidad a la pareja oficial (si la hay). */
+  | { suspect: number }
   | { performance: number }
   | { gpa: number }
   | { salaryMult: number }

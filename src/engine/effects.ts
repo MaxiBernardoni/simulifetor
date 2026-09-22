@@ -118,6 +118,11 @@ export function applyEffect(life: Life, e: Effect, ctx: EffectCtx, rng: Rng): vo
     if (e.relation.married !== undefined) p.married = e.relation.married;
     return;
   }
+  if ('suspect' in e) {
+    const partner = firstAlive(life, 'partner');
+    if (partner && e.suspect) partner.suspicion = Math.max(0, Math.min(100, (partner.suspicion ?? 0) + e.suspect));
+    return;
+  }
   if ('performance' in e) {
     if (life.job) life.job.performance = clamp(life.job.performance + e.performance);
     return;

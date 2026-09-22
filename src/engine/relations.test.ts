@@ -2,15 +2,17 @@ import { describe, expect, it } from 'vitest';
 import { ACTION_CATEGORIES, ACTION_CATEGORY, PERSON_ACTIONS } from '../content/personActions';
 import { BONDS } from '../content/events/bonds';
 import { ageUp } from './ageUp';
-import { isEligible, resolveChoice } from './events';
+import { fireEvent, isEligible, resolveChoice } from './events';
+import { ALL_EVENTS } from '../content/events';
+import { ACTIVITIES } from '../content/activities';
 import { createLife, migrateLife } from './life';
-import { MAX_PER_CATEGORY, offeredActions, personActionStatus, runPersonAction } from './actions';
+import { MAX_PER_CATEGORY, offeredActions, personActionStatus, runActivity, runPersonAction } from './actions';
 import { applyEffect, newEffectCtx, toneOf } from './effects';
 import { rngOf } from './rng';
 import { checkLife } from './invariants';
 import { isBadVibes } from './people';
 import { relationTitle } from './relationTitle';
-import { findLover } from './text';
+import { findLover, fill } from './text';
 import type { Life, Person, PersonKind } from './types';
 
 const action = (id: string) => PERSON_ACTIONS.find((a) => a.id === id)!;
@@ -565,5 +567,118 @@ describe('catálogo de acciones: mínimo 12 por categoría y tope de 6 a la vez'
       }
       expect(sets.size, `${cat} debería variar`).toBeGreaterThan(8);
     }
+  });
+});
+
+describe('eventos viejos sincronizados con amistad, amor y enemistad', () => {
+  const ev = (id: string) => ALL_EVENTS.find((e) => e.id === id)!;
+
+  it('los eventos que suponen una buena relación no salen con un enemigo', () => {
+    for (const id of ['rel.friend_help', 'rel.friend_wedding', 'rel.friend_bail', 'rel.friend_conflict', 'rel.friend_moves']) {
+      const enemy = adultWith('friend', { friendship: -30 });
+      enemy.life.money = 50000;
+      expect(isEligible(enemy.life, ev(id)), `${id} con enemigo`).toBe(false);
+      const pal = adultWith('friend', { friendship: 70 });
+      pal.life.money = 50000;
+      expect(isEligible(pal.life, ev(id)), `${id} con amigo`).toBe(true);
+    }
+    const mom = adultWith('mother', { friendship: -20, age: 60 });
+    expect(isEligible(mom.life, ev('rel.mother_visit'))).toBe(false);
+  });
+
+  it('los chismes del ex solo salen si no se llevan bien', () => {
+    const friendly = adultWith('ex', { friendship: 70 });
+    expect(isEligible(friendly.life, ev('rel.ex_gossip'))).toBe(false);
+    const bad = adultWith('ex', { friendship: 10 });
+    expect(isEligible(bad.life, ev('rel.ex_gossip'))).toBe(true);
+  });
+
+  it('los eventos de pareja piden amor y lo mueven', () => {
+    for (const id of ['rel.partner_surprise', 'rel.partner_promotion', 'rel.partner_illness', 'love.anniversary']) {
+      const { life, p } = adultWith('partner', { friendship: 60, romance: 50 });
+      life.age = 45;
+      life.birthYear = life.year - 45;
+      fireEvent(life, ev(id), p);
+      expect(p.romance, id).toBeGreaterThan(50);
+    }
+    const cold = adultWith('partner', { friendship: 60, romance: 5 });
+    expect(isEligible(cold.life, ev('rel.partner_surprise'))).toBe(false);
+  });
+
+  it('todo cambio de amistad con la pareja también mueve el amor (bond)', () => {
+    const bad: string[] = [];
+    const scan = (node: unknown, e: (typeof ALL_EVENTS)[number]) => {
+      if (Array.isArray(node)) return node.forEach((n) => scan(n, e));
+      if (!node || typeof node !== 'object') return;
+      const o = node as Record<string, unknown>;
+      const rel = o.relation as { who: string; friendship?: number; romance?: number } | undefined;
+      if (
+        rel &&
+        rel.friendship !== undefined &&
+        (rel.who === 'partner' || (rel.who === 'target' && e.target === 'partner')) &&
+        rel.romance === undefined
+      ) {
+        bad.push(e.id);
+      }
+      Object.values(o).forEach((v) => scan(v, e));
+    };
+    for (const e of ALL_EVENTS) scan(e, e);
+    expect(bad).toEqual([]);
+  });
+
+  it('un engaño a escondidas levanta sospechas en la pareja', () => {
+    const tempt = ev('love.temptation');
+    let raised = 0;
+    for (let seed = 1; seed <= 40; seed++) {
+      const { life } = adultWith('friend');
+      const partner: Person = {
+        id: 'pp',
+        kind: 'partner',
+        name: 'Julia Roca',
+        gender: 'F',
+        age: 30,
+        alive: true,
+        friendship: 70,
+        romance: 70,
+      };
+      life.people.push(partner);
+      life.rng = seed * 4243;
+      life.pending.push({ kind: 'choice', eventId: tempt.id, title: tempt.title, text: tempt.text });
+      resolveChoice(life, 0);
+      if ((partner.suspicion ?? 0) >= 18) raised++;
+    }
+    expect(raised).toBeGreaterThan(8);
+  });
+
+  it('buscar una aventura con pareja también deja rastro', () => {
+    expect(ACTIVITIES.find((a) => a.id === 'hookup')!.outcomes.some((o) => JSON.stringify(o.effects).includes('suspect'))).toBe(true);
+    let raised = 0;
+    for (let seed = 1; seed <= 40; seed++) {
+      const { life } = adultWith('friend');
+      const partner: Person = {
+        id: 'pp',
+        kind: 'partner',
+        name: 'Julia Roca',
+        gender: 'F',
+        age: 30,
+        alive: true,
+        friendship: 70,
+        romance: 70,
+      };
+      life.people.push(partner);
+      life.money = 100000;
+      life.rng = seed * 991;
+      runActivity(life, 'hookup');
+      if ((partner.suspicion ?? 0) > 0) raised++;
+    }
+    expect(raised).toBeGreaterThan(5);
+  });
+
+  it('"{friend}" en un texto es el mejor amigo, no un enemigo', () => {
+    const { life } = adultWith('friend', { friendship: -60, name: 'Enemigo Uno' });
+    life.people.push({ id: 'f2', kind: 'friend', name: 'Amigo Dos', gender: 'M', age: 30, alive: true, friendship: 80 });
+    life.people.push({ id: 'f3', kind: 'friend', name: 'Amigo Tres', gender: 'M', age: 30, alive: true, friendship: 20 });
+    expect(fill(life, '{friend} llamó.')).toContain('Amigo');
+    expect(fill(life, '{friend} llamó.')).not.toContain('Enemigo');
   });
 });

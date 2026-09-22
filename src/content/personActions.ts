@@ -50,8 +50,8 @@ const BASE_ACTIONS: PersonAction[] = [
     id: 'night_together', label: 'Pasar la noche juntos', icon: 'Moon', kinds: ['partner'],
     conditions: [c.age(18, 99)],
     outcomes: [
-      { weight: 6, text: 'Una noche apasionada con {target}.', effects: [fx.close('target', 6), fx.hap(6)] },
-      { weight: 3, text: 'Se durmieron viendo una serie. Tan romántico como suena.', effects: [fx.close('target', 3), fx.hap(2)] },
+      { weight: 6, text: 'Una noche apasionada con {target}.', effects: [fx.bond('target', 6, 8), fx.hap(6)] },
+      { weight: 3, text: 'Se durmieron viendo una serie. Tan romántico como suena.', effects: [fx.bond('target', 3, 3), fx.hap(2)] },
     ],
   },
   {
@@ -59,7 +59,7 @@ const BASE_ACTIONS: PersonAction[] = [
     conditions: [c.tClose(60), c.age(18, 99), c.single()],
     outcomes: [
       { weight: 7, text: '¡{target} dijo que sí! Se casaron en una ceremonia inolvidable.', effects: [fx.marry(), fx.hap(10), fx.money(-3000)] },
-      { weight: 2, text: '{target} dijo que necesita más tiempo. Se cortó el clima.', effects: [fx.close('target', -15), fx.hap(-6)] },
+      { weight: 2, text: '{target} dijo que necesita más tiempo. Se cortó el clima.', effects: [fx.bond('target', -15, -15), fx.hap(-6)] },
       { weight: 1, text: '{target} se rió y te dejó. Qué papelón.', effects: [fx.becomes('target', 'ex'), fx.hap(-14)] },
     ],
   },
@@ -80,9 +80,9 @@ const BASE_ACTIONS: PersonAction[] = [
   {
     id: 'reconnect', core: true, label: 'Reconectar', icon: 'RefreshCcw', kinds: ['ex'],
     outcomes: [
-      { weight: 3, text: 'Volvieron a estar juntos con {target}. Ojalá esta vez sea distinto.', effects: [fx.becomes('target', 'partner'), fx.hap(6), fx.close('target', 20)] },
+      { weight: 3, text: 'Volvieron a estar juntos con {target}. Ojalá esta vez sea distinto.', effects: [fx.becomes('target', 'partner'), fx.hap(6), fx.bond('target', 20, 20)] },
       { weight: 5, text: '{target} no quiso hablar con vos.', effects: [fx.hap(-3)] },
-      { weight: 2, text: 'Se acostaron por los viejos tiempos. Un error hermoso.', effects: [fx.hap(4), fx.close('target', 5)] },
+      { weight: 2, text: 'Se acostaron por los viejos tiempos. Un error hermoso.', effects: [fx.hap(4), fx.bond('target', 5, 8)] },
     ],
   },
   {
@@ -144,8 +144,8 @@ const BASE_ACTIONS: PersonAction[] = [
     id: 'cheat', label: 'Engañar a tu pareja', icon: 'VenetianMask', kinds: ['partner'],
     conditions: [c.age(18, 99)],
     outcomes: [
-      { weight: 6, text: 'Tuviste una aventura a espaldas de {target}. Nadie se enteró, por ahora.', effects: [fx.hap(4), fx.close('target', -3)] },
-      { weight: 4, text: '{target} se enteró de todo. Fue una escena que nadie olvida.', effects: [fx.close('target', -45), fx.hap(-8)] },
+      { weight: 6, text: 'Tuviste una aventura a espaldas de {target}. Nadie se enteró, por ahora.', effects: [fx.hap(4), fx.bond('target', -3, -3), fx.suspect(20)] },
+      { weight: 4, text: '{target} se enteró de todo. Fue una escena que nadie olvida.', effects: [fx.bond('target', -45, -45), fx.hap(-8)] },
     ],
   },
   {
