@@ -110,8 +110,8 @@ export interface PersonAction {
   kinds: PersonKind[];
   cost?: number;
   conditions?: Cond[];
-  /** Rota: cada año solo se ofrece una parte al azar (determinista) de las que ya están desbloqueadas. */
-  rotate?: boolean;
+  /** Esencial: entra primero en el cupo de 6 de su categoría ("Conversar", "Coquetear", "Pedir perdón"…). */
+  core?: boolean;
   /** Cuánto "rastro" deja con la pareja oficial si la persona objetivo es otra (infidelidad). */
   risk?: number;
   outcomes: Outcome[];

@@ -2,6 +2,12 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [T17 · 12 acciones o más por categoría, tope de 6 y variación anual]
+
+- **Catálogo ampliado:** cada categoría tiene ahora 12 o más acciones (unas 100 en total): 3 de amistad, 9 de humor, 7 de amor, 7 de pareja, 9 de conflicto, 10 de plata y 8 de paz nuevas.
+- **Máximo 6 por categoría:** con cada persona se ofrecen hasta 6 acciones por categoría; las esenciales (Conversar, Pasar tiempo juntos, Coquetear, Pedir perdón…) están siempre y el resto cambia cada año.
+- Los bots se limitan a acciones amistosas. El test de las 300 vidas tiene más margen de tiempo. 5 tests nuevos (247 en total).
+
 ## [T17 · Subpestañas de acciones y amor con familia]
 
 - **Subpestañas:** la ficha de cada persona muestra primero las categorías (tarjetas con su cantidad de acciones); al tocar una aparecen solo sus acciones y hay un botón para volver a las categorías.

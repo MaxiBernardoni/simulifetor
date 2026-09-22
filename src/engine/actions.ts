@@ -6,6 +6,7 @@ import type { EffectCtx } from './effects';
 import { allActivities, allCareers, allPersonActions, getCareer, getEvent } from './registry';
 import { pickOutcome, fireEvent } from './events';
 import { fill, firstAlive } from './text';
+import { ACTION_CATEGORY } from '../content/personActions';
 import { refineScene, sceneForActivity, sceneForPersonAction } from '../content/scenes';
 import { makePerson } from './people';
 import { formatMoney } from './format';
@@ -66,8 +67,8 @@ export function runActivity(life: Life, id: string): void {
 }
 
 // ───────── Acciones sobre personas ─────────
-/** Qué parte de las acciones "rotativas" se ofrece cada año (p. ej. 60 %): así la lista no se vuelve repetitiva. */
-const ROTATE_SHARE = 0.6;
+/** Cuántas acciones de cada categoría se ofrecen a la vez con una persona. */
+export const MAX_PER_CATEGORY = 6;
 
 /** Hash estable (FNV-1a) → número entre 0 y 1. */
 function unit(s: string): number {
@@ -77,28 +78,52 @@ function unit(s: string): number {
 }
 
 /**
- * ¿Toca ofrecer esta acción rotativa con esta persona este año? Depende solo de la vida, el año, la persona y la
- * acción (no del azar del juego, ni de los niveles, ni de ids con la hora, como el de la vida), así que no cambia al reabrir la pantalla ni tras actuar.
+ * Qué acciones se ofrecen con esta persona este año: de las que cumplen sus condiciones (niveles de amistad y amor,
+ * edades…), hasta `MAX_PER_CATEGORY` por categoría. Las esenciales (`core`) entran primero y el resto se sortea con un
+ * hash de vida + año + persona + acción: cambia cada año, pero es estable dentro del año y no gasta azar del juego.
  */
-export function offeredThisYear(life: Life, a: PersonAction, p: Person): boolean {
-  return !a.rotate || unit(`${life.name}${life.surname}${life.birthYear}|${life.year}|${p.kind}|${p.name}|${a.id}`) < ROTATE_SHARE;
+export function offeredActions(life: Life, p: Person): Set<string> {
+  const rng = rngOf(life);
+  const byCat = new Map<string, PersonAction[]>();
+  for (const a of allPersonActions()) {
+    if (!a.kinds.includes(p.kind) || !allConds(life, a.conditions, rng, { target: p })) continue;
+    const cat = ACTION_CATEGORY[a.id] ?? a.id;
+    const list = byCat.get(cat);
+    if (list) list.push(a);
+    else byCat.set(cat, [a]);
+  }
+  const out = new Set<string>();
+  const seed = `${life.name}${life.surname}${life.birthYear}|${life.year}|${p.kind}|${p.name}|`;
+  for (const list of byCat.values()) {
+    // Con 6 o menos entran todas; si sobran, primero las esenciales y el resto por sorteo del año.
+    const chosen =
+      list.length <= MAX_PER_CATEGORY
+        ? list
+        : list
+            .map((a) => ({ a, rank: a.core ? -1 : unit(seed + a.id) }))
+            .sort((x, y) => x.rank - y.rank)
+            .slice(0, MAX_PER_CATEGORY)
+            .map((x) => x.a);
+    for (const a of chosen) out.add(a.id);
+  }
+  return out;
 }
 
-export function personActionStatus(life: Life, a: PersonAction, p: Person): Status {
+export function personActionStatus(life: Life, a: PersonAction, p: Person, offered: Set<string> = offeredActions(life, p)): Status {
   const rng = rngOf(life);
   if (!p.alive || !a.kinds.includes(p.kind)) return { visible: false };
   if (!allConds(life, a.conditions, rng, { target: p })) return { visible: false };
-  if (!offeredThisYear(life, a, p)) return { visible: false };
+  if (!offered.has(a.id)) return { visible: false };
   if (life.usedThisYear.includes(`${a.id}:${p.id}`)) return { visible: true, reason: 'Ya lo hiciste este año' };
   if (a.cost && life.money < costOf(life, a)) return { visible: true, reason: `Necesitás ${formatMoney(costOf(life, a))}` };
   return { visible: true };
 }
 
-export function runPersonAction(life: Life, actionId: string, personId: string): void {
+export function runPersonAction(life: Life, actionId: string, personId: string, offered?: Set<string>): void {
   const a = allPersonActions().find((x) => x.id === actionId);
   const p = life.people.find((x) => x.id === personId);
   if (!a || !p || life.pending.length) return;
-  const st = personActionStatus(life, a, p);
+  const st = personActionStatus(life, a, p, offered);
   if (!st.visible || st.reason) return;
   const rng = rngOf(life);
   life.usedThisYear.push(`${a.id}:${p.id}`);

@@ -1,11 +1,12 @@
 import type { PersonAction } from '../engine/types';
 import { c, fx } from './dsl';
+import { EXTRA_ACTIONS, EXTRA_CATEGORY } from './personActionsExtra';
 
 const ALL = ['mother', 'father', 'sibling', 'friend', 'partner', 'child', 'ex'] as const;
 
-export const PERSON_ACTIONS: PersonAction[] = [
+const BASE_ACTIONS: PersonAction[] = [
   {
-    id: 'talk', label: 'Conversar', icon: 'MessageCircle', kinds: [...ALL],
+    id: 'talk', core: true, label: 'Conversar', icon: 'MessageCircle', kinds: [...ALL],
     conditions: [c.tAge(3)],
     outcomes: [
       { weight: 6, text: 'Charlaste un buen rato con {target}. Se acercaron un poco.', effects: [fx.close('target', 5), fx.hap(2)] },
@@ -14,7 +15,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'spend_time', label: 'Pasar tiempo juntos', icon: 'Clock', kinds: [...ALL],
+    id: 'spend_time', core: true, label: 'Pasar tiempo juntos', icon: 'Clock', kinds: [...ALL],
     conditions: [c.tClose(0)],
     outcomes: [
       { weight: 7, text: 'Pasaste un día genial con {target}.', effects: [fx.close('target', 8), fx.hap(4)] },
@@ -30,14 +31,14 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'argue', label: 'Pelear', icon: 'Flame', kinds: [...ALL],
+    id: 'argue', core: true, label: 'Pelear', icon: 'Flame', kinds: [...ALL],
     conditions: [c.age(6, 99), c.tAge(6)],
     outcomes: [
       { weight: 1, text: 'Te agarraste a gritos con {target}. Te dijeron cosas que duelen.', effects: [fx.close('target', -15), fx.hap(-3)] },
     ],
   },
   {
-    id: 'ask_money', label: 'Pedir plata prestada', icon: 'Banknote', kinds: ['mother', 'father', 'sibling', 'friend', 'partner'],
+    id: 'ask_money', core: true, label: 'Pedir plata prestada', icon: 'Banknote', kinds: ['mother', 'father', 'sibling', 'friend', 'partner'],
     conditions: [c.tClose(35), c.tAge(18)],
     outcomes: [
       { weight: 5, text: '{target} te prestó $1.500 sin hacer preguntas.', effects: [fx.money(1500), fx.close('target', -3)] },
@@ -54,7 +55,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'propose', label: 'Proponer casamiento', icon: 'Gem', kinds: ['partner'],
+    id: 'propose', core: true, label: 'Proponer casamiento', icon: 'Gem', kinds: ['partner'],
     conditions: [c.tClose(60), c.age(18, 99), c.single()],
     outcomes: [
       { weight: 7, text: '¡{target} dijo que sí! Se casaron en una ceremonia inolvidable.', effects: [fx.marry(), fx.hap(10), fx.money(-3000)] },
@@ -71,13 +72,13 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'break_up', label: 'Terminar la relación', icon: 'HeartCrack', kinds: ['partner'],
+    id: 'break_up', core: true, label: 'Terminar la relación', icon: 'HeartCrack', kinds: ['partner'],
     outcomes: [
       { weight: 1, text: 'Terminaste con {target}. Lloraron los dos. Bueno, uno más que el otro.', effects: [fx.becomes('target', 'ex'), fx.hap(-8)] },
     ],
   },
   {
-    id: 'reconnect', label: 'Reconectar', icon: 'RefreshCcw', kinds: ['ex'],
+    id: 'reconnect', core: true, label: 'Reconectar', icon: 'RefreshCcw', kinds: ['ex'],
     outcomes: [
       { weight: 3, text: 'Volvieron a estar juntos con {target}. Ojalá esta vez sea distinto.', effects: [fx.becomes('target', 'partner'), fx.hap(6), fx.close('target', 20)] },
       { weight: 5, text: '{target} no quiso hablar con vos.', effects: [fx.hap(-3)] },
@@ -116,7 +117,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'apologize', label: 'Pedir perdón', icon: 'Megaphone', kinds: ['mother', 'father', 'sibling', 'friend', 'partner', 'child', 'ex'],
+    id: 'apologize', core: true, label: 'Pedir perdón', icon: 'Megaphone', kinds: ['mother', 'father', 'sibling', 'friend', 'partner', 'child', 'ex'],
     conditions: [c.tClose(undefined, 60), c.tAge(6)],
     outcomes: [
       { weight: 6, text: '{target} aceptó tus disculpas. Se aliviaron los dos.', effects: [fx.close('target', 14), fx.hap(3)] },
@@ -125,7 +126,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'give_money', label: 'Darle plata', icon: 'Banknote', kinds: ['mother', 'father', 'sibling', 'friend', 'partner', 'child'], cost: 1000,
+    id: 'give_money', core: true, label: 'Darle plata', icon: 'Banknote', kinds: ['mother', 'father', 'sibling', 'friend', 'partner', 'child'], cost: 1000,
     conditions: [c.age(18, 99)],
     outcomes: [
       { weight: 1, text: 'Le diste $1.000 a {target}. Se emocionó y te lo agradeció.', effects: [fx.close('target', 12), fx.hap(2)] },
@@ -148,7 +149,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'divorce', label: 'Pedir el divorcio', icon: 'HeartCrack', kinds: ['partner'], cost: 3000,
+    id: 'divorce', core: true, label: 'Pedir el divorcio', icon: 'HeartCrack', kinds: ['partner'], cost: 3000,
     conditions: [c.married()],
     outcomes: [
       { weight: 1, text: 'Te divorciaste de {target}. Firmaron los papeles y se repartieron los muebles.', effects: [fx.becomes('target', 'ex'), fx.flag('divorced'), fx.hap(-6), fx.moneyPct(-0.25)] },
@@ -173,7 +174,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
   // ───────── Acciones que van apareciendo según amistad y amor (rotan cada año) ─────────
   // Amistosas: se desbloquean al subir la amistad. Cada resultado suma o resta una cantidad distinta.
   {
-    id: 'deep_talk', label: 'Tener una charla profunda', icon: 'MessageCircle', kinds: [...ALL], rotate: true,
+    id: 'deep_talk', label: 'Tener una charla profunda', icon: 'MessageCircle', kinds: [...ALL],
     conditions: [c.tClose(30), c.age(10, 99), c.tAge(10)],
     outcomes: [
       { weight: 5, text: 'Hablaron de todo hasta la madrugada con {target}. Salieron más cerca.', effects: [fx.close('target', 9), fx.hap(2)] },
@@ -182,7 +183,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'share_secret', label: 'Contarle un secreto', icon: 'Lock', kinds: [...ALL], rotate: true,
+    id: 'share_secret', label: 'Contarle un secreto', icon: 'Lock', kinds: [...ALL],
     conditions: [c.tClose(45), c.age(10, 99), c.tAge(10)],
     outcomes: [
       { weight: 5, text: '{target} guardó tu secreto y te lo agradeció. Se sintieron unidos.', effects: [fx.close('target', 12), fx.hap(2)] },
@@ -191,7 +192,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'cook_dinner', label: 'Cocinarle una cena', icon: 'UtensilsCrossed', kinds: [...ALL], rotate: true,
+    id: 'cook_dinner', label: 'Cocinarle una cena', icon: 'UtensilsCrossed', kinds: [...ALL],
     conditions: [c.tClose(35), c.age(12, 99), c.tAge(12)],
     outcomes: [
       { weight: 6, text: 'La cena para {target} salió riquísima. Repitieron dos veces.', effects: [fx.close('target', 8), fx.hap(2)] },
@@ -200,7 +201,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'roast', label: 'Cargarlo/a con humor negro', icon: 'Drama', kinds: ['friend', 'sibling', 'partner', 'ex'], rotate: true,
+    id: 'roast', label: 'Cargarlo/a con humor negro', icon: 'Drama', kinds: ['friend', 'sibling', 'partner', 'ex'],
     conditions: [c.tClose(40), c.age(14, 99), c.tAge(14)],
     outcomes: [
       { weight: 5, text: 'Le tiraste una humorada cruel a {target} y se cagó de risa.', effects: [fx.close('target', 6), fx.hap(2)] },
@@ -208,7 +209,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'defend', label: 'Defenderlo/a de un desconocido', icon: 'Shield', kinds: [...ALL], rotate: true,
+    id: 'defend', label: 'Defenderlo/a de un desconocido', icon: 'Shield', kinds: [...ALL],
     conditions: [c.tClose(50), c.age(14, 90), c.tAge(8)],
     outcomes: [
       { weight: 6, text: 'Te plantaste por {target} frente a un desconocido. Lo va a recordar siempre.', effects: [fx.close('target', 11), fx.hap(2)] },
@@ -217,7 +218,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'trip', label: 'Hacer un viaje juntos', icon: 'Plane', kinds: [...ALL], rotate: true, cost: 800,
+    id: 'trip', label: 'Hacer un viaje juntos', icon: 'Plane', kinds: [...ALL], cost: 800,
     conditions: [c.tClose(55), c.age(16, 90), c.tAge(12)],
     outcomes: [
       { weight: 6, text: 'El viaje con {target} fue inolvidable. Volvieron con mil anécdotas.', effects: [fx.close('target', 14), fx.hap(6)] },
@@ -229,7 +230,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
   // Románticas: aparecen con amistad de 50 para arriba entre adultos (también en la familia) y suben con el amor.
   // La otra persona reacciona bien o mal: cada reacción mueve las barras de amistad y de amor una cantidad distinta.
   {
-    id: 'flirt', label: 'Coquetear', icon: 'Sparkles', kinds: [...ALL], risk: 6,
+    id: 'flirt', core: true, label: 'Coquetear', icon: 'Sparkles', kinds: [...ALL], risk: 6,
     conditions: [c.tClose(50), c.age(18, 99), c.tAge(18)],
     outcomes: [
       { weight: 4, text: 'Le tiraste onda a {target} y te siguió el juego. Hay algo en el aire.', effects: [fx.bond('target', 2, 8), fx.hap(2)] },
@@ -239,7 +240,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'love_letter', label: 'Escribirle una carta de amor', icon: 'Mail', kinds: [...ALL], rotate: true, risk: 10,
+    id: 'love_letter', label: 'Escribirle una carta de amor', icon: 'Mail', kinds: [...ALL], risk: 10,
     conditions: [c.tClose(55), c.age(18, 99), c.tAge(18)],
     outcomes: [
       { weight: 5, text: '{target} leyó tu carta dos veces y te miró distinto.', effects: [fx.bond('target', 3, 10), fx.hap(3)] },
@@ -248,7 +249,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'confess', label: 'Confesarle lo que sentís', icon: 'Heart', kinds: [...ALL], rotate: true, risk: 12,
+    id: 'confess', label: 'Confesarle lo que sentís', icon: 'Heart', kinds: [...ALL], risk: 12,
     conditions: [c.tClose(50), c.tLove(30), c.age(18, 99), c.tAge(18)],
     outcomes: [
       { weight: 4, text: '{target} te confesó que sentía lo mismo. Se quedaron abrazados un rato largo.', effects: [fx.bond('target', 6, 15), fx.hap(6)] },
@@ -257,7 +258,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'date', label: 'Invitarlo/a a una cita', icon: 'Wine', kinds: [...ALL], rotate: true, risk: 12, cost: 150,
+    id: 'date', label: 'Invitarlo/a a una cita', icon: 'Wine', kinds: [...ALL], risk: 12, cost: 150,
     conditions: [c.tLove(10), c.age(18, 99), c.tAge(18)],
     outcomes: [
       { weight: 5, text: 'La cita con {target} salió mejor de lo esperado. Se despidieron sin ganas.', effects: [fx.bond('target', 3, 12), fx.hap(4)] },
@@ -266,7 +267,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'romantic_surprise', label: 'Hacerle una sorpresa romántica', icon: 'Gift', kinds: [...ALL], rotate: true, risk: 10, cost: 300,
+    id: 'romantic_surprise', label: 'Hacerle una sorpresa romántica', icon: 'Gift', kinds: [...ALL], risk: 10, cost: 300,
     conditions: [c.tLove(40), c.age(18, 99), c.tAge(18)],
     outcomes: [
       { weight: 6, text: '{target} se emocionó hasta las lágrimas con tu sorpresa.', effects: [fx.bond('target', 5, 13), fx.hap(5)] },
@@ -275,7 +276,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'kiss', label: 'Darle un beso', icon: 'HeartHandshake', kinds: [...ALL], rotate: true, risk: 22,
+    id: 'kiss', label: 'Darle un beso', icon: 'HeartHandshake', kinds: [...ALL], risk: 22,
     conditions: [c.tLove(25), c.age(18, 99), c.tAge(18)],
     outcomes: [
       { weight: 5, text: 'Besaste a {target} y el mundo se detuvo un segundo. Se acordarán de ese beso.', effects: [fx.bond('target', 4, 12), fx.hap(5)] },
@@ -285,7 +286,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'jealous_scene', label: 'Hacer una escena de celos', icon: 'Flame', kinds: [...ALL], rotate: true,
+    id: 'jealous_scene', label: 'Hacer una escena de celos', icon: 'Flame', kinds: [...ALL],
     conditions: [c.tLove(30), c.age(18, 99), c.tAge(18)],
     outcomes: [
       { weight: 6, text: 'Le hiciste una escena de celos a {target} en plena calle. Todos miraron.', effects: [fx.bond('target', -8, -10), fx.hap(-3)] },
@@ -293,7 +294,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'lover_night', label: 'Pasar la noche con esta persona', icon: 'Moon', kinds: [...ALL], rotate: true, risk: 35,
+    id: 'lover_night', label: 'Pasar la noche con esta persona', icon: 'Moon', kinds: [...ALL], risk: 35,
     conditions: [c.tLove(45), c.age(18, 99), c.tAge(18)],
     outcomes: [
       { weight: 5, text: 'La noche con {target} fue intensa. Amanecieron enredados y sin ganas de salir de la cama.', effects: [fx.bond('target', 5, 10), fx.hap(6)] },
@@ -304,7 +305,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
 
   // ───────── Humor, molestias, paces y pareja oficial ─────────
   {
-    id: 'joke', label: 'Contarle un chiste', icon: 'Drama', kinds: [...ALL], rotate: true,
+    id: 'joke', core: true, label: 'Contarle un chiste', icon: 'Drama', kinds: [...ALL],
     conditions: [c.age(6, 99), c.tAge(6), c.tClose(0)],
     outcomes: [
       { weight: 5, text: 'Le contaste un chiste a {target} y se rió hasta llorar.', effects: [fx.close('target', 5), fx.hap(2)] },
@@ -313,7 +314,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'prank', label: 'Hacerle una broma pesada', icon: 'Drama', kinds: ['friend', 'sibling', 'ex', 'child'], rotate: true,
+    id: 'prank', label: 'Hacerle una broma pesada', icon: 'Drama', kinds: ['friend', 'sibling', 'ex', 'child'],
     conditions: [c.age(8, 70), c.tAge(6), c.tClose(-20)],
     outcomes: [
       { weight: 4, text: 'La broma a {target} salió perfecta. Se cagaron de risa los dos.', effects: [fx.close('target', 8), fx.hap(3)] },
@@ -322,7 +323,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'annoy', label: 'Molestarlo/a a propósito', icon: 'Flame', kinds: ['friend', 'sibling', 'ex', 'child'], rotate: true,
+    id: 'annoy', label: 'Molestarlo/a a propósito', icon: 'Flame', kinds: ['friend', 'sibling', 'ex', 'child'],
     conditions: [c.age(8, 90), c.tAge(6)],
     outcomes: [
       { weight: 4, text: 'Le buscaste la pelea a {target} por pura maldad. Te divertiste más de lo que admitís.', effects: [fx.close('target', -6), fx.hap(2)] },
@@ -331,7 +332,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
     ],
   },
   {
-    id: 'make_peace', label: 'Proponer una tregua', icon: 'RefreshCcw', kinds: ['friend', 'sibling', 'ex', 'mother', 'father', 'child'],
+    id: 'make_peace', core: true, label: 'Proponer una tregua', icon: 'RefreshCcw', kinds: ['friend', 'sibling', 'ex', 'mother', 'father', 'child'],
     conditions: [c.tClose(undefined, -1), c.tAge(6)],
     outcomes: [
       { weight: 4, text: '{target} aceptó la tregua. Se dieron la mano, sin abrazos, pero es un comienzo.', effects: [fx.close('target', 30), fx.hap(3)] },
@@ -350,6 +351,9 @@ export const PERSON_ACTIONS: PersonAction[] = [
   },
 ];
 
+/** Todas las acciones con personas (las de base más el catálogo ampliado de `personActionsExtra.ts`). */
+export const PERSON_ACTIONS: PersonAction[] = [...BASE_ACTIONS, ...EXTRA_ACTIONS];
+
 /** Categorías en las que se agrupan las acciones en la ficha de cada persona. */
 export type ActionCategory = 'amistad' | 'humor' | 'amor' | 'pareja' | 'conflicto' | 'plata' | 'paz';
 
@@ -364,7 +368,7 @@ export const ACTION_CATEGORIES: { id: ActionCategory; label: string; icon: strin
 ];
 
 /** A qué categoría pertenece cada acción (todas las de PERSON_ACTIONS tienen una: lo verifica un test). */
-export const ACTION_CATEGORY: Record<string, ActionCategory> = {
+const BASE_CATEGORY: Record<string, ActionCategory> = {
   talk: 'amistad', spend_time: 'amistad', gift: 'amistad', party_friend: 'amistad', play: 'amistad', hug: 'amistad',
   help_study: 'amistad', advice: 'amistad', deep_talk: 'amistad', share_secret: 'amistad', cook_dinner: 'amistad',
   defend: 'amistad', trip: 'amistad',
@@ -376,3 +380,5 @@ export const ACTION_CATEGORY: Record<string, ActionCategory> = {
   ask_money: 'plata', give_money: 'plata',
   apologize: 'paz', reconnect: 'paz', cut_off: 'paz', make_peace: 'paz',
 };
+
+export const ACTION_CATEGORY: Record<string, ActionCategory> = { ...BASE_CATEGORY, ...EXTRA_CATEGORY };

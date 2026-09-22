@@ -4,7 +4,7 @@ import { BONDS } from '../content/events/bonds';
 import { ageUp } from './ageUp';
 import { isEligible, resolveChoice } from './events';
 import { createLife, migrateLife } from './life';
-import { offeredThisYear, personActionStatus, runPersonAction } from './actions';
+import { MAX_PER_CATEGORY, offeredActions, personActionStatus, runPersonAction } from './actions';
 import { applyEffect, newEffectCtx, toneOf } from './effects';
 import { rngOf } from './rng';
 import { checkLife } from './invariants';
@@ -122,19 +122,17 @@ describe('acciones que se desbloquean por niveles', () => {
       expect(yearsOffered(life, id, p)).toBe(0);
   });
 
-  it('la oferta anual rota: no aparece todos los años y es estable dentro de un año', () => {
-    const { life, p } = adultWith('friend', { friendship: 60 });
-    const n = yearsOffered(life, 'love_letter', p, 1990, 2090);
-    expect(n).toBeGreaterThan(30);
-    expect(n).toBeLessThan(90);
-    life.year = 2030;
-    const first = offeredThisYear(life, action('love_letter'), p);
-    for (let i = 0; i < 5; i++) expect(offeredThisYear(life, action('love_letter'), p)).toBe(first);
-    // no cambia por lo que pase en el juego (amor, amistad) dentro del mismo año
-    p.friendship = 99;
-    expect(offeredThisYear(life, action('love_letter'), p)).toBe(first);
-    // "Coquetear", la entrada al amor, no rota: siempre está disponible con amistad de 50 o más
-    expect(yearsOffered(life, 'flirt', p, 1990, 2090)).toBe(100);
+  it('la oferta cambia cada año, es estable dentro del año y "Coquetear" siempre está', () => {
+    const { life, p } = adultWith('friend', { friendship: 90, romance: 70 });
+    const sets = new Set<string>();
+    for (let y = 2000; y < 2040; y++) {
+      life.year = y;
+      const first = [...offeredActions(life, p)].sort().join(',');
+      expect([...offeredActions(life, p)].sort().join(',')).toBe(first);
+      sets.add(first);
+      expect(shown(life, 'flirt', p), `flirt en ${y}`).toBe(true);
+    }
+    expect(sets.size).toBeGreaterThan(20);
   });
 
   it('acciones distintas se ofrecen en años distintos (variedad)', () => {
@@ -159,12 +157,12 @@ describe('familia y edades', () => {
 
   it('si alguno es menor no hay acciones románticas, aunque haya amistad', () => {
     const minor = adultWith('sibling', { friendship: 90, age: 15, romance: 80 });
-    for (const a of PERSON_ACTIONS.filter((x) => x.id === 'flirt' || x.conditions?.some((c) => 'targetRomance' in c))) {
+    for (const a of PERSON_ACTIONS.filter((x) => ACTION_CATEGORY[x.id] === 'amor')) {
       expect(yearsOffered(minor.life, a.id, minor.p), a.id).toBe(0);
     }
     const kid = adultWith('friend', { friendship: 90, romance: 80 });
     kid.life.age = 16;
-    for (const a of PERSON_ACTIONS.filter((x) => x.id === 'flirt' || x.conditions?.some((c) => 'targetRomance' in c))) {
+    for (const a of PERSON_ACTIONS.filter((x) => ACTION_CATEGORY[x.id] === 'amor')) {
       expect(yearsOffered(kid.life, a.id, kid.p), a.id).toBe(0);
     }
   });
@@ -172,17 +170,17 @@ describe('familia y edades', () => {
 
 describe('reacciones distintas, cambios distintos', () => {
   it('cada acción romántica tiene reacciones con cambios diferentes de amistad y amor', () => {
-    const romantic = PERSON_ACTIONS.filter(
-      (a) => (a.rotate || a.id === 'flirt') && a.conditions?.some((c) => 'targetRomance' in c || JSON.stringify(c).includes('18')),
-    );
-    expect(romantic.length).toBeGreaterThanOrEqual(8);
+    const romantic = PERSON_ACTIONS.filter((a) => ACTION_CATEGORY[a.id] === 'amor');
+    expect(romantic.length).toBeGreaterThanOrEqual(12);
     for (const a of romantic) {
       const changes = new Set(a.outcomes.map((o) => JSON.stringify((o.effects ?? []).filter((e) => 'relation' in e))));
       expect(changes.size, a.id).toBe(a.outcomes.length);
-      const signs = a.outcomes.map((o) =>
+    }
+    for (const id of ['flirt', 'kiss', 'confess', 'date']) {
+      const bad = action(id).outcomes.some((o) =>
         (o.effects ?? []).some((e) => 'relation' in e && ((e.relation.friendship ?? 0) < 0 || (e.relation.romance ?? 0) < 0)),
       );
-      expect(signs.some(Boolean), `${a.id} debería tener reacción mala`).toBe(true);
+      expect(bad, `${id} debería tener una reacción mala`).toBe(true);
     }
   });
 
@@ -498,6 +496,74 @@ describe('familia adulta: la entrada al amor siempre está', () => {
       expect(yearsOffered(life, 'flirt', p, 1990, 2060), kind).toBe(70);
       p.friendship = 49;
       expect(yearsOffered(life, 'flirt', p, 1990, 2060), `${kind} con 49`).toBe(0);
+    }
+  });
+});
+
+describe('catálogo de acciones: mínimo 12 por categoría y tope de 6 a la vez', () => {
+  it('cada categoría tiene 12 o más acciones distintas, con ids únicos', () => {
+    const ids = PERSON_ACTIONS.map((a) => a.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const cat of ACTION_CATEGORIES) {
+      const n = PERSON_ACTIONS.filter((a) => ACTION_CATEGORY[a.id] === cat.id).length;
+      expect(n, `${cat.id} tiene ${n}`).toBeGreaterThanOrEqual(12);
+    }
+  });
+
+  it('nunca se ofrecen más de 6 por categoría, con ninguna persona ni en ningún año', () => {
+    let full = 0;
+    for (const kind of ['friend', 'partner', 'mother', 'sibling', 'ex'] as PersonKind[]) {
+      for (const [friendship, romance] of [
+        [95, 90],
+        [70, 45],
+        [-40, 30],
+        [10, undefined],
+      ] as [number, number | undefined][]) {
+        const { life, p } = adultWith(kind, { friendship, romance, married: kind === 'partner' });
+        life.money = 1e6;
+        for (let y = 2000; y < 2030; y++) {
+          life.year = y;
+          const perCat = new Map<string, number>();
+          for (const a of PERSON_ACTIONS) {
+            if (!personActionStatus(life, a, p).visible) continue;
+            const cat = ACTION_CATEGORY[a.id];
+            perCat.set(cat, (perCat.get(cat) ?? 0) + 1);
+          }
+          for (const [cat, n] of perCat) {
+            expect(n, `${kind} ${friendship}/${romance} ${y} ${cat}`).toBeLessThanOrEqual(MAX_PER_CATEGORY);
+            if (n === MAX_PER_CATEGORY) full++;
+          }
+        }
+      }
+    }
+    expect(full).toBeGreaterThan(50);
+  });
+
+  it('las acciones esenciales de cada categoría siempre están cuando corresponden', () => {
+    const { life, p } = adultWith('friend', { friendship: 80, romance: 60 });
+    life.money = 1e6;
+    for (let y = 2000; y < 2040; y++) {
+      life.year = y;
+      for (const id of ['talk', 'spend_time', 'joke', 'flirt', 'ask_money', 'give_money'])
+        expect(shown(life, id, p), `${id} en ${y}`).toBe(true);
+    }
+  });
+
+  it('las categorías van cambiando de un año a otro (variedad)', () => {
+    const { life, p } = adultWith('friend', { friendship: 90, romance: 70 });
+    life.money = 1e6;
+    for (const cat of ['amistad', 'humor', 'amor', 'plata']) {
+      const sets = new Set<string>();
+      for (let y = 2000; y < 2030; y++) {
+        life.year = y;
+        sets.add(
+          PERSON_ACTIONS.filter((a) => ACTION_CATEGORY[a.id] === cat && personActionStatus(life, a, p).visible)
+            .map((a) => a.id)
+            .sort()
+            .join(','),
+        );
+      }
+      expect(sets.size, `${cat} debería variar`).toBeGreaterThan(8);
     }
   });
 });

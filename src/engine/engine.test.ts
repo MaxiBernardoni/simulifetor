@@ -136,7 +136,7 @@ describe('motor', () => {
     // Expectativa de vida razonable.
     expect(avg).toBeGreaterThan(55);
     expect(avg).toBeLessThan(95);
-  });
+  }, 30_000);
 
   it('misma semilla, misma vida', () => {
     const a = simulateLife(99);

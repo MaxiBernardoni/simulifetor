@@ -7,6 +7,7 @@ import {
   activityStatus,
   canEnrollUniversity,
   enrollUniversity,
+  offeredActions,
   personActionStatus,
   runActivity,
   runPersonAction,
@@ -14,10 +15,16 @@ import {
   takeJob,
 } from './actions';
 import { buyAsset, canBuy, investMoney, loanCapacity, sellAsset, takeLoan, withdrawInvestments } from './assets';
+import { ACTION_CATEGORY } from '../content/personActions';
 import { CATALOG } from '../content/assets';
 
-/** Acciones hostiles que el bot nunca elige al azar. */
-const BOT_AVOIDS = new Set(['annoy', 'prank', 'jealous_scene', 'roast']);
+/**
+ * El bot solo elige acciones amistosas: en conflicto, plata y humor se queda con las de siempre; bloquear a alguien
+ * tampoco. Lo demás (peleas, bromas, préstamos…) son decisiones del jugador.
+ */
+const BOT_OK = new Set(['argue', 'ask_money', 'give_money', 'joke']);
+const BOT_CATEGORIES = new Set(['conflicto', 'plata', 'humor']);
+const botSkips = (id: string): boolean => id === 'block' || (BOT_CATEGORIES.has(ACTION_CATEGORY[id]) && !BOT_OK.has(id));
 
 export interface AutoOpts {
   /** Edad hasta la que juega (por defecto, hasta la muerte). */
@@ -70,11 +77,13 @@ export function autoPlay(life: Life, opts: AutoOpts): void {
   const familyStep = () => {
     if (!opts.familyBias || life.age < 20) return;
     const partner = life.people.find((p) => p.alive && p.kind === 'partner');
+    let partnerOffered: Set<string> | undefined;
     const run = (id: string) => {
       const a = allPersonActions().find((x) => x.id === id);
       if (!a || !partner) return;
-      const st = personActionStatus(life, a, partner);
-      if (st.visible && !st.reason) runPersonAction(life, id, partner.id);
+      partnerOffered ??= offeredActions(life, partner);
+      const st = personActionStatus(life, a, partner, partnerOffered);
+      if (st.visible && !st.reason) runPersonAction(life, id, partner.id, partnerOffered);
     };
     if (!partner && life.age < 45 && bot.chance(0.35)) {
       const a = allActivities().find((x) => x.id === 'find_partner');
@@ -117,13 +126,14 @@ export function autoPlay(life: Life, opts: AutoOpts): void {
         const p = life.people.filter((x) => x.alive);
         if (p.length) {
           const person = bot.pick(p);
+          const offered = offeredActions(life, person);
           const pa = allPersonActions().filter((a) => {
             // El bot no molesta ni coquetea con terceros: esas acciones son decisiones del jugador.
-            if (BOT_AVOIDS.has(a.id) || (a.risk && person.kind !== 'partner')) return false;
-            const s = personActionStatus(life, a, person);
+            if (botSkips(a.id) || (a.risk && person.kind !== 'partner')) return false;
+            const s = personActionStatus(life, a, person, offered);
             return s.visible && !s.reason;
           });
-          if (pa.length) runPersonAction(life, bot.pick(pa).id, person.id);
+          if (pa.length) runPersonAction(life, bot.pick(pa).id, person.id, offered);
           drain();
         }
       }

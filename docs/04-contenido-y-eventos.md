@@ -141,7 +141,10 @@ Se importan desde `src/content/dsl.ts`: `c` (condiciones) y `fx` (efectos).
 ## Acciones con personas: categorías, niveles y rotación
 
 - Cada `PersonAction` pertenece a una categoría (`ACTION_CATEGORY` en `content/personActions.ts`; hay un test que exige que todas tengan una): amistad, humor, amor, pareja, conflicto, plata, paz. La ficha de la persona las agrupa con su encabezado.
-- `rotate: true`: cada año solo se ofrece una parte (60 %) de la acción; `risk: n`: rastro de infidelidad con la pareja oficial si la persona objetivo es otra.
+- **Catálogo:** cada categoría tiene **12 o más** acciones (un test lo exige). Las de base están en `personActions.ts` y el catálogo ampliado en `personActionsExtra.ts` (función `group(categoría, lista)` que las registra).
+- **Tope de 6:** la ficha ofrece como máximo 6 acciones por categoría a la vez (`MAX_PER_CATEGORY`). Entran primero las `core: true` (esenciales: Conversar, Pasar tiempo juntos, Contar un chiste, Coquetear, Pedir perdón, Proponer una tregua…) y el resto se sortea cada año: al pasar de año cambian. Poné `core: true` solo a lo imprescindible (máximo 3 por categoría) para que quede lugar a la variedad.
+- `risk: n`: rastro de infidelidad con la pareja oficial si la persona objetivo es otra.
+- Al agregar una acción: elegí su categoría en el grupo, condiciones con `c.tClose` / `c.tLove` (amistad y amor) y `c.tAge`, resultados con cambios distintos de amistad y amor según la reacción, sin `c.chance` (la oferta no debe gastar azar) y sin montos escritos a mano.
 - Niveles: las acciones se desbloquean con `c.tClose(n)` (amistad) y `c.tLove(n)` (amor). Cada resultado usa `fx.close`, `fx.love` o `fx.bond` con cantidades distintas según la reacción de la otra persona.
 - Eventos de amistad, amor y enemistad con una persona: `content/events/bonds.ts` (los de enemistad usan `c.tClose(undefined, -1)`).
 

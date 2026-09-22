@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useGame } from '../../store/gameStore';
-import { personActionStatus } from '../../engine/actions';
+import { offeredActions, personActionStatus } from '../../engine/actions';
 import { allPersonActions } from '../../engine/registry';
 import type { Person, PersonKind } from '../../engine/types';
 import { isBadVibes } from '../../engine/people';
@@ -139,11 +139,12 @@ export function PeopleScreen() {
                 </View>
                 <ScrollView style={{ maxHeight: 400, marginTop: 12 }}>
                   {(() => {
+                    const offered = offeredActions(life, person);
                     const groups = ACTION_CATEGORIES.map((cat) => ({
                       cat,
                       items: allPersonActions()
                         .filter((a) => ACTION_CATEGORY[a.id] === cat.id)
-                        .map((a) => ({ a, st: personActionStatus(life, a, person) }))
+                        .map((a) => ({ a, st: personActionStatus(life, a, person, offered) }))
                         .filter((x) => x.st.visible),
                     })).filter((g) => g.items.length);
                     const current = groups.find((g) => g.cat.id === openCat);

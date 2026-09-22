@@ -1,4 +1,5 @@
 import type { Delta } from '../engine/types';
+import { ACTION_CATEGORY } from './personActions';
 
 // Todas las escenas ilustradas disponibles (deben existir en src/ui/art/Scene.tsx).
 export const SCENE_KEYS = [
@@ -133,8 +134,12 @@ const PERSON_SCENE: Record<string, string> = {
   make_peace: 'friends',
 };
 
+const CATEGORY_SCENE: Record<string, string> = {
+  amistad: 'friends', humor: 'party', amor: 'love', pareja: 'love', conflicto: 'fight', plata: 'money_win', paz: 'friends',
+};
+
 export function sceneForPersonAction(id: string): string {
-  return PERSON_SCENE[id] ?? 'friends';
+  return PERSON_SCENE[id] ?? CATEGORY_SCENE[ACTION_CATEGORY[id]] ?? 'friends';
 }
 
 /** Ajusta la escena al resultado: buenas o malas noticias. */
