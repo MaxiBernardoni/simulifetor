@@ -8,8 +8,9 @@ import { isBadVibes } from '../../engine/people';
 import { relationTitle } from '../../engine/relationTitle';
 import type { TitleTone } from '../../engine/relationTitle';
 import { ACTION_CATEGORIES, ACTION_CATEGORY } from '../../content/personActions';
+import type { ActionCategory } from '../../content/personActions';
 import { FriendIcon } from '../FriendIcon';
-import { Bar, PersonAvatar, Row, SectionTitle } from '../components';
+import { Bar, IconTile, PersonAvatar, Row, SectionTitle } from '../components';
 import { Icon } from '../Icon';
 import { colors, radius, space } from '../theme';
 
@@ -49,6 +50,10 @@ export function PeopleScreen() {
   const life = useGame((st) => st.life)!;
   const doAction = useGame((st) => st.personAction);
   const [selected, setSelected] = useState<string | null>(null);
+  // Subpestaña de acciones abierta: pertenece a la persona elegida (al cambiar de persona vuelve a las categorías).
+  const [catState, setCatState] = useState<{ id: string | null; cat: ActionCategory | null }>({ id: null, cat: null });
+  const openCat = catState.id === selected ? catState.cat : null;
+  const setOpenCat = (cat: ActionCategory | null) => setCatState({ id: selected, cat });
   const person = life.people.find((p) => p.id === selected);
   const blocked = life.pending.length > 0 || !life.alive;
 
@@ -133,19 +138,47 @@ export function PeopleScreen() {
                   </View>
                 </View>
                 <ScrollView style={{ maxHeight: 400, marginTop: 12 }}>
-                  {ACTION_CATEGORIES.map((cat) => {
-                    const items = allPersonActions()
-                      .filter((a) => ACTION_CATEGORY[a.id] === cat.id)
-                      .map((a) => ({ a, st: personActionStatus(life, a, person) }))
-                      .filter((x) => x.st.visible);
-                    if (!items.length) return null;
-                    return (
-                      <View key={cat.id}>
-                        <View style={s.catHead}>
-                          <Icon name={cat.icon} size={14} color={cat.color} />
-                          <Text style={[s.catTitle, { color: cat.color }]}>{cat.label}</Text>
+                  {(() => {
+                    const groups = ACTION_CATEGORIES.map((cat) => ({
+                      cat,
+                      items: allPersonActions()
+                        .filter((a) => ACTION_CATEGORY[a.id] === cat.id)
+                        .map((a) => ({ a, st: personActionStatus(life, a, person) }))
+                        .filter((x) => x.st.visible),
+                    })).filter((g) => g.items.length);
+                    const current = groups.find((g) => g.cat.id === openCat);
+                    if (!current) {
+                      // Vista de categorías: se elige una y aparecen solo sus acciones.
+                      return (
+                        <View>
+                          <View style={s.catGrid}>
+                            {groups.map(({ cat, items }) => (
+                              <Pressable key={cat.id} onPress={() => setOpenCat(cat.id)} style={s.catCard} accessibilityRole="button">
+                                <IconTile name={cat.icon} color={cat.color} size={38} />
+                                <Text style={s.catCardTitle}>{cat.label}</Text>
+                                <Text style={s.catCardCount}>
+                                  {items.length} {items.length === 1 ? 'acción' : 'acciones'}
+                                </Text>
+                              </Pressable>
+                            ))}
+                          </View>
+                          {person.romance === undefined && person.friendship < 50 && person.age >= 18 && life.age >= 18 ? (
+                            <Text style={s.hint}>
+                              Con {50 - person.friendship} punto{50 - person.friendship === 1 ? '' : 's'} más de amistad se desbloquean las
+                              acciones de amor.
+                            </Text>
+                          ) : null}
                         </View>
-                        {items.map(({ a, st }) => (
+                      );
+                    }
+                    return (
+                      <View>
+                        <Pressable onPress={() => setOpenCat(null)} style={s.backRow} accessibilityRole="button">
+                          <Icon name="ArrowLeft" size={18} color={current.cat.color} />
+                          <Text style={[s.catTitle, { color: current.cat.color, fontSize: 14 }]}>{current.cat.label}</Text>
+                          <Text style={s.backHint}>Volver a las categorías</Text>
+                        </Pressable>
+                        {current.items.map(({ a, st }) => (
                           <Row
                             key={a.id}
                             icon={a.icon}
@@ -160,7 +193,7 @@ export function PeopleScreen() {
                         ))}
                       </View>
                     );
-                  })}
+                  })()}
                 </ScrollView>
                 <Pressable onPress={() => setSelected(null)} style={s.close}>
                   <Icon name="X" size={18} color={colors.muted} />
@@ -189,6 +222,22 @@ const s = StyleSheet.create({
   sub: { color: colors.muted, marginTop: 2 },
   pill: { alignSelf: 'flex-start', borderWidth: 1.5, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 2, marginTop: 6 },
   pillText: { fontSize: 12, fontWeight: '800' },
+  hint: { color: colors.muted, fontSize: 12, textAlign: 'center', marginTop: 10 },
+  catGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  catCard: {
+    flexBasis: '47%',
+    flexGrow: 1,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 12,
+    gap: 6,
+  },
+  catCardTitle: { color: colors.text, fontSize: 15, fontWeight: '800' },
+  catCardCount: { color: colors.muted, fontSize: 12 },
+  backRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, marginBottom: 4 },
+  backHint: { color: colors.muted, fontSize: 12, marginLeft: 'auto' },
   catHead: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10, marginBottom: 2 },
   catTitle: { fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.6 },
   close: { flexDirection: 'row', gap: 6, alignItems: 'center', justifyContent: 'center', paddingTop: 14 },

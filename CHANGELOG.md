@@ -2,6 +2,11 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [T17 · Subpestañas de acciones y amor con familia]
+
+- **Subpestañas:** la ficha de cada persona muestra primero las categorías (tarjetas con su cantidad de acciones); al tocar una aparecen solo sus acciones y hay un botón para volver a las categorías.
+- **Amor con familia:** con madre, padre, hermanos o hijos adultos no aparecía nada en algunos años porque todas las acciones románticas rotaban (25 % de los años sin ninguna). "Coquetear", la entrada al amor, ya no rota: siempre está con 50 o más de amistad. Además, si falta amistad, la ficha avisa cuánto. 1 test nuevo, 243 en total.
+
 ## [T17 · Títulos de relación y el amante reacciona]
 
 - **Títulos de relación** según amistad, amor, enemistad y parentesco: Neutral, Conocido, Amigo, Mejor amigo, Interés amoroso, Amigo con derechos, Romance/Amante, Mala onda, Enemigo, Némesis, Relación tóxica, Amor-odio, Pareja, Alma gemela, Ex con cuentas pendientes, Familiar entrañable, Familiar y amante, Familiar: amor-odio, etc. Aparecen en la lista y como etiqueta de color en la ficha.

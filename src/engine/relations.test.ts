@@ -124,15 +124,17 @@ describe('acciones que se desbloquean por niveles', () => {
 
   it('la oferta anual rota: no aparece todos los años y es estable dentro de un año', () => {
     const { life, p } = adultWith('friend', { friendship: 60 });
-    const n = yearsOffered(life, 'flirt', p, 1990, 2090);
+    const n = yearsOffered(life, 'love_letter', p, 1990, 2090);
     expect(n).toBeGreaterThan(30);
     expect(n).toBeLessThan(90);
     life.year = 2030;
-    const first = offeredThisYear(life, action('flirt'), p);
-    for (let i = 0; i < 5; i++) expect(offeredThisYear(life, action('flirt'), p)).toBe(first);
+    const first = offeredThisYear(life, action('love_letter'), p);
+    for (let i = 0; i < 5; i++) expect(offeredThisYear(life, action('love_letter'), p)).toBe(first);
     // no cambia por lo que pase en el juego (amor, amistad) dentro del mismo año
     p.friendship = 99;
-    expect(offeredThisYear(life, action('flirt'), p)).toBe(first);
+    expect(offeredThisYear(life, action('love_letter'), p)).toBe(first);
+    // "Coquetear", la entrada al amor, no rota: siempre está disponible con amistad de 50 o más
+    expect(yearsOffered(life, 'flirt', p, 1990, 2090)).toBe(100);
   });
 
   it('acciones distintas se ofrecen en años distintos (variedad)', () => {
@@ -171,7 +173,7 @@ describe('familia y edades', () => {
 describe('reacciones distintas, cambios distintos', () => {
   it('cada acción romántica tiene reacciones con cambios diferentes de amistad y amor', () => {
     const romantic = PERSON_ACTIONS.filter(
-      (a) => a.rotate && a.conditions?.some((c) => 'targetRomance' in c || JSON.stringify(c).includes('18')),
+      (a) => (a.rotate || a.id === 'flirt') && a.conditions?.some((c) => 'targetRomance' in c || JSON.stringify(c).includes('18')),
     );
     expect(romantic.length).toBeGreaterThanOrEqual(8);
     for (const a of romantic) {
@@ -486,5 +488,16 @@ describe('el amante reacciona cuando se descubre el engaño', () => {
     life.pending.push({ kind: 'choice', eventId: ev.id, title: ev.title, text: ev.text, targetId: partner.id });
     resolveChoice(life, 1);
     expect(life.log[life.log.length - 1].text).not.toMatch(/\{\w+\}/);
+  });
+});
+
+describe('familia adulta: la entrada al amor siempre está', () => {
+  it('con madre, padre, hermano o hijo adultos y amistad de 50 o más, "Coquetear" se ofrece todos los años', () => {
+    for (const kind of ['mother', 'father', 'sibling', 'child'] as PersonKind[]) {
+      const { life, p } = adultWith(kind, { friendship: 60, age: 50 });
+      expect(yearsOffered(life, 'flirt', p, 1990, 2060), kind).toBe(70);
+      p.friendship = 49;
+      expect(yearsOffered(life, 'flirt', p, 1990, 2060), `${kind} con 49`).toBe(0);
+    }
   });
 });

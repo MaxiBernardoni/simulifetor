@@ -229,7 +229,7 @@ export const PERSON_ACTIONS: PersonAction[] = [
   // Románticas: aparecen con amistad de 50 para arriba entre adultos (también en la familia) y suben con el amor.
   // La otra persona reacciona bien o mal: cada reacción mueve las barras de amistad y de amor una cantidad distinta.
   {
-    id: 'flirt', label: 'Coquetear', icon: 'Sparkles', kinds: [...ALL], rotate: true, risk: 6,
+    id: 'flirt', label: 'Coquetear', icon: 'Sparkles', kinds: [...ALL], risk: 6,
     conditions: [c.tClose(50), c.age(18, 99), c.tAge(18)],
     outcomes: [
       { weight: 4, text: 'Le tiraste onda a {target} y te siguió el juego. Hay algo en el aire.', effects: [fx.bond('target', 2, 8), fx.hap(2)] },
