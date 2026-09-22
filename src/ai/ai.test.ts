@@ -14,8 +14,10 @@ import { simulateLife } from '../engine/sim';
 import { applyEffects, newEffectCtx } from '../engine/effects';
 import { createLife } from '../engine/life';
 import { rngOf } from '../engine/rng';
-import { eventPrompt, CONTENT_RULES } from './prompts';
+import { fireEvent, isEligible, resolveChoice } from '../engine/events';
+import { eventPrompt, summarizeLife, CONTENT_RULES } from './prompts';
 import { ALL_EVENTS } from '../content/events';
+import type { Person } from '../engine/types';
 
 const base = () => JSON.parse(sampleEventJson(1));
 const mut = (fn: (o: any) => void) => {
@@ -125,6 +127,117 @@ describe('validador de eventos de IA', () => {
     for (const c of r.event.choices!) for (const o of c.outcomes) applyEffects(l, o.effects, newEffectCtx(), rngOf(l));
     expect(l.alive).toBe(true);
     for (const k of Object.keys(before) as (keyof typeof before)[]) expect(Math.abs(l.stats[k] - before[k])).toBeLessThanOrEqual(45);
+  });
+});
+
+describe('eventos de IA sincronizados con amistad y amor', () => {
+  const friend = (patch: Record<string, unknown> = {}) =>
+    mut((o) => {
+      o.person = 'friend';
+      o.text = 'Salís a caminar con {target} y terminan en una charla larga.';
+      o.choices[0].outcomes[0] = { weight: 5, text: '{target} se abre y se ríen un buen rato.', effects: { happiness: 2, friendship: 6 } };
+      o.choices[0].outcomes[1] = {
+        weight: 2,
+        text: '{target} se queda serio/a y corta corto.',
+        effects: { happiness: -3, friendship: -5 },
+      };
+      o.choices[1].outcomes[0] = { weight: 1, text: '{target} ni te contesta el mensaje.', effects: {} };
+      Object.assign(o, patch);
+    });
+
+  it('con "person" el evento queda con target y solo se ofrece si no es un enemigo', () => {
+    const r = validateAiEvent(JSON.stringify(friend()));
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.event.target).toBe('friend');
+    expect(r.event.conditions).toContainEqual({ targetFriendship: { gte: 0 } });
+  });
+
+  it('rechaza "person" si el texto no nombra a {target} en ningún lado', () => {
+    const noTarget = friend();
+    noTarget.text = 'Salís a caminar solo/a y pensás en la vida.';
+    for (const c of noTarget.choices) for (const o of c.outcomes) o.text = o.text.replace(/\{target\}/g, 'esa persona');
+    const r = validateAiEvent(JSON.stringify(noTarget));
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.reason).toContain('{target}');
+  });
+
+  it('sin "person" no hace falta {target} ni se agrega una condición de amistad', () => {
+    const r = validateAiEvent(sampleEventJson(50));
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.event.target).toBeUndefined();
+      expect(r.event.conditions).not.toContainEqual({ targetFriendship: { gte: 0 } });
+    }
+  });
+
+  it('rechaza friendship/romance fuera de rango, igual que un stat', () => {
+    const tooMuch = friend();
+    tooMuch.choices[0].outcomes[0].effects.friendship = 40;
+    expect(validateAiEvent(JSON.stringify(tooMuch)).ok).toBe(false);
+  });
+
+  it('el efecto friendship se convierte en un efecto de relación con la persona objetivo', () => {
+    const r = validateAiEvent(JSON.stringify(friend()));
+    if (!r.ok) throw new Error('debía ser válido');
+    const goodOutcome = r.event.choices![0].outcomes[0];
+    expect(goodOutcome.effects).toContainEqual({ relation: { who: 'target', friendship: 6 } });
+  });
+
+  it('un evento con persona no está elegible si el único candidato es un enemigo', () => {
+    const r = validateAiEvent(JSON.stringify(friend()));
+    if (!r.ok) throw new Error('debía ser válido');
+    const l = createLife(9);
+    l.age = 30;
+    const enemigo: Person = { id: 'p2', kind: 'friend', name: 'Rival Uno', gender: 'M', age: 30, alive: true, friendship: -40 };
+    l.people.push(enemigo);
+    expect(isEligible(l, r.event)).toBe(false);
+    enemigo.friendship = 30;
+    expect(isEligible(l, r.event)).toBe(true);
+  });
+
+  it('la decisión mueve la amistad de la persona correcta, no la de otra', () => {
+    const r = validateAiEvent(JSON.stringify(friend()));
+    if (!r.ok) throw new Error('debía ser válido');
+    setAiEvents([r.event]);
+    try {
+      const l = createLife(9);
+      l.age = 30;
+      const marcos: Person = { id: 'p1', kind: 'friend', name: 'Marcos Paz', gender: 'M', age: 30, alive: true, friendship: 50 };
+      const otro: Person = { id: 'p2', kind: 'friend', name: 'Otro Amigo', gender: 'M', age: 30, alive: true, friendship: 50 };
+      l.people.push(marcos, otro);
+      fireEvent(l, r.event, marcos);
+      expect(l.pending[0]).toMatchObject({ kind: 'choice', targetId: 'p1' });
+      resolveChoice(l, 0);
+      expect(marcos.friendship).toBe(56);
+      expect(otro.friendship).toBe(50);
+      expect(l.pending[0].kind).toBe('result');
+      if (l.pending[0].kind === 'result') expect(l.pending[0].text).toContain('Marcos');
+    } finally {
+      setAiEvents([]);
+    }
+  });
+
+  it('el prompt explica "person", el placeholder {target} y los campos friendship/romance', () => {
+    const p = eventPrompt('ctx');
+    expect(p).toContain('"person"');
+    expect(p).toContain('{target}');
+    expect(p).toContain('friendship');
+    expect(p).toContain('romance');
+  });
+
+  it('summarizeLife suma el contexto de relaciones cuando hay algo relevante', () => {
+    const l = createLife(9);
+    l.age = 30;
+    l.job = null;
+    l.people = []; // createLife arranca con familia al azar; se limpia para probar el caso sin nada relevante
+    expect(summarizeLife(l)).not.toMatch(/enemistad|amorío|buena onda/);
+    const amigo: Person = { id: 'p1', kind: 'friend', name: 'Marcos Paz', gender: 'M', age: 30, alive: true, friendship: 80 };
+    const enemigo: Person = { id: 'p2', kind: 'friend', name: 'Rival Uno', gender: 'M', age: 30, alive: true, friendship: -60 };
+    l.people.push(amigo, enemigo);
+    const s = summarizeLife(l);
+    expect(s).toContain('buena onda');
+    expect(s).toContain('enemistad fuerte');
   });
 });
 

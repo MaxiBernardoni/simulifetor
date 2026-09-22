@@ -10,6 +10,9 @@ const effectsSchema = z.strictObject({
   looks: stat.optional(),
   money: z.number().int().min(-20000).max(20000).optional(),
   moneyPct: z.number().min(-0.25).max(0.25).optional(),
+  // Amistad y amor con la persona de la situación (si la hay); ver `person` en eventSchema y `target` en freeTextPrompt.
+  friendship: stat.optional(),
+  romance: stat.optional(),
 });
 
 type Fx = z.infer<typeof effectsSchema>;
@@ -27,6 +30,9 @@ const choiceSchema = z.strictObject({
 
 export const CATEGORIES = ['work', 'love', 'money', 'family', 'health', 'random', 'rel', 'school'] as const;
 
+// Con quién puede ser el evento: mismos tipos que engine/types.ts (`PersonKind`).
+const PERSON_KINDS = ['mother', 'father', 'sibling', 'friend', 'partner', 'child', 'ex'] as const;
+
 const eventSchema = z.strictObject({
   title: z.string().min(3).max(60),
   text: z.string().min(20).max(420),
@@ -34,6 +40,7 @@ const eventSchema = z.strictObject({
   minAge: z.number().int().min(0).max(110),
   maxAge: z.number().int().min(0).max(120),
   weight: z.number().int().min(1).max(8).default(3),
+  person: z.enum(PERSON_KINDS).optional(),
   effects: effectsSchema.optional(),
   choices: z.array(choiceSchema).min(2).max(3).optional(),
 });
@@ -56,6 +63,11 @@ const toEffects = (e: Fx): Effect[] => {
   if (e.looks) out.push({ stat: 'looks', add: e.looks });
   if (e.money) out.push({ money: e.money });
   if (e.moneyPct) out.push({ moneyPct: e.moneyPct });
+  // Amistad/amor con la persona de la situación; si no hay ninguna (`ctx.target` vacío) el motor lo ignora solo.
+  if (e.friendship || e.romance)
+    out.push({
+      relation: { who: 'target', ...(e.friendship ? { friendship: e.friendship } : {}), ...(e.romance ? { romance: e.romance } : {}) },
+    });
   return out;
 };
 
@@ -104,6 +116,8 @@ export function validateAiEvent(
   if (!speaksToYou(ev.text)) return { ok: false, reason: 'no está en segunda persona', title };
   const third = [ev.text, ...outcomes.map((o) => o.text)].map(textProblem).find(Boolean);
   if (third) return { ok: false, reason: third, title };
+  // Con "person" el texto tiene que nombrar a esa persona con el placeholder, nunca con un nombre inventado.
+  if (ev.person && !allText.join(' ').includes('{target}')) return { ok: false, reason: 'falta {target} en el texto', title };
 
   if (ev.effects && magnitude(ev.effects) > 30) return { ok: false, reason: 'efectos demasiado grandes', title };
   for (const o of outcomes) if (magnitude(o.effects) > 30) return { ok: false, reason: 'efectos demasiado grandes', title };
@@ -125,7 +139,9 @@ export function validateAiEvent(
     weight: ev.weight,
     cooldown: 8,
     once: true,
-    conditions: [{ age: [ev.minAge, ev.maxAge] }],
+    // Con persona: solo se ofrece con alguien que no sea un enemigo (amistad negativa), igual que el resto del contenido.
+    ...(ev.person ? { target: ev.person } : {}),
+    conditions: [{ age: [ev.minAge, ev.maxAge] }, ...(ev.person ? [{ targetFriendship: { gte: 0 } }] : [])],
     ...(ev.choices
       ? { choices: ev.choices.map((c) => ({ label: c.label.trim(), outcomes: c.outcomes.map(mkOutcome) })) }
       : { effects: toEffects(ev.effects!) }),

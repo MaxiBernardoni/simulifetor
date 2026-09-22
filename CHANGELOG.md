@@ -2,6 +2,13 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [T17 · La IA sincronizada con amistad, amor y enemistad]
+
+- **Eventos generados por la IA** pueden involucrar a una persona (`"person"`: madre, padre, hermano/a, amigo/a, pareja, hijo/a o ex), nombrada siempre con el placeholder `{target}` (nunca un nombre inventado); se rechazan si falta. Igual que el contenido escrito a mano, nunca se ofrecen con un enemigo. Sus resultados pueden sumar o restar amistad (y amor, sobre todo con la pareja).
+- **Responder escribiendo**: si la situación tiene una persona, la IA se entera de quién es ("tu amiga", "tu hermano"…) y puede mover su amistad y su amor al juzgar tu respuesta, con los mismos límites que un stat.
+- El contexto que recibe la IA (`summarizeLife`) ahora incluye, cuando corresponde, la pareja, la mejor amistad, una enemistad fuerte o un amorío en curso.
+- No hizo falta tocar la UI: los chips de resultado ya sabían mostrar amistad y amor. 41 tests nuevos (268 en total); no probado con un proveedor real ni en el navegador (requiere red).
+
 ## [T17 · Eventos viejos sincronizados con amistad y amor]
 
 - **Enemistad:** los eventos que suponen una buena relación (un amigo que pide ayuda, casamientos, fianza, visita a tu mamá, operación de tu papá) ya no salen con un enemigo; los chismes del ex solo si no se llevan bien.

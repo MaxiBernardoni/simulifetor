@@ -12,6 +12,7 @@ import { summarizeLife } from './prompts';
 import { getApiKey, loadAIData, saveAIData, setApiKey } from './storage';
 import { inputProblem, norm, speaksToYou, textProblem } from './filter';
 import { applyConfigPatch, canAnswerByText, connectionChanged, connectionUsable, describeAIError } from './config';
+import { relationLabel } from '../engine/text';
 import type { GameEvent } from '../engine/types';
 
 let pool: GameEvent[] = [];
@@ -193,6 +194,8 @@ export const useAI = create<AIState>((set, get) => {
         return 'Probá la conexión en Menú → IA y activá «Responder escribiendo» para responder escribiendo.';
       const key = await keyFor(config);
       if (key === null) return 'Falta la clave de la IA.';
+      // Si la situación tiene una persona (evento con target), la IA puede mover su amistad/amor.
+      const target = prompt.targetId ? life.people.find((p) => p.id === prompt.targetId) : undefined;
       const res = await resolveFreeText(providerFor(config), key, {
         title: prompt.title,
         situation: prompt.text,
@@ -201,11 +204,13 @@ export const useAI = create<AIState>((set, get) => {
         age: life.age,
         thread: prompt.thread,
         depth: prompt.depth,
+        targetLabel: target ? relationLabel(target) : undefined,
       });
       if (!res.ok) return res.message;
       // Si mientras tanto cambió la situación, no se aplica.
       const now = useGame.getState().life?.pending[0];
-      if (now?.kind !== 'choice' || now.eventId !== prompt.eventId || now.text !== prompt.text) return 'La situación cambió mientras la IA pensaba.';
+      if (now?.kind !== 'choice' || now.eventId !== prompt.eventId || now.text !== prompt.text)
+        return 'La situación cambió mientras la IA pensaba.';
       useGame.getState().chooseFree(res.outcome, res.next);
       return null;
     },

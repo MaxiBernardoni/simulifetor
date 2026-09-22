@@ -8,6 +8,7 @@ import { freeTextPrompt, CONTENT_RULES } from './prompts';
 import { createLife } from '../engine/life';
 import { resolveWithOutcome, fireEvent } from '../engine/events';
 import { getEvent } from '../engine/registry';
+import type { Person } from '../engine/types';
 
 const good = (over: Record<string, unknown> = {}) =>
   JSON.stringify({
@@ -79,6 +80,58 @@ describe('lo que escribe el jugador', () => {
   });
 });
 
+describe('la situación con una persona: la IA puede mover su amistad y su amor', () => {
+  const input = { title: 'Matón', situation: 'Un chico te molesta.', answer: 'Le hablo con calma', ctx: 'ctx', age: 30 };
+
+  it('el prompt solo menciona a la persona (y "friendship"/"romance") cuando hay una', () => {
+    const sinPersona = freeTextPrompt('Matón', 'Un chico te molesta.', 'Le hablo con calma', 'ctx');
+    expect(sinPersona).not.toContain('friendship');
+    expect(sinPersona).not.toContain('Esta situación es con');
+    const conPersona = freeTextPrompt('Matón', 'Un chico te molesta.', 'Le hablo con calma', 'ctx', undefined, false, 'tu amigo');
+    expect(conPersona).toContain('Esta situación es con tu amigo');
+    expect(conPersona).toContain('"friendship"');
+    expect(conPersona).toContain('"romance"');
+  });
+
+  it('validateFreeTextOutcome convierte friendship/romance en un efecto de relación con la persona objetivo', () => {
+    const r = validateFreeTextOutcome(good({ effects: { happiness: 3, friendship: 7, romance: -4 } }), 30);
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.outcome.effects).toContainEqual({ relation: { who: 'target', friendship: 7, romance: -4 } });
+  });
+
+  it('friendship/romance fuera de rango se rechaza como cualquier stat', () => {
+    expect(validateFreeTextOutcome(good({ effects: { friendship: 99 } }), 30).ok).toBe(false);
+  });
+
+  it('resolveFreeText le pasa a la IA quién es la persona de la situación', async () => {
+    let seen = '';
+    const provider = {
+      id: 'mock' as const,
+      generate: async (prompt: string) => {
+        seen = prompt;
+        return good({ effects: { happiness: 2, friendship: 5 } });
+      },
+    };
+    const r = await resolveFreeText(provider, 'k', { ...input, targetLabel: 'tu hermana' });
+    expect(seen).toContain('Esta situación es con tu hermana');
+    expect(r.ok && r.outcome.effects).toContainEqual({ relation: { who: 'target', friendship: 5 } });
+  });
+
+  it('motor: el efecto de relación se aplica a la persona de la situación, no a otra', () => {
+    const l = createLife(9);
+    l.age = 30;
+    const target: Person = { id: 'p1', kind: 'friend', name: 'Marcos Paz', gender: 'M', age: 30, alive: true, friendship: 50 };
+    const otro: Person = { id: 'p2', kind: 'friend', name: 'Otro Amigo', gender: 'M', age: 30, alive: true, friendship: 50 };
+    l.people.push(target, otro);
+    l.pending.push({ kind: 'choice', eventId: 'x', title: 'Matón', text: 'Un chico te molesta.', targetId: 'p1' });
+    const v = validateFreeTextOutcome(good({ effects: { happiness: 2, friendship: 9 } }), l.age);
+    if (!v.ok) throw new Error('debía ser válido');
+    resolveWithOutcome(l, v.outcome);
+    expect(target.friendship).toBe(59);
+    expect(otro.friendship).toBe(50);
+  });
+});
+
 describe('resolveFreeText con proveedor simulado', () => {
   const input = { title: 'Matón', situation: 'Un chico te molesta.', answer: 'Le hablo con calma', ctx: 'ctx', age: 30 };
 
@@ -131,7 +184,11 @@ describe('motor: resolver con un resultado dado', () => {
 });
 
 describe('continuación: la IA retruca y el jugador decide otra vez', () => {
-  const next = { title: 'El matón vuelve', text: 'El matón vuelve con dos amigos y te bloquea la salida del patio.', options: ['Correr', 'Pelear'] };
+  const next = {
+    title: 'El matón vuelve',
+    text: 'El matón vuelve con dos amigos y te bloquea la salida del patio.',
+    options: ['Correr', 'Pelear'],
+  };
   const input = { title: 'Matón', situation: 'Un chico te molesta.', answer: 'Le hablo con calma', ctx: 'ctx', age: 30 };
 
   it('valida la continuación y la devuelve con el hilo y la profundidad', async () => {
@@ -141,7 +198,11 @@ describe('continuación: la IA retruca y el jugador decide otra vez', () => {
   });
 
   it('una continuación inválida o con contenido prohibido se descarta pero el resultado se conserva', () => {
-    for (const bad of [{ ...next, options: ['una sola'] }, { ...next, text: 'Te ofrece sexo con un niño de 12 años en el baño.' }, { title: 'x' }]) {
+    for (const bad of [
+      { ...next, options: ['una sola'] },
+      { ...next, text: 'Te ofrece sexo con un niño de 12 años en el baño.' },
+      { title: 'x' },
+    ]) {
       const r = validateFreeTextOutcome(good({ next: bad }), 30);
       expect(r.ok && r.next).toBeFalsy();
       expect(r.ok).toBe(true);

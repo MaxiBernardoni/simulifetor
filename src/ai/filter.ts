@@ -160,19 +160,44 @@ export function inputProblem(text: string, age: number): string | null {
   return null;
 }
 
-const NOT_2P = new Set(['ademas', 'despues', 'quizas', 'jamas', 'atras', 'detras', 'traves', 'interes', 'pais', 'mas', 'menos', 'tres', 'dos', 'mes', 'veces', 'gas', 'es', 'les', 'nos']);
+const NOT_2P = new Set([
+  'ademas',
+  'despues',
+  'quizas',
+  'jamas',
+  'atras',
+  'detras',
+  'traves',
+  'interes',
+  'pais',
+  'mas',
+  'menos',
+  'tres',
+  'dos',
+  'mes',
+  'veces',
+  'gas',
+  'es',
+  'les',
+  'nos',
+]);
 const NOT_A_NAME = new Set(['alguien', 'nadie', 'todo', 'nada', 'eso', 'esto', 'hoy', 'ya', 'aca', 'alli', 'ahi', 'luego', 'entonces']);
 
 /** ¿El texto le habla al jugador? (te / tu / vos o un verbo con voseo: "tenés", "encontrás", "salís"). */
 export function speaksToYou(text: string): boolean {
   return norm(text)
     .split(/[^a-zñ]+/)
-    .some((w) => w === 'te' || w === 'tu' || w === 'tus' || w === 'vos' || w === 'ti' || (w.length > 3 && /(as|es|is)$/.test(w) && !NOT_2P.has(w)));
+    .some(
+      (w) =>
+        w === 'te' || w === 'tu' || w === 'tus' || w === 'vos' || w === 'ti' || (w.length > 3 && /(as|es|is)$/.test(w) && !NOT_2P.has(w)),
+    );
 }
 
 /** Detecta oraciones en tercera persona con un nombre propio de sujeto ("Marcos está despierto…"): la IA no debe nombrar al personaje. */
 export function thirdPersonProblem(text: string): string | null {
-  for (const m of text.matchAll(/(?:^|[.!?¡¿]\s+)([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+) (?:está|es|va|tiene|decide|quiere|sale|llega|se |le |lo |no |ve |mira|toma|camina|siente|piensa)/g)) {
+  for (const m of text.matchAll(
+    /(?:^|[.!?¡¿]\s+)([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+) (?:está|es|va|tiene|decide|quiere|sale|llega|se |le |lo |no |ve |mira|toma|camina|siente|piensa)/g,
+  )) {
     if (!NOT_A_NAME.has(norm(m[1]))) return `tercera persona (${m[1]})`;
   }
   return null;

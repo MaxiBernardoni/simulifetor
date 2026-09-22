@@ -71,17 +71,30 @@ const ERROR_MESSAGE: Record<string, string> = {
 export async function resolveFreeText(
   provider: AIProvider,
   apiKey: string,
-  input: { title: string; situation: string; answer: string; ctx: string; age: number; thread?: string; depth?: number },
+  input: {
+    title: string;
+    situation: string;
+    answer: string;
+    ctx: string;
+    age: number;
+    thread?: string;
+    depth?: number;
+    targetLabel?: string;
+  },
   timeoutMs = 30000,
 ): Promise<FreeTextAnswer> {
   let reason = 'sin respuesta';
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const depth = input.depth ?? 0;
-      const raw = await provider.generate(freeTextPrompt(input.title, input.situation, input.answer, input.ctx, input.thread, depth < MAX_FOLLOWUPS), apiKey, {
-        timeoutMs,
-        temperature: 0.8,
-      });
+      const raw = await provider.generate(
+        freeTextPrompt(input.title, input.situation, input.answer, input.ctx, input.thread, depth < MAX_FOLLOWUPS, input.targetLabel),
+        apiKey,
+        {
+          timeoutMs,
+          temperature: 0.8,
+        },
+      );
       const res = validateFreeTextOutcome(raw, input.age);
       if (res.ok) {
         const { next, outcome } = res;
