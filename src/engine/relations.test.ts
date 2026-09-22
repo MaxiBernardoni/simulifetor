@@ -9,6 +9,8 @@ import { applyEffect, newEffectCtx, toneOf } from './effects';
 import { rngOf } from './rng';
 import { checkLife } from './invariants';
 import { isBadVibes } from './people';
+import { relationTitle } from './relationTitle';
+import { findLover } from './text';
 import type { Life, Person, PersonKind } from './types';
 
 const action = (id: string) => PERSON_ACTIONS.find((a) => a.id === id)!;
@@ -363,5 +365,126 @@ describe('eventos de amistad, amor y enemistad', () => {
   it('la mala onda empieza en amistad negativa', () => {
     expect(isBadVibes({ friendship: 0 })).toBe(false);
     expect(isBadVibes({ friendship: -1 })).toBe(true);
+  });
+});
+
+describe('títulos de relación', () => {
+  const t = (kind: PersonKind, friendship: number, romance?: number, extra: Partial<Person> = {}, hasPartner = false) =>
+    relationTitle({ kind, gender: 'M', friendship, romance, ...extra }, hasPartner).title;
+
+  it('amistad: neutral, conocido, amigo y mejor amigo', () => {
+    expect(t('friend', 5)).toBe('Neutral');
+    expect(t('friend', 20)).toBe('Conocido');
+    expect(t('friend', 50)).toBe('Amigo');
+    expect(t('friend', 90)).toBe('Mejor amigo');
+    expect(t('friend', 90, undefined, { gender: 'F' })).toBe('Mejor amiga');
+  });
+
+  it('enemistad: mala onda, enemigo y némesis', () => {
+    expect(t('friend', -10)).toBe('Mala onda');
+    expect(t('friend', -60)).toBe('Enemigo');
+    expect(t('friend', -60, undefined, { gender: 'F' })).toBe('Enemiga');
+    expect(t('friend', -90)).toBe('Némesis');
+  });
+
+  it('amor: interés amoroso, amigo con derechos, romance y amante según haya pareja', () => {
+    expect(t('friend', 50, 30)).toBe('Interés amoroso');
+    expect(t('friend', 50, 50)).toBe('Amigo con derechos');
+    expect(t('friend', 70, 70)).toBe('Romance');
+    expect(t('friend', 70, 70, {}, true)).toBe('Amante');
+  });
+
+  it('amor mezclado con mala onda', () => {
+    expect(t('friend', -10, 40)).toBe('Relación tóxica');
+    expect(t('friend', -60, 40)).toBe('Amor-odio');
+    expect(t('partner', -60, 50)).toBe('Amor-odio');
+    expect(t('mother', -20, 50)).toBe('Familiar: amor-odio');
+  });
+
+  it('pareja, esposo/a, alma gemela y crisis', () => {
+    expect(t('partner', 60, 60)).toBe('Pareja');
+    expect(t('partner', 60, 60, { married: true })).toBe('Esposo');
+    expect(t('partner', 60, 60, { married: true, gender: 'F' })).toBe('Esposa');
+    expect(t('partner', 10, 60)).toBe('Pareja distante');
+    expect(t('partner', 90, 90)).toBe('Alma gemela');
+    expect(t('partner', -10, 10)).toBe('Pareja en crisis');
+  });
+
+  it('ex: enemigo, con cuentas pendientes o amigable', () => {
+    expect(t('ex', -60)).toBe('Ex enemigo');
+    expect(t('ex', 30, 50)).toBe('Ex con cuentas pendientes');
+    expect(t('ex', 70)).toBe('Ex amigable');
+    expect(t('ex', 20)).toBe('Ex');
+  });
+
+  it('familia: entrañable, cercano, distante, con mala onda, con amor y némesis', () => {
+    expect(t('sibling', 85)).toBe('Familiar entrañable');
+    expect(t('mother', 60)).toBe('Familiar cercano');
+    expect(t('father', 5)).toBe('Familiar distante');
+    expect(t('sibling', -5)).toBe('Familiar con mala onda');
+    expect(t('sibling', -90)).toBe('Némesis familiar');
+    expect(t('sibling', 60, 30)).toBe('Familiar con tensión romántica');
+    expect(t('child', 70, 70)).toBe('Familiar y amante');
+  });
+});
+
+describe('el amante reacciona cuando se descubre el engaño', () => {
+  it('findLover elige a la persona con más amor que no es la pareja, y solo adultos', () => {
+    const { life, p } = adultWith('friend', { friendship: 70, romance: 50 });
+    life.people.push({ id: 'pp', kind: 'partner', name: 'Julia Roca', gender: 'F', age: 30, alive: true, friendship: 70, romance: 99 });
+    life.people.push({ id: 'y', kind: 'friend', name: 'Teo Ruiz', gender: 'M', age: 16, alive: true, friendship: 70, romance: 80 });
+    expect(findLover(life)).toBe(p);
+    p.alive = false;
+    expect(findLover(life)).toBeUndefined();
+  });
+
+  it('las decisiones mueven las barras del amante sin ensuciar los chips del resultado', () => {
+    const ev = BONDS.find((e) => e.id === 'love.cheat_discovered')!;
+    let moved = 0;
+    for (let seed = 1; seed <= 30; seed++) {
+      const { life, p } = adultWith('friend', { friendship: 70, romance: 60 });
+      const partner: Person = {
+        id: 'pp',
+        kind: 'partner',
+        name: 'Julia Roca',
+        gender: 'F',
+        age: 30,
+        alive: true,
+        friendship: 70,
+        romance: 70,
+      };
+      life.people.push(partner);
+      life.rng = seed * 977;
+      life.pending.push({ kind: 'choice', eventId: ev.id, title: ev.title, text: ev.text, targetId: partner.id });
+      const before = [p.friendship, p.romance];
+      resolveChoice(life, seed % 3);
+      if (p.friendship !== before[0] || p.romance !== before[1]) moved++;
+      const result = life.pending[0];
+      expect(result.kind).toBe('result');
+      if (result.kind === 'result') {
+        expect(result.text).toContain('Marcos'.slice(0, 0) + p.name.split(' ')[0]);
+      }
+      expect(checkLife(life)).toEqual([]);
+    }
+    expect(moved).toBe(30);
+  });
+
+  it('sin amante el texto no deja huecos ({lover} → "la otra persona")', () => {
+    const ev = BONDS.find((e) => e.id === 'love.cheat_discovered')!;
+    const { life } = adultWith('friend');
+    const partner: Person = {
+      id: 'pp',
+      kind: 'partner',
+      name: 'Julia Roca',
+      gender: 'F',
+      age: 30,
+      alive: true,
+      friendship: 70,
+      romance: 70,
+    };
+    life.people.push(partner);
+    life.pending.push({ kind: 'choice', eventId: ev.id, title: ev.title, text: ev.text, targetId: partner.id });
+    resolveChoice(life, 1);
+    expect(life.log[life.log.length - 1].text).not.toMatch(/\{\w+\}/);
   });
 });

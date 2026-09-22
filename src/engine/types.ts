@@ -36,7 +36,8 @@ export type Cond =
   | { era: string };
 
 // ───────── Efectos ─────────
-export type Who = 'target' | PersonKind;
+/** A quién apunta un efecto: la persona objetivo, el primero de un tipo, o el amante (quien más amor tiene sin ser la pareja). */
+export type Who = 'target' | 'lover' | PersonKind;
 
 export type Effect =
   | { stat: StatKey; add: number }

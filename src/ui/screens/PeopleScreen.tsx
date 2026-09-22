@@ -5,6 +5,8 @@ import { personActionStatus } from '../../engine/actions';
 import { allPersonActions } from '../../engine/registry';
 import type { Person, PersonKind } from '../../engine/types';
 import { isBadVibes } from '../../engine/people';
+import { relationTitle } from '../../engine/relationTitle';
+import type { TitleTone } from '../../engine/relationTitle';
 import { ACTION_CATEGORIES, ACTION_CATEGORY } from '../../content/personActions';
 import { FriendIcon } from '../FriendIcon';
 import { Bar, PersonAvatar, Row, SectionTitle } from '../components';
@@ -36,6 +38,8 @@ const LOVE_ICON = '#EC6E96';
 /** Color de la barra de amistad: verde (50+), amarillo (0–49) y rojo si es negativa (enemistad). */
 const friendColor = (f: number) => (f >= 50 ? colors.good : f >= 0 ? colors.warn : colors.bad);
 
+const TONE_COLOR: Record<TitleTone, string> = { good: colors.good, love: LOVE_ICON, bad: colors.bad, neutral: colors.muted };
+
 /** Ícono de la amistad: los dos amigos abrazados en verde; si es enemistad, otro ícono en rojo. */
 function FriendshipIcon({ friendship }: { friendship: number }) {
   return friendship < 0 ? <Icon name="Swords" size={22} color={colors.bad} /> : <FriendIcon size={24} color={colors.good} />;
@@ -48,6 +52,15 @@ export function PeopleScreen() {
   const person = life.people.find((p) => p.id === selected);
   const blocked = life.pending.length > 0 || !life.alive;
 
+  const hasPartner = (p: Person) => life.people.some((x) => x.alive && x.kind === 'partner' && x !== p);
+  const titleOf = (p: Person) => relationTitle(p, hasPartner(p));
+  // "Amiga · 23 años" o "Madre · Familiar cercano · 55 años": el título resume amistad, amor y enemistad.
+  const detail = (p: Person) => {
+    const t = titleOf(p).title;
+    const kind = kindLabel(p);
+    const parts = p.kind === 'friend' || t.toLowerCase().startsWith(kind.toLowerCase()) ? [t] : [kind, t];
+    return `${parts.join(' · ')} · ${p.age} años`;
+  };
   const kindLabel = (p: Person) => (p.kind === 'partner' && p.married ? (p.gender === 'F' ? 'Esposa' : 'Esposo') : LABEL[p.kind]);
 
   return (
@@ -66,7 +79,7 @@ export function PeopleScreen() {
                   key={p.id}
                   avatar={<PersonAvatar person={p} life={life} size={46} />}
                   title={p.name}
-                  subtitle={`${kindLabel(p)} · ${p.age} años${p.alive ? '' : ' · Fallecido/a'}`}
+                  subtitle={`${detail(p)}${p.alive ? '' : ' · Fallecido/a'}`}
                   disabled={!p.alive}
                   onPress={() => setSelected(p.id)}
                   right={
@@ -96,6 +109,9 @@ export function PeopleScreen() {
                     <Text style={s.sub}>
                       {kindLabel(person)} · {person.age} años
                     </Text>
+                    <View style={[s.pill, { borderColor: TONE_COLOR[titleOf(person).tone] }]}>
+                      <Text style={[s.pillText, { color: TONE_COLOR[titleOf(person).tone] }]}>{titleOf(person).title}</Text>
+                    </View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}>
                       <FriendshipIcon friendship={person.friendship} />
                       <View style={{ flex: 1 }}>
@@ -171,6 +187,8 @@ const s = StyleSheet.create({
   },
   title: { color: colors.text, fontSize: 20, fontWeight: '800' },
   sub: { color: colors.muted, marginTop: 2 },
+  pill: { alignSelf: 'flex-start', borderWidth: 1.5, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 2, marginTop: 6 },
+  pillText: { fontSize: 12, fontWeight: '800' },
   catHead: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10, marginBottom: 2 },
   catTitle: { fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.6 },
   close: { flexDirection: 'row', gap: 6, alignItems: 'center', justifyContent: 'center', paddingTop: 14 },

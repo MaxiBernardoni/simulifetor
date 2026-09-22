@@ -1,6 +1,6 @@
 import type { Delta, Effect, Life, LogEntry, Person, StatKey, Tone } from './types';
 import type { Rng } from './rng';
-import { firstAlive } from './text';
+import { findLover, firstAlive } from './text';
 import { scaleMoney } from '../content/eras';
 import { clampFriendship, spawnPerson } from './people';
 
@@ -55,6 +55,7 @@ export function changeMoney(life: Life, ctx: EffectCtx, amount: number): void {
 
 function resolveWho(life: Life, ctx: EffectCtx, who: string): Person | undefined {
   if (who === 'target') return ctx.target;
+  if (who === 'lover') return findLover(life, ctx.target);
   return firstAlive(life, who as Person['kind']);
 }
 
@@ -95,14 +96,14 @@ export function applyEffect(life: Life, e: Effect, ctx: EffectCtx, rng: Rng): vo
     if (e.relation.friendship) {
       const was = p.friendship;
       p.friendship = clampFriendship(was + e.relation.friendship);
-      addDelta(ctx, 'friendship', p.friendship - was);
+      if (p === ctx.target) addDelta(ctx, 'friendship', p.friendship - was);
     }
     // El amor solo existe entre adultos (regla fija): si alguno es menor, se ignora.
     if (e.relation.romance && life.age >= 18 && p.age >= 18) {
       const was = p.romance ?? 0;
       if (p.romance !== undefined) p.romance = clamp(p.romance + e.relation.romance);
       else if (e.relation.romance > 0) p.romance = clamp(e.relation.romance);
-      addDelta(ctx, 'romance', (p.romance ?? 0) - was);
+      if (p === ctx.target) addDelta(ctx, 'romance', (p.romance ?? 0) - was);
     }
     if (e.relation.remove) {
       life.people = life.people.filter((x) => x !== p);

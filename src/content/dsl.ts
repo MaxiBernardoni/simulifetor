@@ -50,12 +50,12 @@ export const fx = {
   unflag: (f: string): Effect => ({ clearFlag: f }),
   add: (kind: PersonKind, age?: 'baby' | 'peer' | 'young'): Effect => ({ addPerson: { kind, age } }),
   /** Suma o resta amistad. */
-  close: (who: 'target' | PersonKind, n: number): Effect => ({ relation: { who, friendship: n } }),
+  close: (who: 'target' | 'lover' | PersonKind, n: number): Effect => ({ relation: { who, friendship: n } }),
   /** Suma o resta amor (lo desbloquea si era positivo). */
-  love: (who: 'target' | PersonKind, n: number): Effect => ({ relation: { who, romance: n } }),
+  love: (who: 'target' | 'lover' | PersonKind, n: number): Effect => ({ relation: { who, romance: n } }),
   /** Cambia amistad y amor a la vez. */
-  bond: (who: 'target' | PersonKind, friendship: number, romance: number): Effect => ({ relation: { who, friendship, romance } }),
-  becomes: (who: 'target' | PersonKind, kind: PersonKind): Effect => ({
+  bond: (who: 'target' | 'lover' | PersonKind, friendship: number, romance: number): Effect => ({ relation: { who, friendship, romance } }),
+  becomes: (who: 'target' | 'lover' | PersonKind, kind: PersonKind): Effect => ({
     relation: { who, becomes: kind },
   }),
   marry: (): Effect => ({ relation: { who: 'partner', married: true } }),
@@ -69,7 +69,7 @@ export const fx = {
   sentence: (s: 'full' | 'half' | 'double' | 'none' | 'probation'): Effect => ({ sentence: s }),
   loseAsset: (k: 'house' | 'car'): Effect => ({ loseAsset: k }),
   invest: (n: number): Effect => ({ invest: n }),
-  remove: (who: 'target' | PersonKind): Effect => ({ relation: { who, remove: true } }),
+  remove: (who: 'target' | 'lover' | PersonKind): Effect => ({ relation: { who, remove: true } }),
   die: (cause: string): Effect => ({ die: cause }),
   log: (text: string): Effect => ({ log: text }),
   trigger: (id: string): Effect => ({ trigger: id }),

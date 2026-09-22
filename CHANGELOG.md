@@ -2,6 +2,11 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [T17 · Títulos de relación y el amante reacciona]
+
+- **Títulos de relación** según amistad, amor, enemistad y parentesco: Neutral, Conocido, Amigo, Mejor amigo, Interés amoroso, Amigo con derechos, Romance/Amante, Mala onda, Enemigo, Némesis, Relación tóxica, Amor-odio, Pareja, Alma gemela, Ex con cuentas pendientes, Familiar entrañable, Familiar y amante, Familiar: amor-odio, etc. Aparecen en la lista y como etiqueta de color en la ficha.
+- **El amante reacciona** cuando la pareja descubre el engaño: según la decisión se aleja o se ilusiona; los textos lo nombran con su relación. 10 tests nuevos (242 en total).
+
 ## [T17 · Categorías, eventos, íconos e infidelidad]
 
 - **Acciones por categoría** en la ficha de cada persona: Amistad, Humor y bromas, Amor y seducción, Pareja y compromiso, Peleas y molestias, Plata, Paces y distancia. Acciones nuevas: chiste, broma pesada, molestar, tregua y "Pedirle que sean pareja".

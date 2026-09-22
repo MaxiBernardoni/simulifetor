@@ -7,6 +7,16 @@ export function firstAlive(life: Life, kind: PersonKind): Person | undefined {
 
 const first = (name: string) => name.split(' ')[0];
 
+/** El amante: la persona adulta y viva con más amor que no es la pareja oficial ni `exclude` (o undefined si no hay). */
+export function findLover(life: Life, exclude?: Person): Person | undefined {
+  let best: Person | undefined;
+  for (const p of life.people) {
+    if (!p.alive || p === exclude || p.kind === 'partner' || p.age < 18 || !p.romance) continue;
+    if (!best || p.romance > (best.romance ?? 0)) best = p;
+  }
+  return best;
+}
+
 const FALLBACK: Record<string, string> = {
   mother: 'tu madre',
   father: 'tu padre',
@@ -17,6 +27,7 @@ const FALLBACK: Record<string, string> = {
   sibling: 'tu hermano',
   boss: 'tu jefe',
   target: 'esa persona',
+  lover: 'la otra persona',
 };
 
 /** Cómo se llama esa persona respecto del jugador ("tu madre", "tu amiga", "tu esposo"…). */
@@ -57,6 +68,10 @@ export function fill(life: Life, text: string, target?: Person): string {
     if (key === 'crime') return life.trial?.crime ?? 'un delito';
     if (key === 'boss') return life.job?.boss ? withRelation(life.job.boss, 'tu jefe') : FALLBACK.boss;
     if (key === 'target') return target ? withRelation(first(target.name), relationLabel(target)) : FALLBACK.target;
+    if (key === 'lover') {
+      const l = findLover(life, target);
+      return l ? withRelation(first(l.name), relationLabel(l)) : FALLBACK.lover;
+    }
     const p = firstAlive(life, key as PersonKind);
     if (p) return withRelation(first(p.name), relationLabel(p));
     return FALLBACK[key] ?? key;
