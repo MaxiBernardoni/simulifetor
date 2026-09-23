@@ -32,6 +32,7 @@ Cada archivo `Txx-*.md` es una tarea **autocontenida**: objetivo, contexto (arch
 | 16 | [T13](T13-pwa-e-instalacion.md) | PWA y build para instalar en el iPhone (sin desplegar) | M | T12 | ✅ segura | todo |
 | 17 | [T17](T17-relaciones-amistad-y-amor.md) | Doble medidor de relación (amistad y amor), mala onda e infidelidad | XL | — | ⚠️ cambia el esquema | review (hitos 1–6) |
 | 18 | [T18](T18-mejoras-de-experiencia.md) | Mejoras de experiencia: vibración, ficha de persona, pantalla de muerte, IA, vida del día | M | — | ✅ segura | parcial (puntos 1 y 7 hechos) |
+| 19 | [T19](T19-avatares-mas-pelos-y-edad.md) | Más peinados (se repiten mucho) y avatares que reflejen la edad de cada personaje | L | — | ✅ segura | todo |
 
 Esfuerzo: S ≈ 1 h · M ≈ 2–3 h · L ≈ 4–6 h · XL ≈ 1 noche completa o más (dividir en hitos).
 
