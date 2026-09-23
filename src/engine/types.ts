@@ -181,12 +181,20 @@ export interface LogEntry {
   tone: Tone;
   title?: string;
   icon?: string;
+  /** Qué cambió por esto (si tuvo efectos numéricos): permite explicar el origen de un cambio del año. */
+  deltas?: Delta[];
 }
 
 export interface Delta {
   /** Stats, plata, o cuánto cambió la amistad o el amor con la persona de la acción. */
   key: StatKey | 'money' | 'friendship' | 'romance';
   amount: number;
+}
+
+/** Uno de los cambios que compusieron el total de `lastDelta` ("Estalla la burbuja: felicidad -3"). */
+export interface DeltaSource {
+  title: string;
+  deltas: Delta[];
 }
 
 /** Id de los prompts de continuación de la IA (no corresponden a ningún evento registrado). */
@@ -264,6 +272,8 @@ export interface Life {
   log: LogEntry[];
   pending: Prompt[];
   lastDelta: Delta[];
+  /** Qué compuso `lastDelta`, por origen (opcional: partidas viejas no lo tienen hasta el próximo año). */
+  lastDeltaSources?: DeltaSource[];
   schemaVersion: number;
   /** Dinastía a la que pertenece esta vida. */
   lineageId: string;

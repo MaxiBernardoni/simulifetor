@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [T18 · Origen de los cambios: tocar un chip para ver qué lo causó]
+
+- Los chips de cambios de cada año (`Felicidad −4`, `−$4.869`…) ahora se pueden tocar: despliegan una lista con qué los causó ("Estalla la burbuja: −3, Gripe: −1"); lo que no viene de un evento puntual (impuestos, mantenimiento, desgaste natural) queda en "Otros cambios", así el desglose siempre suma exactamente el total mostrado. Los chips de una sola decisión (`PromptModal`) siguen igual, porque ya son una causa clara. 10 tests nuevos (279 en total).
+
 ## [T17 hito 6 · Perfil de balance para amoríos e infidelidad]
 
 - Nuevo perfil `romance` en `npm run balance -- --profile=romance`: el bot ahora puede ir por una acción romántica con alguien que no es su pareja (antes las evitaba siempre; `AutoOpts.cheatChance`, en 0 para el resto de los perfiles, sin cambios en ellos). Métricas nuevas en el informe: `divorced` y `caughtCheating` (se enteró la pareja de una infidelidad y la relación se rompió por eso). Con cientos de vidas simuladas: alrededor de 17–28 % termina con la infidelidad descubierta, sin romper el resto de las bandas. Test de banda nuevo (269 en total).

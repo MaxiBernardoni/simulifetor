@@ -34,7 +34,7 @@ export function activityStatus(life: Life, a: Activity): Status {
 }
 
 function finish(life: Life, title: string, text: string, ctx: EffectCtx, icon?: string, scene?: string, targetId?: string): void {
-  addLog(life, text, toneOf(ctx.deltas), title, icon);
+  addLog(life, text, toneOf(ctx.deltas), title, icon, ctx.deltas);
   for (const l of ctx.logs) addLog(life, l, 'neutral');
   life.pending.unshift({
     kind: 'result',

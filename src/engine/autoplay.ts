@@ -154,6 +154,7 @@ export function tidyAfterSimulation(life: Life): void {
   life.money = Math.max(0, life.money);
   life.loan = 0;
   life.lastDelta = [];
+  life.lastDeltaSources = [];
   life.stats.happiness = Math.max(life.stats.happiness, 35);
   life.stats.health = Math.max(life.stats.health, 40);
   life.usedThisYear = [];

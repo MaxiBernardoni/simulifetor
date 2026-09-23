@@ -146,7 +146,7 @@ export function LifeScreen() {
         {STATS.map((k) => (
           <LifeStat key={k} stat={k} value={life.stats[k]} />
         ))}
-        <DeltaChips deltas={life.lastDelta} />
+        <DeltaChips deltas={life.lastDelta} sources={life.lastDeltaSources} />
       </CoachTarget>
 
       <CoachTarget id="nav" style={[s.navBar, { paddingBottom: Math.max(insets.bottom, 10) }]}>

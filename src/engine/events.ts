@@ -62,7 +62,7 @@ export function fireEvent(life: Life, ev: GameEvent, target?: Person): void {
   const ctx = newEffectCtx(target);
   const text = fill(life, ev.text, target);
   applyEffects(life, ev.effects, ctx, rng);
-  addLog(life, text, toneOf(ctx.deltas), fill(life, ev.title, target), styleForTags(ev.tags).icon);
+  addLog(life, text, toneOf(ctx.deltas), fill(life, ev.title, target), styleForTags(ev.tags).icon, ctx.deltas);
   flushCtx(life, ctx);
   runTriggers(life, ctx);
 }
@@ -113,7 +113,7 @@ function finishOutcome(life: Life, title: string, icon: string, baseScene: strin
   const ctx = newEffectCtx(target);
   const text = fill(life, outcome.text, target);
   applyEffects(life, outcome.effects, ctx, rng);
-  addLog(life, text, toneOf(ctx.deltas), title, icon);
+  addLog(life, text, toneOf(ctx.deltas), title, icon, ctx.deltas);
   flushCtx(life, ctx);
   life.pending.unshift({
     kind: 'result',

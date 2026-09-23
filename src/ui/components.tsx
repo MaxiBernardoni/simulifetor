@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { ViewStyle } from 'react-native';
-import type { Delta, Life, Look, Person, StatKey } from '../engine/types';
+import type { Delta, DeltaSource, Life, Look, Person, StatKey } from '../engine/types';
 import { Avatar } from './Avatar';
 import { getScenario } from '../content/scenarios';
 import { deriveLook } from '../engine/looks';
@@ -112,33 +112,63 @@ export function StatBar({ stat, value }: { stat: StatKey; value: number }) {
   );
 }
 
-export function DeltaChips({ deltas }: { deltas: Delta[] }) {
+/**
+ * Los chips de cambios. Con `sources` (el desglose por origen de `lastDelta`) se pueden tocar para ver qué lo causó;
+ * sin ese prop (el resultado de una sola decisión, que ya es una única causa clara) quedan como antes.
+ */
+export function DeltaChips({ deltas, sources }: { deltas: Delta[]; sources?: DeltaSource[] }) {
+  const [open, setOpen] = useState<Delta['key'] | null>(null);
+  // Si cambió el año (nuevo array de deltas), se cierra el desglose abierto en vez de mostrar uno viejo.
+  const [shownFor, setShownFor] = useState(deltas);
+  if (deltas !== shownFor) {
+    setShownFor(deltas);
+    setOpen(null);
+  }
   if (!deltas.length) return null;
+  const why = open ? sources?.filter((s) => s.deltas.some((d) => d.key === open)) : undefined;
   return (
-    <View style={s.chips}>
-      {deltas.map((d, idx) => {
-        const up = d.amount > 0;
-        const color = up ? colors.good : colors.bad;
-        const meta =
-          d.key === 'money'
-            ? { icon: 'Banknote', label: '' }
-            : d.key === 'friendship'
-              ? { icon: 'Handshake', label: 'Amistad' }
-              : d.key === 'romance'
-                ? { icon: 'Heart', label: 'Amor' }
-                : STAT_META[d.key];
-        return (
-          <Pop key={d.key + d.amount} delay={idx * 110}>
-            <View style={[s.chip, { borderColor: color, backgroundColor: color + '14' }]}>
-              <Icon name={meta.icon} size={13} color={color} />
-              <Text style={[s.chipText, { color }]}>
-                {up ? '+' : ''}
-                {d.key === 'money' ? formatMoney(d.amount) : d.amount}
+    <View>
+      <View style={s.chips}>
+        {deltas.map((d, idx) => {
+          const up = d.amount > 0;
+          const color = up ? colors.good : colors.bad;
+          const meta =
+            d.key === 'money'
+              ? { icon: 'Banknote', label: '' }
+              : d.key === 'friendship'
+                ? { icon: 'Handshake', label: 'Amistad' }
+                : d.key === 'romance'
+                  ? { icon: 'Heart', label: 'Amor' }
+                  : STAT_META[d.key];
+          return (
+            <Pop key={d.key + d.amount} delay={idx * 110}>
+              <Pressable
+                onPress={sources ? () => setOpen(open === d.key ? null : d.key) : undefined}
+                style={[s.chip, { borderColor: color, backgroundColor: color + (open === d.key ? '30' : '14') }]}
+              >
+                <Icon name={meta.icon} size={13} color={color} />
+                <Text style={[s.chipText, { color }]}>
+                  {up ? '+' : ''}
+                  {d.key === 'money' ? formatMoney(d.amount) : d.amount}
+                </Text>
+              </Pressable>
+            </Pop>
+          );
+        })}
+      </View>
+      {why?.length ? (
+        <View style={s.deltaWhy}>
+          {why.map((src, i) => {
+            const d = src.deltas.find((x) => x.key === open)!;
+            return (
+              <Text key={i} style={s.deltaWhyText}>
+                {src.title}: {d.amount > 0 ? '+' : ''}
+                {open === 'money' ? formatMoney(d.amount) : d.amount}
               </Text>
-            </View>
-          </Pop>
-        );
-      })}
+            );
+          })}
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -208,6 +238,8 @@ const s = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 4, borderWidth: 1, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3 },
   chipText: { fontSize: 12, fontWeight: '700' },
+  deltaWhy: { marginTop: 6, gap: 2 },
+  deltaWhyText: { fontSize: 12, color: colors.muted },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

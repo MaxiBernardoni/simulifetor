@@ -3,7 +3,7 @@
 - **Prioridad / esfuerzo:** media / M en total (cada punto es S–M)
 - **Depende de:** —
 - **Autonomía:** ✅ segura
-- **Estado:** todo
+- **Estado:** parcial (punto 7 hecho; ver Progreso)
 
 Ideas aprobadas por Max el 21/09/2026 (vibración, ficha de persona, pantalla de muerte, IA, vida del día sin apuro, instalación como app y origen de los cambios). Se pueden hacer por separado.
 
@@ -13,7 +13,11 @@ Ideas aprobadas por Max el 21/09/2026 (vibración, ficha de persona, pantalla de
 4. **IA:** indicador de "pensando…" en la continuación y reintento con un toque si falla; exigir en el prompt que aclare la relación cuando nombra a alguien.
 5. **Vida del día** (sin apuro): semilla derivada de la fecha para jugar la misma vida y comparar puntaje.
 6. **Instalación como app** (ver T13): service worker para abrir sin conexión y ícono propio. En iPhone funciona con "Agregar a inicio", pero los datos de la app instalada están separados de los de Safari (hay que exportar/importar la partida una vez).
-7. **Origen de los cambios** (aprobado): tocar un chip (−4, −$4.869) muestra qué lo causó ("Felicidad −4: Estalla la burbuja −3, Gripe −1"). Requiere guardar en `lastDelta` el título del evento de cada cambio.
+7. ✅ **Origen de los cambios** (hecho el 23/09/2026): tocar un chip de `life.lastDelta` en `LifeScreen` despliega qué lo causó ("Primer día de clases: −1, Otros cambios: −2"). Ver `docs/10-motor-y-formulas.md` § "Origen de los cambios del año".
 
 ## Criterios de aceptación
 - [ ] `npm run check` en verde y tests por punto que toque el motor; UI verificada a 375×812; docs y `CHANGELOG.md`.
+
+## Progreso
+- **Punto 7 (origen de los cambios):** `LogEntry.deltas?` (opcional, sin subir `SCHEMA_VERSION`) guarda los efectos de cada entrada del historial que ya pasa por `ctx.deltas` (evento sin decisiones, resultado de una decisión, actividad o acción con una persona). `Life.lastDeltaSources?: DeltaSource[]` (`engine/types.ts`) se arma en `ageUp()` con `deltaSources()` (nueva, exportada de `engine/ageUp.ts`): recorre el historial desde el principio del año y le resta a cada stat/plata lo que ya se atribuyó; el resto (impuestos, mantenimiento, desgaste natural…) queda en "Otros cambios", así el desglose siempre suma exactamente el total. `DeltaChips` (`ui/components.tsx`) recibe un `sources?` opcional: con él, cada chip es tocable y despliega la lista debajo (un solo chip abierto a la vez, se cierra al cambiar de año); sin `sources` (el resultado de una sola decisión en `PromptModal`) sigue igual que antes. 10 tests nuevos en `engine/deltaSources.test.ts` (279 en total), incluida una prueba de propiedad sobre 60 años simulados al azar que el desglose nunca se desvía del total mostrado. Verificado tocando los chips en el navegador a 390×844.
+- **Pendientes:** puntos 1 a 6 (vibración, ficha de persona, pantalla de muerte, indicador/reintento de la IA, vida del día, instalación como app).

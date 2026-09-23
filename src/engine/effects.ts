@@ -20,10 +20,11 @@ export const newEffectCtx = (target?: Person): EffectCtx => ({
 
 const clamp = (n: number, lo = 0, hi = 100) => Math.max(lo, Math.min(hi, n));
 
-export function addLog(life: Life, text: string, tone: Tone = 'neutral', title?: string, icon?: string): void {
+export function addLog(life: Life, text: string, tone: Tone = 'neutral', title?: string, icon?: string, deltas?: Delta[]): void {
   const entry: LogEntry = { age: life.age, year: life.year, text, tone };
   if (title) entry.title = title;
   if (icon) entry.icon = icon;
+  if (deltas?.length) entry.deltas = deltas;
   life.log.push(entry);
 }
 

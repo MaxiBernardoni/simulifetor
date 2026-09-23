@@ -1,5 +1,5 @@
 import { priceIndex, scaleMoney, wageIndex } from '../content/eras';
-import type { Delta, Life, StatKey } from './types';
+import type { Delta, DeltaSource, Life, StatKey } from './types';
 import { rngOf } from './rng';
 import type { Rng } from './rng';
 import { addLog, killLife } from './effects';
@@ -47,6 +47,25 @@ function computeDelta(life: Life, before: ReturnType<typeof snapshot>): Delta[] 
   const dm = life.money - before.money;
   if (dm) out.push({ key: 'money', amount: dm });
   return out;
+}
+
+/**
+ * Desglosa el total (`computeDelta`) por origen, usando lo que se logueó durante este año (eventos con efectos).
+ * Lo que no viene de un evento puntual (impuestos, mantenimiento, el desgaste natural de las stats…) queda en
+ * "Otros cambios", así el desglose siempre suma exactamente el total mostrado.
+ * ponytail: solo atribuye lo que ya pasa por `ctx.deltas` (eventos/actividades/acciones); ampliar si hace falta más detalle.
+ */
+export function deltaSources(life: Life, total: Delta[], logFrom: number): DeltaSource[] {
+  const sources: DeltaSource[] = [];
+  const left = new Map(total.map((d) => [d.key, d.amount]));
+  for (const entry of life.log.slice(logFrom)) {
+    if (!entry.deltas?.length) continue;
+    sources.push({ title: entry.title ?? entry.text, deltas: entry.deltas });
+    for (const d of entry.deltas) left.set(d.key, (left.get(d.key) ?? 0) - d.amount);
+  }
+  const rest = [...left].filter(([, amount]) => amount).map(([key, amount]) => ({ key, amount }) as Delta);
+  if (rest.length) sources.push({ title: 'Otros cambios', deltas: rest });
+  return sources;
 }
 
 /** Consecuencias de que muera un familiar o conocido. */
@@ -281,6 +300,7 @@ function checkMortality(life: Life, rng: Rng): void {
 export function ageUp(life: Life): void {
   if (!life.alive || life.pending.length > 0) return;
   const before = snapshot(life);
+  const logFrom = life.log.length;
   const rng = rngOf(life);
 
   life.age++;
@@ -299,6 +319,7 @@ export function ageUp(life: Life): void {
   if (life.alive && life.stats.health <= 0) killLife(life, 'complicaciones de salud');
 
   life.lastDelta = computeDelta(life, before);
+  life.lastDeltaSources = deltaSources(life, life.lastDelta, logFrom);
 }
 
 export const hasPartner = (life: Life) => !!firstAlive(life, 'partner');
