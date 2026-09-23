@@ -74,7 +74,7 @@ Cada año: con probabilidad `activityChance` busca trabajo, se anota a la univer
 
 ## Bandas de balance objetivo (T01)
 
-Medidas con `npm run balance -- --n=500 --profile=<perfil>` (perfiles: `normal`, `crimen`, `familia`, `pasivo`; ver `engine/balance.ts`). El bot elige al azar, así que las bandas sirven para **detectar roturas**, no para simular a una persona.
+Medidas con `npm run balance -- --n=500 --profile=<perfil>` (perfiles: `normal`, `crimen`, `familia`, `pasivo`, `romance`; ver `engine/balance.ts`). El bot elige al azar, así que las bandas sirven para **detectar roturas**, no para simular a una persona.
 
 | Métrica (perfil) | Banda | Última medición |
 |---|---|---|

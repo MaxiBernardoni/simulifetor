@@ -30,6 +30,16 @@ describe('bandas de balance (150 vidas, semilla fija)', () => {
     expect(r.pct.married).toBeGreaterThanOrEqual(12);
   }, 60_000);
 
+  it('perfil romance: los amoríos y la infidelidad se disparan de verdad, sin descontrolar el resto', () => {
+    const r = runBalance({ n: 100, seed: 5, profile: 'romance' });
+    expect(r.pct.married).toBeGreaterThanOrEqual(10);
+    expect(r.pct.children).toBeGreaterThanOrEqual(20);
+    // Prueba que el mecanismo se ejerce (no queda en 0 %) y que no se dispara siempre.
+    expect(r.pct.caughtCheating).toBeGreaterThanOrEqual(5);
+    expect(r.pct.caughtCheating).toBeLessThanOrEqual(45);
+    expect(r.pct.divorced).toBeLessThanOrEqual(45);
+  }, 60_000);
+
   it('sin eventos muertos salvo los que dependen de la dinastía o de un rango de años', () => {
     const big = runBalance({ n: 150, seed: 4, profile: 'normal' });
     const dead = big.neverFired.filter((id) => !id.startsWith('dyn.') && !id.startsWith('law.'));

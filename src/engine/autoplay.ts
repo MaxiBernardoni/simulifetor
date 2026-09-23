@@ -38,6 +38,8 @@ export interface AutoOpts {
   familyBias?: boolean;
   /** Se detiene si la vida pasa a ser esta (usado para no hacer trampa con la cárcel). */
   stopWhenJailed?: boolean;
+  /** Probabilidad de ir por una acción romántica con alguien que no es la pareja (amoríos e infidelidad). 0 = nunca (default). */
+  cheatChance?: number;
 }
 
 /**
@@ -128,8 +130,8 @@ export function autoPlay(life: Life, opts: AutoOpts): void {
           const person = bot.pick(p);
           const offered = offeredActions(life, person);
           const pa = allPersonActions().filter((a) => {
-            // El bot no molesta ni coquetea con terceros: esas acciones son decisiones del jugador.
-            if (botSkips(a.id) || (a.risk && person.kind !== 'partner')) return false;
+            // El bot no molesta a terceros; con acciones románticas fuera de la pareja, solo si el perfil lo permite (amoríos/infidelidad).
+            if (botSkips(a.id) || (a.risk && person.kind !== 'partner' && !bot.chance(opts.cheatChance ?? 0))) return false;
             const s = personActionStatus(life, a, person, offered);
             return s.visible && !s.reason;
           });

@@ -15,7 +15,7 @@ npm test               # solo tests (simula cientos de vidas completas)
 npm run typecheck      # solo tipos
 npx expo start --web --port 8081   # app en el navegador (para verificar la UI)
 npm run check:all      # + ESLint y Prettier --check
-npm run balance -- --n=500 --profile=normal   # informe de balance (perfiles: normal, crimen, familia, pasivo)
+npm run balance -- --n=500 --profile=normal   # informe de balance (perfiles: normal, crimen, familia, pasivo, romance)
 npm run icons          # regenera src/ui/Icon.tsx (falla si falta un ícono)
 ```
 

@@ -3,13 +3,15 @@ import { autoPlay } from './autoplay';
 import { realNetWorth } from './assets';
 import { allEvents } from './registry';
 
-export type Profile = 'normal' | 'crimen' | 'familia' | 'pasivo';
+export type Profile = 'normal' | 'crimen' | 'familia' | 'pasivo' | 'romance';
 
-const PROFILES: Record<Profile, { crimeChance: number; activityChance: number; familyBias?: boolean }> = {
+const PROFILES: Record<Profile, { crimeChance: number; activityChance: number; familyBias?: boolean; cheatChance?: number }> = {
   normal: { crimeChance: 0.08, activityChance: 0.5 },
   crimen: { crimeChance: 0.7, activityChance: 0.5 },
   familia: { crimeChance: 0.08, activityChance: 0.5, familyBias: true },
   pasivo: { crimeChance: 0, activityChance: 0 },
+  // Mide el efecto de los amoríos y la infidelidad: bots que forman pareja y, además, coquetean con terceros.
+  romance: { crimeChance: 0.08, activityChance: 0.5, familyBias: true, cheatChance: 0.25 },
 };
 
 export interface BalanceReport {
@@ -29,6 +31,10 @@ export interface BalanceReport {
     degree: number;
     house: number;
     jailed: number;
+    /** Se separó o se divorció alguna vez (cualquier motivo). */
+    divorced: number;
+    /** La pareja descubrió una infidelidad (evento `love.cheat_discovered`) y la relación se rompió por eso. */
+    caughtCheating: number;
   };
   /** Cuántas de cada 1.000 vidas dispararon cada evento (una vez o más). */
   eventsPer1000: Record<string, number>;
@@ -51,7 +57,18 @@ export function runBalance(opts: { n: number; seed?: number; profile?: Profile }
   const wealth: number[] = [];
   const causes: Record<string, number> = {};
   const fired: Record<string, number> = {};
-  const c = { bankrupt: 0, millionaire: 0, record: 0, married: 0, children: 0, degree: 0, house: 0, jailed: 0 };
+  const c = {
+    bankrupt: 0,
+    millionaire: 0,
+    record: 0,
+    married: 0,
+    children: 0,
+    degree: 0,
+    house: 0,
+    jailed: 0,
+    divorced: 0,
+    caughtCheating: 0,
+  };
   let eventCount = 0;
   let yearsLived = 0;
 
@@ -72,6 +89,8 @@ export function runBalance(opts: { n: number; seed?: number; profile?: Profile }
     if (life.edu.level >= 3) c.degree++;
     if (life.assets.some((a) => a.kind === 'house')) c.house++;
     if (life.flags.ex_convict) c.jailed++;
+    if (life.flags.divorced) c.divorced++;
+    if (life.flags.caught_cheating) c.caughtCheating++;
     for (const id of Object.keys(life.eventLast)) {
       fired[id] = (fired[id] ?? 0) + 1;
       eventCount++;

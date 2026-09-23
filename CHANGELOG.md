@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [T17 hito 6 · Perfil de balance para amoríos e infidelidad]
+
+- Nuevo perfil `romance` en `npm run balance -- --profile=romance`: el bot ahora puede ir por una acción romántica con alguien que no es su pareja (antes las evitaba siempre; `AutoOpts.cheatChance`, en 0 para el resto de los perfiles, sin cambios en ellos). Métricas nuevas en el informe: `divorced` y `caughtCheating` (se enteró la pareja de una infidelidad y la relación se rompió por eso). Con cientos de vidas simuladas: alrededor de 17–28 % termina con la infidelidad descubierta, sin romper el resto de las bandas. Test de banda nuevo (269 en total).
+
 ## [Deploy: corrección — Workers Builds ignora el build.command de wrangler.jsonc]
 
 - El intento anterior (`build.command` en `wrangler.jsonc`) no arregla el deploy automático: Cloudflare documenta que **Workers Builds ignora a propósito** los "Custom Builds" del archivo de configuración. El arreglo real es manual y va en el panel: *Settings → Builds → Deploy command* → `npm run deploy:web` (en vez de `npx wrangler deploy`). Ver `docs/13-instalacion.md`. `build.command` se deja igual, porque sí sirve para probar en seco en local con `wrangler deploy --dry-run`.

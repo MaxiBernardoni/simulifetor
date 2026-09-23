@@ -1,4 +1,4 @@
-// Informe de balance. Uso: npm run balance -- --n=1000 --seed=1 --profile=normal|crimen|familia|pasivo [--out]
+// Informe de balance. Uso: npm run balance -- --n=1000 --seed=1 --profile=normal|crimen|familia|pasivo|romance [--out]
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { reportToMarkdown, runBalance } from '../src/engine/balance';
 import type { Profile } from '../src/engine/balance';

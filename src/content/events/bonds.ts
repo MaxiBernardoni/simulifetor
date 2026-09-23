@@ -179,19 +179,19 @@ export const BONDS: GameEvent[] = [
       { label: 'Negarlo todo', outcomes: [
         { weight: 3, text: '{target} te creyó a medias. Quedó una duda que no se va a ir. {lover} te escribió asustado/a y no contestaste.', effects: [fx.bond('target', -6, -8), fx.bond('lover', -6, -8), fx.hap(-2)] },
         { weight: 7, text: '{target} tenía capturas de pantalla. Fue una escena que nadie olvida, y {lover} se enteró del escándalo y se alejó.', effects: [fx.bond('target', -25, -30), fx.bond('lover', -10, -14), fx.hap(-6)] },
-        { weight: 4, conditions: [c.single()], text: '{target} juntó sus cosas y se fue esa misma noche. Se terminó. Al día siguiente {lover} te escribió: "¿Ahora sí?".', effects: [fx.becomes('target', 'ex'), fx.bond('lover', 3, 8), fx.hap(-10)] },
-        { weight: 4, conditions: [c.married()], text: '{target} pidió el divorcio con un abogado ya contratado. Salió caro. {lover} apareció con flores, como si nada.', effects: [fx.becomes('target', 'ex'), fx.flag('divorced'), fx.moneyPct(-0.25), fx.bond('lover', 3, 8), fx.hap(-10)] },
+        { weight: 4, conditions: [c.single()], text: '{target} juntó sus cosas y se fue esa misma noche. Se terminó. Al día siguiente {lover} te escribió: "¿Ahora sí?".', effects: [fx.becomes('target', 'ex'), fx.flag('caught_cheating'), fx.bond('lover', 3, 8), fx.hap(-10)] },
+        { weight: 4, conditions: [c.married()], text: '{target} pidió el divorcio con un abogado ya contratado. Salió caro. {lover} apareció con flores, como si nada.', effects: [fx.becomes('target', 'ex'), fx.flag('divorced'), fx.flag('caught_cheating'), fx.moneyPct(-0.25), fx.bond('lover', 3, 8), fx.hap(-10)] },
       ] },
       { label: 'Pedir perdón de rodillas', outcomes: [
         { weight: 5, text: '{target} lloró, gritó y te perdonó. Con condiciones: cortaste todo contacto con {lover}.', effects: [fx.bond('target', -10, -15), fx.bond('lover', -15, -20), fx.hap(-3)] },
         { weight: 3, text: '{target} te dio una última oportunidad. La palabra es "última". {lover} entendió que elegiste a otra persona.', effects: [fx.bond('target', -18, -20), fx.bond('lover', -12, -18), fx.hap(-4)] },
-        { weight: 2, conditions: [c.single()], text: '{target} escuchó todo y aun así se fue. Se terminó. {lover} quedó libre para vos, aunque ya no era lo mismo.', effects: [fx.becomes('target', 'ex'), fx.bond('lover', 2, 6), fx.hap(-9)] },
-        { weight: 2, conditions: [c.married()], text: '{target} escuchó todo y aun así pidió el divorcio. {lover} quedó libre para vos, aunque ya no era lo mismo.', effects: [fx.becomes('target', 'ex'), fx.flag('divorced'), fx.moneyPct(-0.25), fx.bond('lover', 2, 6), fx.hap(-9)] },
+        { weight: 2, conditions: [c.single()], text: '{target} escuchó todo y aun así se fue. Se terminó. {lover} quedó libre para vos, aunque ya no era lo mismo.', effects: [fx.becomes('target', 'ex'), fx.flag('caught_cheating'), fx.bond('lover', 2, 6), fx.hap(-9)] },
+        { weight: 2, conditions: [c.married()], text: '{target} escuchó todo y aun así pidió el divorcio. {lover} quedó libre para vos, aunque ya no era lo mismo.', effects: [fx.becomes('target', 'ex'), fx.flag('divorced'), fx.flag('caught_cheating'), fx.moneyPct(-0.25), fx.bond('lover', 2, 6), fx.hap(-9)] },
       ] },
       { label: 'Admitirlo y decir que no es para tanto', outcomes: [
         { weight: 3, text: '{target} te pegó un portazo que hizo temblar las paredes. Todavía no se fue. Terminaste peleado/a también con {lover}.', effects: [fx.bond('target', -30, -35), fx.bond('lover', -8, -10), fx.hap(-5)] },
-        { weight: 7, conditions: [c.single()], text: '{target} se rió con amargura y se fue para siempre. Ahora {lover} te quiere todo/a para sí.', effects: [fx.becomes('target', 'ex'), fx.bond('lover', 4, 8), fx.hap(-8)] },
-        { weight: 7, conditions: [c.married()], text: '{target} pidió el divorcio y se quedó con la mitad de todo. Ahora {lover} te quiere todo/a para sí.', effects: [fx.becomes('target', 'ex'), fx.flag('divorced'), fx.moneyPct(-0.25), fx.bond('lover', 4, 8), fx.hap(-8)] },
+        { weight: 7, conditions: [c.single()], text: '{target} se rió con amargura y se fue para siempre. Ahora {lover} te quiere todo/a para sí.', effects: [fx.becomes('target', 'ex'), fx.flag('caught_cheating'), fx.bond('lover', 4, 8), fx.hap(-8)] },
+        { weight: 7, conditions: [c.married()], text: '{target} pidió el divorcio y se quedó con la mitad de todo. Ahora {lover} te quiere todo/a para sí.', effects: [fx.becomes('target', 'ex'), fx.flag('divorced'), fx.flag('caught_cheating'), fx.moneyPct(-0.25), fx.bond('lover', 4, 8), fx.hap(-8)] },
       ] },
     ] },
 ];
