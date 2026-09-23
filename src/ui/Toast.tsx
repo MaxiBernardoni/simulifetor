@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGame } from '../store/gameStore';
 import { IconTile } from './components';
 import { NATIVE } from './anim';
+import { hapticGood } from './haptics';
 import { colors } from './theme';
 
 /** Aviso animado que baja desde arriba cuando desbloqueás un logro. */
@@ -17,6 +18,7 @@ export function AchievementToast() {
 
   useEffect(() => {
     if (!visible) return;
+    hapticGood();
     y.setValue(-160);
     const anim = Animated.sequence([
       Animated.spring(y, { toValue: 0, friction: 6, tension: 90, useNativeDriver: NATIVE }),

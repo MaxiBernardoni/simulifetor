@@ -40,6 +40,8 @@ interface Meta {
   activeSlot: number;
   /** Opcional: las partidas viejas no lo tienen (se asume visto si ya había partidas). */
   seenTutorial?: boolean;
+  /** Vibración al envejecer, en resultados y logros. Opcional: por defecto encendida. */
+  hapticsEnabled?: boolean;
 }
 
 interface GameState {
@@ -68,6 +70,8 @@ interface GameState {
   markNewsRead: () => void;
   seenTutorial: boolean;
   markTutorialSeen: () => void;
+  hapticsEnabled: boolean;
+  setHapticsEnabled: (v: boolean) => void;
   switchSlot: (i: number) => void;
   deleteSlot: (i: number) => void;
   exportData: () => string;
@@ -167,6 +171,7 @@ export const useGame = create<GameState>((set, get) => {
       scenarioWins: s.scenarioWins,
       activeSlot: s.activeSlot,
       seenTutorial: s.seenTutorial,
+      hapticsEnabled: s.hapticsEnabled,
       ...over,
     };
   };
@@ -302,6 +307,7 @@ export const useGame = create<GameState>((set, get) => {
             achievements: m.achievements ?? [],
             scenarioWins: m.scenarioWins ?? [],
             seenTutorial: m.seenTutorial ?? true,
+            hapticsEnabled: m.hapticsEnabled ?? true,
             ready: true,
           });
           slots.forEach((l, i) => {
@@ -351,6 +357,12 @@ export const useGame = create<GameState>((set, get) => {
     markTutorialSeen: () => {
       set({ seenTutorial: true });
       void saveMeta(meta({ seenTutorial: true }));
+    },
+
+    hapticsEnabled: true,
+    setHapticsEnabled: (v) => {
+      set({ hapticsEnabled: v });
+      void saveMeta(meta({ hapticsEnabled: v }));
     },
 
     markNewsRead: () => {

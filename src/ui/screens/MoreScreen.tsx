@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Switch, Text, View } from 'react-native';
 import { showAlert } from '../dialog';
 import { useGame } from '../../store/gameStore';
 import { formatMoney } from '../../engine/format';
@@ -17,6 +17,8 @@ export function MoreScreen() {
   const setTab = useGame((st) => st.setTab);
   const wins = useGame((st) => st.scenarioWins);
   const world = useGame((st) => st.world);
+  const haptics = useGame((st) => st.hapticsEnabled);
+  const setHaptics = useGame((st) => st.setHapticsEnabled);
   const unreadNews = (world?.world.news ?? []).filter((n) => n.id > (world?.world.newsSeen ?? 0)).length;
   const [gallery, setGallery] = useState(false);
 
@@ -55,6 +57,17 @@ export function MoreScreen() {
             onPress={() => setGallery((g) => !g)}
           />
         ) : null}
+      </View>
+
+      <SectionTitle icon="Sparkles" color="#5B7DB1">
+        Preferencias
+      </SectionTitle>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ color: colors.text, fontWeight: '700' }}>Vibración</Text>
+          <Text style={{ color: colors.muted, fontSize: 13 }}>Al envejecer, en los resultados y al desbloquear un logro.</Text>
+        </View>
+        <Switch value={haptics} onValueChange={setHaptics} trackColor={{ true: colors.accent }} />
       </View>
 
       {gallery ? (

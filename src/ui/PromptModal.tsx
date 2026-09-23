@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAI } from '../ai/store';
 import { canAnswerByText } from '../ai/config';
 import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -10,6 +10,7 @@ import { Button, DeltaChips, IconTile } from './components';
 import { Scene } from './art/Scene';
 import { FadeIn, Pop } from './anim';
 import { styleForTags } from '../content/icons';
+import { hapticBad, hapticGood } from './haptics';
 import { colors, radius } from './theme';
 
 function score(deltas: { key: string; amount: number }[]): number {
@@ -31,6 +32,11 @@ export function PromptModal() {
   const answer = draft.key === promptKey ? draft.text : '';
   const answerError = draft.key === promptKey ? draft.error : null;
   const setAnswer = (text: string) => setDraft({ key: promptKey, text, error: null });
+  const bad = prompt?.kind === 'result' && score(prompt.deltas) < 0;
+  useEffect(() => {
+    if (prompt?.kind === 'result') (bad ? hapticBad : hapticGood)();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo cuando cambia la situación, no en cada render
+  }, [promptKey]);
   if (!life || !prompt) return null;
   const submitAnswer = async (text = answer) => {
     setThinking(true);
@@ -41,7 +47,6 @@ export function PromptModal() {
 
   const ev = prompt.kind === 'choice' ? getEvent(prompt.eventId) : undefined;
   const target = life.people.find((p) => p.id === prompt.targetId);
-  const bad = prompt.kind === 'result' && score(prompt.deltas) < 0;
   // Clave para reiniciar las animaciones con cada prompt nuevo.
   const key = `${prompt.kind}:${prompt.title}:${prompt.text.length}:${life.log.length}`;
 

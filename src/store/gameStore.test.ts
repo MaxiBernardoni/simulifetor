@@ -143,6 +143,29 @@ describe('store: tutorial', () => {
   });
 });
 
+describe('store: vibración', () => {
+  it('viene activada por defecto, se puede apagar y queda guardada', async () => {
+    mem.clear();
+    useGame.setState({ ready: false });
+    await get().load();
+    expect(get().hapticsEnabled).toBe(true);
+    get().setHapticsEnabled(false);
+    expect(get().hapticsEnabled).toBe(false);
+    await tick();
+    useGame.setState({ ready: false });
+    await get().load();
+    expect(get().hapticsEnabled).toBe(false);
+  });
+
+  it('una meta de una versión anterior (sin el campo) la deja activada', async () => {
+    mem.clear();
+    mem.set('vidasim.meta.v2', JSON.stringify({ schemaVersion: 4, history: [], achievements: [], scenarioWins: [], activeSlot: 0 }));
+    useGame.setState({ ready: false });
+    await get().load();
+    expect(get().hapticsEnabled).toBe(true);
+  });
+});
+
 describe('store: cambio de personaje', () => {
   beforeEach(fresh);
 

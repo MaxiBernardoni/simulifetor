@@ -11,6 +11,7 @@ import { Avatar } from '../Avatar';
 import { Icon } from '../Icon';
 import { FadeIn, PressScale, Pulse, useBump, useHop } from '../anim';
 import { CoachTarget, useCoach } from '../coach';
+import { hapticTap } from '../haptics';
 import { colors, space } from '../theme';
 
 const STATS: StatKey[] = ['happiness', 'health', 'smarts', 'looks'];
@@ -154,7 +155,15 @@ export function LifeScreen() {
         <NavItem icon="PiggyBank" label="Activos" onPress={() => setTab('assets')} />
         <CoachTarget id="age" style={s.ageSlot}>
           <Pulse active={!blocked} amount={0.045} style={s.pulse}>
-            <PressScale onPress={ageUp} disabled={blocked} to={0.88} style={[s.ageButton, { opacity: blocked ? 0.5 : 1 }]}>
+            <PressScale
+              onPress={() => {
+                hapticTap();
+                ageUp();
+              }}
+              disabled={blocked}
+              to={0.88}
+              style={[s.ageButton, { opacity: blocked ? 0.5 : 1 }]}
+            >
               <Icon name="ChevronsRight" size={38} color="#fff" />
               <Text style={s.ageText}>Envejecer</Text>
             </PressScale>

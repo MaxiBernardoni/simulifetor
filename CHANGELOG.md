@@ -2,6 +2,10 @@
 
 Historial de cambios de VidaSim, del más reciente al más antiguo. Cada entrada corresponde a un commit (o grupo de commits) de `main`.
 
+## [T18 · Vibración]
+
+- Vibración (`expo-haptics`) al envejecer, en resultados buenos o malos y al desbloquear un logro. Interruptor en Menú → Preferencias, encendido por defecto; nunca rompe la UI si el dispositivo no vibra. 5 tests nuevos (284 en total).
+
 ## [T18 · Origen de los cambios: tocar un chip para ver qué lo causó]
 
 - Los chips de cambios de cada año (`Felicidad −4`, `−$4.869`…) ahora se pueden tocar: despliegan una lista con qué los causó ("Estalla la burbuja: −3, Gripe: −1"); lo que no viene de un evento puntual (impuestos, mantenimiento, desgaste natural) queda en "Otros cambios", así el desglose siempre suma exactamente el total mostrado. Los chips de una sola decisión (`PromptModal`) siguen igual, porque ya son una causa clara. 10 tests nuevos (279 en total).
